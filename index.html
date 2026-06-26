@@ -66,7 +66,7 @@
             margin-bottom: 5px;
         }
 
-        textarea, input[type="file"] {
+        textarea, input[type="file"], input[type="url"] {
             width: 100%;
             padding: 12px;
             border: 2px solid #ccc;
@@ -184,6 +184,29 @@
         .btn-warning { background-color: #ff9800; }
         .btn-warning:hover { background-color: #e68a00; }
 
+        /* Setup Tab Styling */
+        .tab-group-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 12px;
+        }
+        .tab-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            border: 1px solid #ccc;
+            background-color: #eaeaea;
+            color: #333;
+        }
+        .tab-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
         .result-box {
             margin-top: 15px;
             padding: 20px;
@@ -250,11 +273,24 @@
 
     <div class="card" id="setup-card">
         <h2>1. Materialien einrichten</h2>
-        <div class="form-group">
+        
+        <div class="tab-group-container">
+            <button type="button" class="tab-btn active" id="tab-local" onclick="switchSetupTab('local')">📁 Lokale Dateien</button>
+            <button type="button" class="tab-btn" id="tab-url" onclick="switchSetupTab('url')">🌐 Archive.org Link</button>
+        </div>
+
+        <div id="panel-local" class="form-group">
             <label for="audio-inputs">Audio-Dateien auswählen (Mehrere Dateien gleichzeitig auswählen):</label>
             <input type="file" id="audio-inputs" accept="audio/*" multiple>
         </div>
-        <div class="form-group">
+
+        <div id="panel-url" class="form-group hidden">
+            <label for="audio-url-input">Direct Archive.org Audio-URL eingeben (z.B. https://archive.org/download/.../track.mp3):</label>
+            <input type="url" id="audio-url-input" placeholder="https://archive.org/download/your_audio_collection/audio_01.mp3">
+            <small style="color: #666; display: block; margin-top: 5px;">⚠️ Hinweis: Nutzen Sie den direkten Download-Link (endet meist auf .mp3, .wav oder .ogg).</small>
+        </div>
+
+        <div class="form-group" style="margin-top: 20px;">
             <label for="script-input">Skript eingeben (Jede Zeile entspricht einer Audio-Datei):</label>
             <textarea id="script-input" placeholder="Guten Tag.&#10;Wie geht es Ihnen?&#10;Übung macht den Meister."></textarea>
         </div>
@@ -267,7 +303,7 @@
         <audio id="audio-player"></audio>
 
         <div class="custom-player">
-            <div class="player-title" id="track-title">Sich vorstellen – Thomas</div>
+            <div class="player-title" id="track-title">Hörbeispiel</div>
             
             <div class="progress-container">
                 <div class="time-stamps">
@@ -333,6 +369,7 @@
     let sentenceList = [];
     let audioFilesList = [];
     let currentIndex = 0;
+    let setupMode = 'local'; 
 
     const nativePlayer = document.getElementById('audio-player');
     const playIcon = document.getElementById('play-icon');
@@ -342,6 +379,28 @@
     const timeDuration = document.getElementById('time-duration');
     const speedToggle = document.getElementById('speed-toggle');
 
+    // Switch setup panel type
+    function switchSetupTab(mode) {
+        setupMode = mode;
+        const tabLocal = document.getElementById('tab-local');
+        const tabUrl = document.getElementById('tab-url');
+        const panelLocal = document.getElementById('panel-local');
+        const panelUrl = document.getElementById('panel-url');
+
+        if (mode === 'local') {
+            tabLocal.classList.add('active');
+            tabUrl.classList.remove('active');
+            panelLocal.classList.remove('hidden');
+            panelUrl.classList.add('hidden');
+        } else {
+            tabLocal.classList.remove('active');
+            tabUrl.classList.add('active');
+            panelLocal.classList.add('hidden');
+            panelUrl.classList.remove('hidden');
+        }
+    }
+
+    // Ctrl Hotkey triggers rewind
     window.addEventListener('keydown', function(event) {
         if (event.key === 'Control') {
             const exerciseCard = document.getElementById('exercise-card');
@@ -415,25 +474,41 @@
     }
 
     function triggerDownload() {
-        if (nativePlayer.src) {
+        if (nativePlayer.src && setupMode === 'local') {
             const a = document.createElement('a');
             a.href = nativePlayer.src;
             a.download = `Audio_Satz_${currentIndex + 1}.mp3`;
             a.click();
+        } else if (nativePlayer.src) {
+            window.open(nativePlayer.src, '_blank');
         }
     }
 
     function prepareSentencesApp() {
-        const files = document.getElementById('audio-inputs').files;
         const rawScript = document.getElementById('script-input').value.trim();
 
-        if (files.length === 0 || !rawScript) {
-            alert("Bitte wählen Sie mindestens eine Audiodatei aus und geben Sie den Text ein!");
+        if (!rawScript) {
+            alert("Bitte geben Sie den Text im Skriptfeld ein!");
             return;
         }
 
         sentenceList = rawScript.split('\n').map(s => s.trim()).filter(s => s.length > 0);
-        audioFilesList = Array.from(files);
+
+        if (setupMode === 'local') {
+            const files = document.getElementById('audio-inputs').files;
+            if (files.length === 0) {
+                alert("Bitte wählen Sie mindestens eine lokale Audiodatei aus!");
+                return;
+            }
+            audioFilesList = Array.from(files);
+        } else {
+            const remoteUrl = document.getElementById('audio-url-input').value.trim();
+            if (!remoteUrl) {
+                alert("Bitte geben Sie einen gültigen Archive.org Link ein!");
+                return;
+            }
+            audioFilesList = [remoteUrl]; 
+        }
 
         startExerciseLoop();
     }
@@ -456,13 +531,21 @@
 
         document.getElementById('progress-indicator').textContent = `Satz ${currentIndex + 1} / ${sentenceList.length}`;
 
-        if (audioFilesList[currentIndex]) {
-            const currentFile = audioFilesList[currentIndex];
-            document.getElementById('track-title').textContent = currentFile.name.split('.').slice(0, -1).join('.');
-            nativePlayer.src = URL.createObjectURL(currentFile);
+        if (setupMode === 'local') {
+            if (audioFilesList[currentIndex]) {
+                const currentFile = audioFilesList[currentIndex];
+                document.getElementById('track-title').textContent = currentFile.name.split('.').slice(0, -1).join('.');
+                nativePlayer.src = URL.createObjectURL(currentFile);
+            } else {
+                document.getElementById('track-title').textContent = `Satz ${currentIndex + 1}`;
+                alert("Für diese Textzeile wurde keine entsprechende Audiodatei gefunden.");
+            }
         } else {
-            document.getElementById('track-title').textContent = `Satz ${currentIndex + 1}`;
-            alert("Für diese Textzeile wurde keine entsprechende Audiodatei gefunden.");
+            // Archive.org Stream Mode
+            const currentUrl = audioFilesList[0]; 
+            document.getElementById('track-title').textContent = "Archive.org Stream";
+            nativePlayer.src = currentUrl;
+            nativePlayer.crossOrigin = "anonymous"; 
         }
     }
 
@@ -568,6 +651,7 @@
         document.getElementById('summary-card').classList.add('hidden');
         document.getElementById('setup-card').classList.remove('hidden');
         document.getElementById('audio-inputs').value = "";
+        document.getElementById('audio-url-input').value = "";
         document.getElementById('script-input').value = "";
     }
 </script>
