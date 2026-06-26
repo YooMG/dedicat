@@ -66,7 +66,7 @@
             margin-bottom: 5px;
         }
 
-        textarea, input[type="file"], input[type="url"], input[type="text"] {
+        textarea, input[type="file"], input[type="url"], input[type="text"], select {
             width: 100%;
             padding: 12px;
             border: 2px solid #ccc;
@@ -75,7 +75,60 @@
             font-size: 15px;
         }
 
-        textarea { resize: vertical; height: 120px; }
+        textarea { resize: vertical; height: 100px; }
+
+        /* Level Filter Button Styling */
+        .level-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .level-btn {
+            background-color: white;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .level-btn:hover, .level-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,2,108,0.2);
+        }
+
+        /* Group Playlist Cards */
+        .group-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .group-item {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 15px 20px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+        .group-item:hover {
+            background: #f1f3f5;
+        }
+
+        .group-info h4 { margin: 0 0 5px 0; color: #1a1a1a; font-size: 16px; }
+        .group-info span { font-size: 13px; color: #6c757d; }
 
         /* Custom Audio Player Layout */
         .custom-player {
@@ -87,93 +140,22 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.03);
         }
 
-        .player-title {
-            font-size: 20px;
-            font-weight: 500;
-            color: #1a1a1a;
-            margin-bottom: 25px;
-        }
+        .player-title { font-size: 20px; font-weight: 500; color: #1a1a1a; margin-bottom: 25px; }
+        .progress-container { width: 100%; margin-bottom: 10px; }
+        .time-stamps { display: flex; justify-content: space-between; color: #8a8a8a; font-size: 14px; margin-bottom: 8px; }
+        .progress-bar-wrapper { width: 100%; height: 6px; background: #e0e0e0; border-radius: 3px; cursor: pointer; position: relative; }
+        .progress-fill { height: 100%; width: 0%; background: #b0b0b0; border-radius: 3px; }
 
-        .progress-container {
-            width: 100%;
-            margin-bottom: 10px;
-        }
-
-        .time-stamps {
-            display: flex;
-            justify-content: space-between;
-            color: #8a8a8a;
-            font-size: 14px;
-            margin-bottom: 8px;
-        }
-
-        .progress-bar-wrapper {
-            width: 100%;
-            height: 6px;
-            background: #e0e0e0;
-            border-radius: 3px;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .progress-fill {
-            height: 100%;
-            width: 0%;
-            background: #b0b0b0;
-            border-radius: 3px;
-        }
-
-        .player-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 25px;
-            padding: 0 10px;
-        }
-
-        .control-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #1a1a1a;
-            padding: 5px;
-            transition: opacity 0.2s;
-        }
+        .player-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 25px; padding: 0 10px; }
+        .control-btn { background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #1a1a1a; padding: 5px; transition: opacity 0.2s; }
         .control-btn:hover { opacity: 0.7; }
-
         .speed-btn { font-size: 16px; font-weight: 500; width: 40px; }
         
-        .play-btn {
-            width: 56px;
-            height: 56px;
-            background: #111111;
-            border-radius: 50%;
-            color: white;
-        }
+        .play-btn { width: 56px; height: 56px; background: #111111; border-radius: 50%; color: white; }
         .play-btn svg { fill: white; width: 20px; height: 20px; }
 
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 15px;
-            transition: background 0.2s;
-            flex: 1;
-            min-width: 140px;
-        }
+        .btn-group { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
+        .btn { color: white; border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 15px; transition: background 0.2s; flex: 1; min-width: 140px; }
 
         .btn-main { background-color: var(--primary-color); }
         .btn-main:hover { background-color: #001f4d; }
@@ -185,74 +167,21 @@
         .btn-warning:hover { background-color: #e68a00; }
         .btn-danger { background-color: #dc3545; }
 
-        /* Admin Specific Styling */
-        .admin-card {
-            border: 3px dashed var(--secondary-color);
-            background-color: #fff8f8;
-        }
-        .track-item {
-            background: #eee;
-            padding: 10px;
-            margin-bottom: 5px;
-            border-radius: 5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .result-box {
-            margin-top: 15px;
-            padding: 20px;
-            border-radius: 10px;
-            font-size: 22px;
-            display: none;
-        }
-
+        .admin-card { border: 3px dashed var(--secondary-color); background-color: #fff8f8; }
+        .track-item { background: #eee; padding: 10px; margin-bottom: 5px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; font-size: 14px;}
+        .result-box { margin-top: 15px; padding: 20px; border-radius: 10px; font-size: 22px; display: none; }
         .correct { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; font-weight: bold; }
         .wrong { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
         .hint-screenshot-box { background-color: #f8f9fa; color: #333333; border: 1px solid #e2e3e5; }
-        
         .hint-text-normal { color: #333333; margin-right: 8px; display: inline-block; }
         .hint-text-correct-word { color: #28a745; font-weight: bold; margin-right: 8px; display: inline-block; }
         .hint-text-hidden { color: #ccc; margin-right: 8px; display: inline-block; letter-spacing: 2px; }
-
-        .word-wrong-underline { 
-            color: #333333; 
-            margin-right: 8px; 
-            display: inline-block; 
-            border-bottom: 3px solid #ff9800; 
-        }
-
-        .progress-badge {
-            background: var(--accent-color);
-            color: #333;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: bold;
-            float: right;
-        }
-
-        .shortcut-tip {
-            font-size: 13px;
-            color: #666;
-            margin-bottom: 15px;
-            display: block;
-        }
-
-        .summary-title {
-            text-align: center;
-            color: #28a745;
-            font-size: 26px;
-            margin-bottom: 20px;
-        }
-        .summary-stats {
-            text-align: center;
-            font-size: 18px;
-            margin-bottom: 25px;
-            color: #555;
-        }
-
+        .word-wrong-underline { color: #333333; margin-right: 8px; display: inline-block; border-bottom: 3px solid #ff9800; }
+        .progress-badge { background: var(--accent-color); color: #333; padding: 3px 8px; border-radius: 12px; font-size: 14px; font-weight: bold; float: right; }
+        .shortcut-tip { font-size: 13px; color: #666; margin-bottom: 15px; display: block; }
+        .summary-title { text-align: center; color: #28a745; font-size: 26px; margin-bottom: 20px; }
+        .summary-stats { text-align: center; font-size: 18px; margin-bottom: 25px; color: #555; }
+        
         .hidden { display: none !important; }
     </style>
 </head>
@@ -265,22 +194,39 @@
     </header>
 
     <div class="card admin-card hidden" id="admin-card">
-        <h2>🛠️ Admin Panel (Bulk Import List)</h2>
-        <p style="font-size: 14px; margin-top: -10px; color: #666;">Fügen Sie Listen ein. Jede Zeile entspricht einer Lektion.</p>
+        <h2>🛠️ Admin Panel (Kurs-Kollektion hinzufügen)</h2>
+        <p style="font-size: 14px; margin-top: -10px; color: #666;">Gruppieren Sie Sätze nach Sprachniveau und Thema.</p>
         
+        <div style="display: flex; gap: 10px;" class="form-group">
+            <div style="flex: 1;">
+                <label for="admin-level-select">Sprachniveau:</label>
+                <select id="admin-level-select">
+                    <option value="A1">A1 (Anfänger)</option>
+                    <option value="A2">A2 (Grundlegende Kenntnisse)</option>
+                    <option value="B1">B1 (Fortgeschrittene Verwendung)</option>
+                    <option value="B2">B2 (Selbständige Verwendung)</option>
+                    <option value="C1">C1 (Fachkundige Sprachkenntnisse)</option>
+                </select>
+            </div>
+            <div style="flex: 2;">
+                <label for="admin-group-title">Gruppen / Lektions-Titel:</label>
+                <input type="text" id="admin-group-title" placeholder="z.B. Lektion 1: Im Restaurant">
+            </div>
+        </div>
+
         <div class="form-group">
-            <label for="admin-links-list">Audio Links Liste (Ein Link pro Zeile):</label>
-            <textarea id="admin-links-list" placeholder="https://archive.org/download/.../track1.mp3&#10;https://archive.org/download/.../track2.mp3" style="height: 100px;"></textarea>
+            <label for="admin-links-list">Audio-Links (Ein Link pro Zeile):</label>
+            <textarea id="admin-links-list" placeholder="https://archive.org/download/.../audio1.mp3&#10;https://archive.org/download/.../audio2.mp3"></textarea>
         </div>
         
         <div class="form-group">
-            <label for="admin-scripts-list">Skript Sätze Liste (Ein Satz pro Zeile):</label>
-            <textarea id="admin-scripts-list" placeholder="Guten Tag, wie geht es Ihnen?&#10;Mir geht es sehr gut, danke!" style="height: 100px;"></textarea>
+            <label for="admin-scripts-list">Skript / Lösungen (Ein Satz pro Zeile):</label>
+            <textarea id="admin-scripts-list" placeholder="Ich möchte einen Kaffee bitte.&#10;Zahlen bitte!"></textarea>
         </div>
         
-        <button class="btn btn-success" onclick="processBulkAdminImport()">⚡ Listen verarbeiten & Hinzufügen</button>
+        <button class="btn btn-success" onclick="processBulkGroupAdmin()">➕ Gruppe zur Datenbank hinzufügen</button>
         
-        <h3 style="margin-top: 20px; font-size: 16px;">Aktuelle globale Trackliste:</h3>
+        <h3 style="margin-top: 20px; font-size: 16px;">Aktuelle Sammlungen im Code:</h3>
         <div id="admin-track-list"></div>
 
         <div style="margin-top: 20px; background: #eee; padding: 10px; border-radius: 8px;">
@@ -290,14 +236,19 @@
     </div>
 
     <div class="card" id="setup-card">
-        <h2>1. Kurs starten</h2>
-        <p>Willkommen! Klicken Sie unten auf den Button, um die vom Admin bereitgestellten Audio-Übungen zu laden.</p>
+        <h2>1. Wählen Sie ein Sprachniveau</h2>
         
-        <div id="visitor-track-count" style="font-weight: bold; margin-bottom: 15px; color: var(--primary-color);">
-            Verfügbare Übungssätze: 0 Sätze geladen.
+        <div class="level-container">
+            <button class="level-btn active" onclick="filterByLevel('A1', this)">A1</button>
+            <button class="level-btn" onclick="filterByLevel('A2', this)">A2</button>
+            <button class="level-btn" onclick="filterByLevel('B1', this)">B1</button>
+            <button class="level-btn" onclick="filterByLevel('B2', this)">B2</button>
+            <button class="level-btn" onclick="filterByLevel('C1', this)">C1</button>
         </div>
 
-        <button class="btn btn-success" id="start-app-btn" onclick="prepareSentencesApp()">🚀 Übung jetzt starten</button>
+        <h2>Verfügbare Übungen</h2>
+        <div class="group-list" id="visitor-group-list">
+            </div>
     </div>
 
     <div id="exercise-card" class="card hidden">
@@ -359,25 +310,41 @@
 
     <div id="summary-card" class="card hidden">
         <div class="summary-title">🎉 Übung erfolgreich beendet!</div>
-        <div class="summary-stats" id="summary-text">Sie haben alle Sätze erfolgreich abgeschlossen.</div>
+        <div class="summary-stats" id="summary-text">Sie haben alle Sätze dieser Übung abgeschlossen.</div>
         
         <div class="btn-group">
             <button class="btn btn-success" onclick="restartSameExercise()">Gleiche Übung wiederholen</button>
-            <button class="btn btn-main" onclick="backToConfiguration()">Zur Startseite</button>
+            <button class="btn btn-main" onclick="backToConfiguration()">Zur Level-Auswahl</button>
         </div>
     </div>
 </div>
 
 <script>
     // ==========================================
-    // ⚙️ GLOBAL DATABASE STORAGE (FOR EVERYONE)
+    // ⚙️ GLOBAL COURSE DATABASE
     // ==========================================
-    // Paste your exported configurations here to save permanently on GitHub!
-   let globalDatabase = [{"url":"https://archive.org/download/2-eine-person-steht-fruh-auf-und-macht-fruhstuck/1%20hete%20ist%20samstag.wav","title":"Satz 1","script":"Heute ist Samstag."},{"url":"https://archive.org/download/2-eine-person-steht-fruh-auf-und-macht-fruhstuck/2%20Eine%20Person%20steht%20fr%C3%BCh%20auf%20und%20macht%20Fr%C3%BChst%C3%BCck_.wav","title":"Satz 2","script":"Eine Person steht früh auf und macht Frühstück."},{"url":"https://archive.org/download/2-eine-person-steht-fruh-auf-und-macht-fruhstuck/3%20Sie%20trinkt%20Kaffee%20und%20isst%20Brot%20mit%20K%C3%A4se_.wav","title":"Satz 3","script":"Sie trinkt Kaffee und isst Brot mit Käse."},{"url":"https://archive.org/download/2-eine-person-steht-fruh-auf-und-macht-fruhstuck/4%20Danach%20geht%20sie%20in%20die%20Bibliothek_.wav","title":"Satz 4","script":"Danach geht sie in die Bibliothek."},{"url":"https://archive.org/download/2-eine-person-steht-fruh-auf-und-macht-fruhstuck/5%20Die%20Bibliothek%20ist%20ruhig%20und%20sauber_.wav","title":"Satz 5","script":"Die Bibliothek ist ruhig und sauber."},{"url":"https://archive.org/download/2-eine-person-steht-fruh-auf-und-macht-fruhstuck/6%20Dort%20liest%20sie%20ein%20Buch%20%C3%BCber%20Tiere_.wav","title":"Satz 6","script":"Dort liest sie ein Buch über Tiere."},{"url":"https://archive.org/download/2-eine-person-steht-fruh-auf-und-macht-fruhstuck/7%20Sie%20macht%20Notizen%20in%20ein%20Heft_.wav","title":"Satz 7","script":"Sie macht Notizen in ein Heft."},{"url":"https://archive.org/download/2-eine-person-steht-fruh-auf-und-macht-fruhstuck/8%20Am%20Nachmittag%20geht%20sie%20nach%20Hause%20und%20h%C3%B6rt%20Musik_.wav","title":"Satz 8","script":"Am Nachmittag geht sie nach Hause und hört Musik."}];
+    // This organizes courses into collections by Level and Topic Group.
+    let globalDatabase = [
+        {
+            level: "A1",
+            groupTitle: "Lektion 1: Erste Kontakte",
+            tracks: [
+                { url: "https://archive.org/download/sample-audio-german/welcome.mp3", script: "Guten Tag! Herzlich willkommen." },
+                { url: "https://archive.org/download/sample-audio-german/welcome.mp3", script: "Wie heißen Sie?" }
+            ]
+        },
+        {
+            level: "B1",
+            groupTitle: "Diskussion: Umweltschutz",
+            tracks: [
+                { url: "https://archive.org/download/sample-audio-german/welcome.mp3", script: "Wir müssen mehr Plastik recyceln." }
+            ]
+        }
+    ];
 
-    let sentenceList = [];
-    let audioFilesList = [];
+    let activeTracks = [];
     let currentIndex = 0;
+    let selectedLevel = "A1";
 
     const nativePlayer = document.getElementById('audio-player');
     const playIcon = document.getElementById('play-icon');
@@ -388,48 +355,71 @@
     const speedToggle = document.getElementById('speed-toggle');
 
     window.onload = function() {
-        updateVisitorUI();
+        filterByLevel('A1', document.querySelector('.level-btn'));
         renderAdminTrackList();
     };
 
-    // SECRET SHORTCUT: CTRL + SHIFT + ALT toggles admin panel
+    // SECRET SHORTCUT: CTRL + SHIFT + ALT
     window.addEventListener('keydown', function(event) {
         if (event.ctrlKey && event.shiftKey && event.altKey) {
             event.preventDefault();
-            const adminCard = document.getElementById('admin-card');
-            adminCard.classList.toggle('hidden');
+            document.getElementById('admin-card').classList.toggle('hidden');
         }
         
         if (event.key === 'Control' && !event.shiftKey && !event.altKey) {
-            const exerciseCard = document.getElementById('exercise-card');
-            if (!exerciseCard.classList.contains('hidden') && nativePlayer.src) {
+            if (!document.getElementById('exercise-card').classList.contains('hidden') && nativePlayer.src) {
                 event.preventDefault();
                 rewindAudio(5);
             }
         }
     }, true);
 
-    function updateVisitorUI() {
-        const statusText = document.getElementById('visitor-track-count');
-        const startBtn = document.getElementById('start-app-btn');
-        if(globalDatabase.length === 0) {
-            statusText.textContent = "Aktuell sind keine Übungen vom Admin geladen.";
-            startBtn.disabled = true;
-        } else {
-            statusText.textContent = `Verfügbare Übungssätze: ${globalDatabase.length} Sätze geladen.`;
-            startBtn.disabled = false;
+    // Filter UI lists for visitors based on level
+    function filterByLevel(level, element) {
+        selectedLevel = level;
+        
+        // Toggle Active Button Class
+        document.querySelectorAll('.level-btn').forEach(btn => btn.classList.remove('active'));
+        if(element) element.classList.add('active');
+
+        const container = document.getElementById('visitor-group-list');
+        container.innerHTML = "";
+
+        const filteredGroups = globalDatabase.filter(g => g.level === level);
+
+        if(filteredGroups.length === 0) {
+            container.innerHTML = `<p style="color:#666; font-style:italic; padding:10px;">Derzeit gibt es keine Übungen für das Niveau ${level}.</p>`;
+            return;
         }
+
+        filteredGroups.forEach((group, index) => {
+            // Find the true absolute index in globalDatabase
+            const trueGlobalIndex = globalDatabase.indexOf(group);
+
+            const div = document.createElement('div');
+            div.className = "group-item";
+            div.innerHTML = `
+                <div class="group-info">
+                    <h4>${group.groupTitle}</h4>
+                    <span>📊 ${group.tracks.length} Sätze zum Diktat</span>
+                </div>
+                <button class="btn btn-main" style="min-width:unset; padding: 8px 16px;" onclick="startGroupExercise(${trueGlobalIndex})">Starten &rarr;</button>
+            `;
+            container.appendChild(div);
+        });
     }
 
     // ==========================================
-    // 🛠️ ADMIN METHOD LOGIC (BULK MATCHING)
+    // 🛠️ ADMIN METHOD LOGIC (BULK MATCHING BY GROUP)
     // ==========================================
-    function processBulkAdminImport() {
+    function processBulkGroupAdmin() {
+        const lvl = document.getElementById('admin-level-select').value;
+        const title = document.getElementById('admin-group-title').value.trim();
         const rawLinks = document.getElementById('admin-links-list').value.trim();
         const rawScripts = document.getElementById('admin-scripts-list').value.trim();
 
-        if(!rawLinks || !rawScripts) {
-            alert("Bitte füllen Sie beide Listen (Links und Skripte) aus!");
+        if(!title || !rawLinks || !rawScripts) {
+            alert("Bitte füllen Sie alle Gruppen-Felder aus!");
             return;
         }
 
@@ -437,60 +427,87 @@
         const scriptsArray = rawScripts.split('\n').map(s => s.trim()).filter(s => s.length > 0);
 
         if(linksArray.length !== scriptsArray.length) {
-            alert(`⚠️ Warnung: Die Anzahl stimmt nicht überein!\nSie haben ${linksArray.length} Links, aber ${scriptsArray.length} Sätze eingegeben. Sie müssen exakt gleich viele Zeilen haben.`);
+            alert(`⚠️ Abgleichfehler:\nSie haben ${linksArray.length} Audio-Links aber ${scriptsArray.length} Textzeilen eingegeben.`);
             return;
         }
 
-        // Clear existing database to overwrite with the new fresh full list
-        globalDatabase = [];
+        let newGroup = {
+            level: lvl,
+            groupTitle: title,
+            tracks: []
+        };
 
-        // Match line by line
-        linksArray.forEach((linkUrl, index) => {
-            globalDatabase.push({
-                url: linkUrl,
-                title: `Satz ${index + 1}`,
-                script: scriptsArray[index]
-            });
+        linksArray.forEach((link, idx) => {
+            newGroup.tracks.push({ url: link, script: scriptsArray[idx] });
         });
 
-        // Reset textareas
+        globalDatabase.push(newGroup);
+
+        // Reset inputs
+        document.getElementById('admin-group-title').value = "";
         document.getElementById('admin-links-list').value = "";
         document.getElementById('admin-scripts-list').value = "";
 
-        updateVisitorUI();
+        filterByLevel(selectedLevel, document.querySelector('.level-btn.active'));
         renderAdminTrackList();
-        alert(`🎉 Erfolgreich ${globalDatabase.length} Sätze kombiniert! Klicken Sie unten auf "Code für GitHub exportieren", um sie dauerhaft zu machen.`);
+        alert("Neue Gruppe erfolgreich hinzugefügt!");
     }
 
-    function removeTrackAsAdmin(index) {
+    function removeGroupAsAdmin(index) {
         globalDatabase.splice(index, 1);
-        // Re-adjust titles
-        globalDatabase.forEach((track, i) => track.title = `Satz ${i + 1}`);
-        updateVisitorUI();
+        filterByLevel(selectedLevel, document.querySelector('.level-btn.active'));
         renderAdminTrackList();
     }
 
     function renderAdminTrackList() {
         const listContainer = document.getElementById('admin-track-list');
         listContainer.innerHTML = "";
-        globalDatabase.forEach((track, index) => {
+        globalDatabase.forEach((group, index) => {
             const div = document.createElement('div');
             div.className = "track-item";
             div.innerHTML = `
-                <span><strong>${track.title}:</strong> <a href="${track.url}" target="_blank" style="font-size:12px; color:#002f6c; margin-right:10px;">[Audio Link]</a> <em>"${track.script}"</em></span>
-                <button class="btn btn-danger" style="padding: 4px 10px; min-width:unset; flex:unset;" onclick="removeTrackAsAdmin(${index})">Löschen</button>
+                <span><strong>[${group.level}]</strong> ${group.groupTitle} (${group.tracks.length} Sätze)</span>
+                <button class="btn btn-danger" style="padding: 4px 10px; min-width:unset; flex:unset;" onclick="removeGroupAsAdmin(${index})">Löschen</button>
             `;
             listContainer.appendChild(div);
         });
     }
 
     function exportAdminConfig() {
-        window.prompt("Kopieren Sie das (Strg+C) und ersetzen Sie Zeile 195 in Ihrer GitHub index.html:", `let globalDatabase = ${JSON.stringify(globalDatabase)};`);
+        window.prompt("Kopieren (Strg+C) und ersetzen Sie Zeile 195 in Ihrer index.html Datei:", `let globalDatabase = ${JSON.stringify(globalDatabase)};`);
     }
 
     // ==========================================
-    // 🚀 PLAYER ENGINE RUNTIME
+    // 🚀 EXERCISE RUNTIME ENGINE
     // ==========================================
+    function startGroupExercise(groupIndex) {
+        const targetGroup = globalDatabase[groupIndex];
+        activeTracks = targetGroup.tracks;
+        
+        currentIndex = 0;
+        loadCurrentExerciseSlot();
+
+        document.getElementById('setup-card').classList.add('hidden');
+        document.getElementById('admin-card').classList.add('hidden');
+        document.getElementById('summary-card').classList.add('hidden');
+        document.getElementById('exercise-card').classList.remove('hidden');
+    }
+
+    function loadCurrentExerciseSlot() {
+        document.getElementById('user-input').value = "";
+        const resultBox = document.getElementById('result');
+        resultBox.style.display = "none";
+        resultBox.innerHTML = "";
+        playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+
+        document.getElementById('progress-indicator').textContent = `Satz ${currentIndex + 1} / ${activeTracks.length}`;
+
+        const trackData = activeTracks[currentIndex];
+        document.getElementById('track-title').textContent = `Satz ${currentIndex + 1}`;
+        nativePlayer.src = trackData.url;
+        nativePlayer.crossOrigin = "anonymous"; 
+    }
+
     nativePlayer.addEventListener('timeupdate', () => {
         if (!nativePlayer.duration) return;
         const pct = (nativePlayer.currentTime / nativePlayer.duration) * 100;
@@ -554,39 +571,7 @@
     }
 
     function triggerDownload() {
-        if (nativePlayer.src) {
-            window.open(nativePlayer.src, '_blank');
-        }
-    }
-
-    function prepareSentencesApp() {
-        if(globalDatabase.length === 0) return;
-
-        sentenceList = globalDatabase.map(item => item.script);
-        audioFilesList = globalDatabase.map(item => item.url);
-
-        currentIndex = 0;
-        loadCurrentExerciseSlot();
-
-        document.getElementById('setup-card').classList.add('hidden');
-        document.getElementById('admin-card').classList.add('hidden');
-        document.getElementById('summary-card').classList.add('hidden');
-        document.getElementById('exercise-card').classList.remove('hidden');
-    }
-
-    function loadCurrentExerciseSlot() {
-        document.getElementById('user-input').value = "";
-        const resultBox = document.getElementById('result');
-        resultBox.style.display = "none";
-        resultBox.innerHTML = "";
-        playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
-
-        document.getElementById('progress-indicator').textContent = `Satz ${currentIndex + 1} / ${sentenceList.length}`;
-
-        const currentTrack = globalDatabase[currentIndex];
-        document.getElementById('track-title').textContent = currentTrack.title;
-        nativePlayer.src = currentTrack.url;
-        nativePlayer.crossOrigin = "anonymous"; 
+        if (nativePlayer.src) window.open(nativePlayer.src, '_blank');
     }
 
     function cleanWord(word) {
@@ -603,7 +588,7 @@
         }
 
         const cleanString = (str) => str.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s+/g, ' ').trim();
-        const targetSentence = sentenceList[currentIndex];
+        const targetSentence = activeTracks[currentIndex].script;
 
         resultBox.style.display = "block";
         resultBox.innerHTML = ""; 
@@ -636,7 +621,7 @@
     function showFirstFailedWordHint() {
         const userInput = document.getElementById('user-input').value.trim();
         const resultBox = document.getElementById('result');
-        const targetSentence = sentenceList[currentIndex];
+        const targetSentence = activeTracks[currentIndex].script;
         
         const userWords = userInput.split(/\s+/);
         const targetWords = targetSentence.split(/\s+/);
@@ -672,13 +657,13 @@
     }
 
     function goToNextSentence() {
-        if (currentIndex < sentenceList.length - 1) {
+        if (currentIndex < activeTracks.length - 1) {
             currentIndex++;
             loadCurrentExerciseSlot();
         } else {
             nativePlayer.pause();
             document.getElementById('exercise-card').classList.add('hidden');
-            document.getElementById('summary-text').innerHTML = `Du hast alle <strong>${sentenceList.length} Hörbeispiele</strong> erfolgreich gemeistert! Was möchtest du als Nächstes tun?`;
+            document.getElementById('summary-text').innerHTML = `Du hast diese Kollektion erfolgreich gemeistert!`;
             document.getElementById('summary-card').classList.remove('hidden');
         }
     }
@@ -693,6 +678,7 @@
     function backToConfiguration() {
         document.getElementById('summary-card').classList.add('hidden');
         document.getElementById('setup-card').classList.remove('hidden');
+        filterByLevel(selectedLevel, document.querySelector('.level-btn.active'));
     }
 </script>
 
