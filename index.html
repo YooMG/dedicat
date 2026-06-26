@@ -264,25 +264,21 @@
         <p class="subtitle">Satz-für-Satz Hörverständnis-Übung</p>
     </header>
 
-    <!-- SECRET ADMIN CARD (Hidden by default) -->
     <div class="card admin-card hidden" id="admin-card">
-        <h2>🛠️ Admin Panel (Global Course Manager)</h2>
-        <p style="font-size: 14px; margin-top: -10px; color: #666;">Fügen Sie hier neue Lektionen permanent für alle Besucher hinzu.</p>
+        <h2>🛠️ Admin Panel (Bulk Import List)</h2>
+        <p style="font-size: 14px; margin-top: -10px; color: #666;">Fügen Sie Listen ein. Jede Zeile entspricht einer Lektion.</p>
         
         <div class="form-group">
-            <label for="admin-audio-url">Archive.org Audio-URL:</label>
-            <input type="url" id="admin-audio-url" placeholder="https://archive.org/download/.../track1.mp3">
-        </div>
-        <div class="form-group">
-            <label for="admin-audio-title">Anzeige-Name / Titel:</label>
-            <input type="text" id="admin-audio-title" placeholder="Lektion 1: Begrüßung">
-        </div>
-        <div class="form-group">
-            <label for="admin-script">Zugehöriges Skript / Lösungssatz:</label>
-            <input type="text" id="admin-script" placeholder="Guten Tag, wie geht es Ihnen heute?">
+            <label for="admin-links-list">Audio Links Liste (Ein Link pro Zeile):</label>
+            <textarea id="admin-links-list" placeholder="https://archive.org/download/.../track1.mp3&#10;https://archive.org/download/.../track2.mp3" style="height: 100px;"></textarea>
         </div>
         
-        <button class="btn btn-success" onclick="addTrackAsAdmin()">➕ Track zur Liste hinzufügen</button>
+        <div class="form-group">
+            <label for="admin-scripts-list">Skript Sätze Liste (Ein Satz pro Zeile):</label>
+            <textarea id="admin-scripts-list" placeholder="Guten Tag, wie geht es Ihnen?&#10;Mir geht es sehr gut, danke!" style="height: 100px;"></textarea>
+        </div>
+        
+        <button class="btn btn-success" onclick="processBulkAdminImport()">⚡ Listen verarbeiten & Hinzufügen</button>
         
         <h3 style="margin-top: 20px; font-size: 16px;">Aktuelle globale Trackliste:</h3>
         <div id="admin-track-list"></div>
@@ -293,7 +289,6 @@
         </div>
     </div>
 
-    <!-- Visitor Setup Card -->
     <div class="card" id="setup-card">
         <h2>1. Kurs starten</h2>
         <p>Willkommen! Klicken Sie unten auf den Button, um die vom Admin bereitgestellten Audio-Übungen zu laden.</p>
@@ -305,7 +300,6 @@
         <button class="btn btn-success" id="start-app-btn" onclick="prepareSentencesApp()">🚀 Übung jetzt starten</button>
     </div>
 
-    <!-- 2. Interactive Workspace Area -->
     <div id="exercise-card" class="card hidden">
         <h2>2. Prüfung <span id="progress-indicator" class="progress-badge">Satz 1/1</span></h2>
         
@@ -363,7 +357,6 @@
         <div id="result" class="result-box"></div>
     </div>
 
-    <!-- 3. Final Summary Screen Card -->
     <div id="summary-card" class="card hidden">
         <div class="summary-title">🎉 Übung erfolgreich beendet!</div>
         <div class="summary-stats" id="summary-text">Sie haben alle Sätze erfolgreich abgeschlossen.</div>
@@ -379,11 +372,11 @@
     // ==========================================
     // ⚙️ GLOBAL DATABASE STORAGE (FOR EVERYONE)
     // ==========================================
-    // Put your default custom audio links here! Anyone visiting your site will see these.
+    // Paste your exported configurations here to save permanently on GitHub!
     let globalDatabase = [
         {
             url: "https://archive.org/download/sample-audio-german/welcome.mp3",
-            title: "Willkommen beim Trainer",
+            title: "Satz 1",
             script: "Guten Tag! Herzlich willkommen."
         }
     ];
@@ -400,13 +393,12 @@
     const timeDuration = document.getElementById('time-duration');
     const speedToggle = document.getElementById('speed-toggle');
 
-    // Load setup metrics on window opening
     window.onload = function() {
         updateVisitorUI();
         renderAdminTrackList();
     };
 
-    // 🔑 LISTEN FOR SECRET SHORTCUT: CTRL + SHIFT + ALT
+    // SECRET SHORTCUT: CTRL + SHIFT + ALT toggles admin panel
     window.addEventListener('keydown', function(event) {
         if (event.ctrlKey && event.shiftKey && event.altKey) {
             event.preventDefault();
@@ -414,7 +406,6 @@
             adminCard.classList.toggle('hidden');
         }
         
-        // Custom Rewind Shortcut (Control only)
         if (event.key === 'Control' && !event.shiftKey && !event.altKey) {
             const exerciseCard = document.getElementById('exercise-card');
             if (!exerciseCard.classList.contains('hidden') && nativePlayer.src) {
@@ -431,38 +422,56 @@
             statusText.textContent = "Aktuell sind keine Übungen vom Admin geladen.";
             startBtn.disabled = true;
         } else {
-            statusText.textContent = `Verfügbare Übungssätze: ${globalDatabase.length} Lektionen geladen.`;
+            statusText.textContent = `Verfügbare Übungssätze: ${globalDatabase.length} Sätze geladen.`;
             startBtn.disabled = false;
         }
     }
 
     // ==========================================
-    // 🛠️ ADMIN METHOD LOGIC
+    // 🛠️ ADMIN METHOD LOGIC (BULK MATCHING)
     // ==========================================
-    function addTrackAsAdmin() {
-        const url = document.getElementById('admin-audio-url').value.trim();
-        const title = document.getElementById('admin-audio-title').value.trim();
-        const script = document.getElementById('admin-script').value.trim();
+    function processBulkAdminImport() {
+        const rawLinks = document.getElementById('admin-links-list').value.trim();
+        const rawScripts = document.getElementById('admin-scripts-list').value.trim();
 
-        if(!url || !title || !script) {
-            alert("Bitte füllen Sie alle Admin-Felder aus!");
+        if(!rawLinks || !rawScripts) {
+            alert("Bitte füllen Sie beide Listen (Links und Skripte) aus!");
             return;
         }
 
-        globalDatabase.push({ url: url, title: title, script: script });
-        
-        // Clear inputs
-        document.getElementById('admin-audio-url').value = "";
-        document.getElementById('admin-audio-title').value = "";
-        document.getElementById('admin-script').value = "";
+        const linksArray = rawLinks.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+        const scriptsArray = rawScripts.split('\n').map(s => s.trim()).filter(s => s.length > 0);
+
+        if(linksArray.length !== scriptsArray.length) {
+            alert(`⚠️ Warnung: Die Anzahl stimmt nicht überein!\nSie haben ${linksArray.length} Links, aber ${scriptsArray.length} Sätze eingegeben. Sie müssen exakt gleich viele Zeilen haben.`);
+            return;
+        }
+
+        // Clear existing database to overwrite with the new fresh full list
+        globalDatabase = [];
+
+        // Match line by line
+        linksArray.forEach((linkUrl, index) => {
+            globalDatabase.push({
+                url: linkUrl,
+                title: `Satz ${index + 1}`,
+                script: scriptsArray[index]
+            });
+        });
+
+        // Reset textareas
+        document.getElementById('admin-links-list').value = "";
+        document.getElementById('admin-scripts-list').value = "";
 
         updateVisitorUI();
         renderAdminTrackList();
-        alert("Track temporär hinzugefügt! Nutzen Sie den Export-Button unten, um es dauerhaft zu machen.");
+        alert(`🎉 Erfolgreich ${globalDatabase.length} Sätze kombiniert! Klicken Sie unten auf "Code für GitHub exportieren", um sie dauerhaft zu machen.`);
     }
 
     function removeTrackAsAdmin(index) {
         globalDatabase.splice(index, 1);
+        // Re-adjust titles
+        globalDatabase.forEach((track, i) => track.title = `Satz ${i + 1}`);
         updateVisitorUI();
         renderAdminTrackList();
     }
@@ -474,7 +483,7 @@
             const div = document.createElement('div');
             div.className = "track-item";
             div.innerHTML = `
-                <span><strong>${index+1}. ${track.title}</strong> — <em>"${track.script}"</em></span>
+                <span><strong>${track.title}:</strong> <a href="${track.url}" target="_blank" style="font-size:12px; color:#002f6c; margin-right:10px;">[Audio Link]</a> <em>"${track.script}"</em></span>
                 <button class="btn btn-danger" style="padding: 4px 10px; min-width:unset; flex:unset;" onclick="removeTrackAsAdmin(${index})">Löschen</button>
             `;
             listContainer.appendChild(div);
@@ -482,11 +491,7 @@
     }
 
     function exportAdminConfig() {
-        const jsonCode = JSON.stringify(globalDatabase, null, 4);
-        const output = `Kopieren Sie dieses Array und ersetzen Sie Zeile 250 in Ihrer index.html:\n\nlet globalDatabase = ${jsonCode};`;
-        
-        // Fallback alert prompt for easy copying
-        window.prompt("Kopieren Sie den Inhalt (Strg+C) und fügen Sie ihn in Ihren Code ein:", `let globalDatabase = ${JSON.stringify(globalDatabase)};`);
+        window.prompt("Kopieren Sie das (Strg+C) und ersetzen Sie Zeile 195 in Ihrer GitHub index.html:", `let globalDatabase = ${JSON.stringify(globalDatabase)};`);
     }
 
     // ==========================================
