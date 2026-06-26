@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deutsch Diktat-Trainer Pro</title>
+    <style>
+        :root {
+            --primary-color: #002f6c;
+            --secondary-color: #dd0000;
+            --accent-color: #ffce00;
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 5px solid var(--accent-color);
+            background: var(--primary-color);
+            color: white;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        h1 { margin: 0; font-size: 24px; }
+        p.subtitle { margin: 5px 0 0 0; opacity: 0.8; }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.06);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+            border-left: 4px solid var(--secondary-color);
+            padding-left: 10px;
+            font-size: 20px;
+        }
+
+        .form-group { margin-bottom: 15px; }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        textarea, input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            box-sizing: border-box;
+            font-size: 15px;
+        }
+
+        textarea { resize: vertical; height: 120px; }
+
+        /* Custom Audio Player Layout */
+        .custom-player {
+            background: #ffffff;
+            border: 1px solid #eaeaea;
+            border-radius: 24px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+
+        .player-title {
+            font-size: 20px;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 25px;
+        }
+
+        .progress-container {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .time-stamps {
+            display: flex;
+            justify-content: space-between;
+            color: #8a8a8a;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar-wrapper {
+            width: 100%;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: #b0b0b0;
+            border-radius: 3px;
+        }
+
+        .player-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 25px;
+            padding: 0 10px;
+        }
+
+        .control-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1a1a1a;
+            padding: 5px;
+            transition: opacity 0.2s;
+        }
+        .control-btn:hover { opacity: 0.7; }
+
+        .speed-btn { font-size: 16px; font-weight: 500; width: 40px; }
+        
+        .play-btn {
+            width: 56px;
+            height: 56px;
+            background: #111111;
+            border-radius: 50%;
+            color: white;
+        }
+        .play-btn svg { fill: white; width: 20px; height: 20px; }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 15px;
+            transition: background 0.2s;
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .btn-main { background-color: var(--primary-color); }
+        .btn-main:hover { background-color: #001f4d; }
+        .btn-success { background-color: #28a745; }
+        .btn-success:hover { background-color: #218838; }
+        .btn-secondary { background-color: #6c757d; }
+        .btn-secondary:hover { background-color: #5a6268; }
+        .btn-warning { background-color: #ff9800; }
+        .btn-warning:hover { background-color: #e68a00; }
+
+        .result-box {
+            margin-top: 15px;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 22px;
+            display: none;
+        }
+
+        .correct { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; font-weight: bold; }
+        .wrong { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        .hint-screenshot-box { background-color: #f8f9fa; color: #333333; border: 1px solid #e2e3e5; }
+        
+        .hint-text-normal { color: #333333; margin-right: 8px; display: inline-block; }
+        .hint-text-correct-word { color: #28a745; font-weight: bold; margin-right: 8px; display: inline-block; }
+        .hint-text-hidden { color: #ccc; margin-right: 8px; display: inline-block; letter-spacing: 2px; }
+
+        .word-wrong-underline { 
+            color: #333333; 
+            margin-right: 8px; 
+            display: inline-block; 
+            border-bottom: 3px solid #ff9800; 
+        }
+
+        .progress-badge {
+            background: var(--accent-color);
+            color: #333;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: bold;
+            float: right;
+        }
+
+        .shortcut-tip {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .summary-title {
+            text-align: center;
+            color: #28a745;
+            font-size: 26px;
+            margin-bottom: 20px;
+        }
+        .summary-stats {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 25px;
+            color: #555;
+        }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Deutsch Diktat-Trainer Pro</h1>
+        <p class="subtitle">Satz-für-Satz Hörverständnis-Übung</p>
+    </header>
+
+    <div class="card" id="setup-card">
+        <h2>1. Materialien einrichten</h2>
+        <div class="form-group">
+            <label for="audio-inputs">Audio-Dateien auswählen (Mehrere Dateien gleichzeitig auswählen):</label>
+            <input type="file" id="audio-inputs" accept="audio/*" multiple>
+        </div>
+        <div class="form-group">
+            <label for="script-input">Skript eingeben (Jede Zeile entspricht einer Audio-Datei):</label>
+            <textarea id="script-input" placeholder="Guten Tag.&#10;Wie geht es Ihnen?&#10;Übung macht den Meister."></textarea>
+        </div>
+        <button class="btn btn-success" onclick="prepareSentencesApp()">Übung starten</button>
+    </div>
+
+    <div id="exercise-card" class="card hidden">
+        <h2>2. Prüfung <span id="progress-indicator" class="progress-badge">Satz 1/1</span></h2>
+        
+        <audio id="audio-player"></audio>
+
+        <div class="custom-player">
+            <div class="player-title" id="track-title">Sich vorstellen – Thomas</div>
+            
+            <div class="progress-container">
+                <div class="time-stamps">
+                    <span id="time-current">0:00</span>
+                    <span id="time-duration">-0:00</span>
+                </div>
+                <div class="progress-bar-wrapper" id="progress-wrapper">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+            </div>
+
+            <div class="player-controls">
+                <button class="control-btn speed-btn" id="speed-toggle" onclick="toggleSpeed()">1x</button>
+                
+                <button class="control-btn" onclick="rewindAudio(5)">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><polyline points="3 3 3 8 8 8"/></svg>
+                    <span style="font-size:10px; font-weight:bold; margin-left:-18px; margin-top:8px;">5</span>
+                </button>
+
+                <button class="control-btn play-btn" onclick="togglePlay()">
+                    <svg id="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </button>
+
+                <button class="control-btn" onclick="forwardAudio(5)">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><polyline points="21 3 21 8 16 8"/></svg>
+                    <span style="font-size:10px; font-weight:bold; margin-left:-18px; margin-top:8px;">5</span>
+                </button>
+
+                <button class="control-btn" onclick="triggerDownload()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="8 12 12 16 16 12"/><line x1="12" y1="8" x2="12" y2="16"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <span class="shortcut-tip">💡 <strong>Tastenkombination:</strong> Drücken Sie die <strong>Strg-Taste (Ctrl)</strong>, um 5 Sekunden zurückzuspringen.</span>
+
+        <div class="form-group">
+            <label for="user-input">Ihre Transkription:</label>
+            <textarea id="user-input" placeholder="Schreibe hier das Gelernte auf..."></textarea>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-main" onclick="verifySentence()">Antwort überprüfen</button>
+            <button class="btn btn-warning" onclick="showFirstFailedWordHint()">Tipp anzeigen</button>
+            <button id="next-sentence-btn" class="btn btn-secondary" onclick="goToNextSentence()">Nächster Satz &rarr;</button>
+        </div>
+
+        <div id="result" class="result-box"></div>
+    </div>
+
+    <div id="summary-card" class="card hidden">
+        <div class="summary-title">🎉 Übung erfolgreich beendet!</div>
+        <div class="summary-stats" id="summary-text">Sie haben alle Sätze erfolgreich abgeschlossen.</div>
+        
+        <div class="btn-group">
+            <button class="btn btn-success" onclick="restartSameExercise()">Gleiche Übung wiederholen</button>
+            <button class="btn btn-main" onclick="backToConfiguration()">Neue Materialien laden</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let sentenceList = [];
+    let audioFilesList = [];
+    let currentIndex = 0;
+
+    const nativePlayer = document.getElementById('audio-player');
+    const playIcon = document.getElementById('play-icon');
+    const progressFill = document.getElementById('progress-fill');
+    const progressWrapper = document.getElementById('progress-wrapper');
+    const timeCurrent = document.getElementById('time-current');
+    const timeDuration = document.getElementById('time-duration');
+    const speedToggle = document.getElementById('speed-toggle');
+
+    window.addEventListener('keydown', function(event) {
+        if (event.key === 'Control') {
+            const exerciseCard = document.getElementById('exercise-card');
+            if (!exerciseCard.classList.contains('hidden') && nativePlayer.src) {
+                event.preventDefault();
+                rewindAudio(5);
+            }
+        }
+    }, true);
+
+    nativePlayer.addEventListener('timeupdate', () => {
+        if (!nativePlayer.duration) return;
+        const pct = (nativePlayer.currentTime / nativePlayer.duration) * 100;
+        progressFill.style.width = pct + '%';
+        timeCurrent.textContent = formatTime(nativePlayer.currentTime);
+        timeDuration.textContent = '-' + formatTime(nativePlayer.duration - nativePlayer.currentTime);
+    });
+
+    nativePlayer.addEventListener('loadedmetadata', () => {
+        timeCurrent.textContent = "0:00";
+        timeDuration.textContent = '-' + formatTime(nativePlayer.duration);
+    });
+
+    nativePlayer.addEventListener('ended', () => {
+        playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+    });
+
+    progressWrapper.addEventListener('click', (e) => {
+        const rect = progressWrapper.getBoundingClientRect();
+        const pos = (e.clientX - rect.left) / rect.width;
+        nativePlayer.currentTime = pos * nativePlayer.duration;
+    });
+
+    function formatTime(secs) {
+        let m = Math.floor(secs / 60);
+        let s = Math.floor(secs % 60);
+        return m + ':' + (s < 10 ? '0' : '') + s;
+    }
+
+    function togglePlay() {
+        if (nativePlayer.paused) {
+            nativePlayer.play();
+            playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+        } else {
+            nativePlayer.pause();
+            playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+        }
+    }
+
+    function rewindAudio(sec) {
+        nativePlayer.currentTime = Math.max(0, nativePlayer.currentTime - sec);
+        if (nativePlayer.paused) nativePlayer.play();
+        playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+    }
+
+    function forwardAudio(sec) {
+        nativePlayer.currentTime = Math.min(nativePlayer.duration, nativePlayer.currentTime + sec);
+    }
+
+    function toggleSpeed() {
+        if (nativePlayer.playbackRate === 1.0) {
+            nativePlayer.playbackRate = 0.75;
+            speedToggle.textContent = '0.75x';
+        } else if (nativePlayer.playbackRate === 0.75) {
+            nativePlayer.playbackRate = 0.5;
+            speedToggle.textContent = '0.5x';
+        } else {
+            nativePlayer.playbackRate = 1.0;
+            speedToggle.textContent = '1x';
+        }
+    }
+
+    function triggerDownload() {
+        if (nativePlayer.src) {
+            const a = document.createElement('a');
+            a.href = nativePlayer.src;
+            a.download = `Audio_Satz_${currentIndex + 1}.mp3`;
+            a.click();
+        }
+    }
+
+    function prepareSentencesApp() {
+        const files = document.getElementById('audio-inputs').files;
+        const rawScript = document.getElementById('script-input').value.trim();
+
+        if (files.length === 0 || !rawScript) {
+            alert("Bitte wählen Sie mindestens eine Audiodatei aus und geben Sie den Text ein!");
+            return;
+        }
+
+        sentenceList = rawScript.split('\n').map(s => s.trim()).filter(s => s.length > 0);
+        audioFilesList = Array.from(files);
+
+        startExerciseLoop();
+    }
+
+    function startExerciseLoop() {
+        currentIndex = 0;
+        loadCurrentExerciseSlot();
+
+        document.getElementById('setup-card').classList.add('hidden');
+        document.getElementById('summary-card').classList.add('hidden');
+        document.getElementById('exercise-card').classList.remove('hidden');
+    }
+
+    function loadCurrentExerciseSlot() {
+        document.getElementById('user-input').value = "";
+        const resultBox = document.getElementById('result');
+        resultBox.style.display = "none";
+        resultBox.innerHTML = "";
+        playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+
+        document.getElementById('progress-indicator').textContent = `Satz ${currentIndex + 1} / ${sentenceList.length}`;
+
+        if (audioFilesList[currentIndex]) {
+            const currentFile = audioFilesList[currentIndex];
+            document.getElementById('track-title').textContent = currentFile.name.split('.').slice(0, -1).join('.');
+            nativePlayer.src = URL.createObjectURL(currentFile);
+        } else {
+            document.getElementById('track-title').textContent = `Satz ${currentIndex + 1}`;
+            alert("Für diese Textzeile wurde keine entsprechende Audiodatei gefunden.");
+        }
+    }
+
+    function cleanWord(word) {
+        return word ? word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").toLowerCase() : "";
+    }
+
+    function verifySentence() {
+        const userInput = document.getElementById('user-input').value.trim();
+        const resultBox = document.getElementById('result');
+        
+        if (!userInput) {
+            alert("Bitte schreiben Sie zuerst etwas!");
+            return;
+        }
+
+        const cleanString = (str) => str.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s+/g, ' ').trim();
+        const targetSentence = sentenceList[currentIndex];
+
+        resultBox.style.display = "block";
+        resultBox.innerHTML = ""; 
+
+        if (cleanString(userInput).toLowerCase() === cleanString(targetSentence).toLowerCase()) {
+            resultBox.className = "result-box correct";
+            resultBox.innerHTML = "🎉 Ausgezeichnet! Perfekte Transkription.";
+        } else {
+            resultBox.className = "result-box wrong";
+            
+            const userWords = userInput.split(/\s+/);
+            const targetWords = targetSentence.split(/\s+/);
+            const container = document.createElement('div');
+
+            userWords.forEach((word, idx) => {
+                const span = document.createElement('span');
+                if (cleanWord(word) === cleanWord(targetWords[idx])) {
+                    span.className = "hint-text-normal";
+                    span.innerHTML = word;
+                } else {
+                    span.className = "word-wrong-underline";
+                    span.innerHTML = word;
+                }
+                container.appendChild(span);
+            });
+            resultBox.appendChild(container);
+        }
+    }
+
+    function showFirstFailedWordHint() {
+        const userInput = document.getElementById('user-input').value.trim();
+        const resultBox = document.getElementById('result');
+        const targetSentence = sentenceList[currentIndex];
+        
+        const userWords = userInput.split(/\s+/);
+        const targetWords = targetSentence.split(/\s+/);
+        
+        resultBox.style.display = "block";
+        resultBox.className = "result-box hint-screenshot-box";
+        resultBox.innerHTML = ""; 
+
+        const sentenceContainer = document.createElement('div');
+        let firstErrorFound = false;
+        
+        targetWords.forEach((targetWord, idx) => {
+            const userWord = userWords[idx];
+            const span = document.createElement('span');
+            
+            if (cleanWord(userWord) === cleanWord(targetWord) && userWord !== undefined) {
+                span.className = "hint-text-normal";
+                span.innerHTML = targetWord; 
+            } else {
+                if (!firstErrorFound) {
+                    span.className = "hint-text-correct-word";
+                    span.innerHTML = targetWord;
+                    firstErrorFound = true; 
+                } else {
+                    span.className = "hint-text-hidden";
+                    span.innerHTML = "___";
+                }
+            }
+            sentenceContainer.appendChild(span);
+        });
+
+        resultBox.appendChild(sentenceContainer);
+    }
+
+    function goToNextSentence() {
+        if (currentIndex < sentenceList.length - 1) {
+            currentIndex++;
+            loadCurrentExerciseSlot();
+        } else {
+            nativePlayer.pause();
+            document.getElementById('exercise-card').classList.add('hidden');
+            document.getElementById('summary-text').innerHTML = `Du hast alle <strong>${sentenceList.length} Hörbeispiele</strong> erfolgreich gemeistert! Was möchtest du als Nächstes tun?`;
+            document.getElementById('summary-card').classList.remove('hidden');
+        }
+    }
+
+    function restartSameExercise() {
+        startExerciseLoop();
+    }
+
+    function backToConfiguration() {
+        document.getElementById('summary-card').classList.add('hidden');
+        document.getElementById('setup-card').classList.remove('hidden');
+        document.getElementById('audio-inputs').value = "";
+        document.getElementById('script-input').value = "";
+    }
+</script>
+
+</body>
+</html>
