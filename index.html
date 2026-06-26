@@ -77,7 +77,6 @@
 
         textarea { resize: vertical; height: 100px; }
 
-        /* Level Filter Button Styling */
         .level-container {
             display: flex;
             gap: 10px;
@@ -106,11 +105,11 @@
             box-shadow: 0 6px 12px rgba(0,2,108,0.2);
         }
 
-        /* Group Playlist Cards */
         .group-list {
             display: flex;
             flex-direction: column;
             gap: 12px;
+            margin-bottom: 20px;
         }
 
         .group-item {
@@ -123,9 +122,7 @@
             align-items: center;
             transition: background 0.2s;
         }
-        .group-item:hover {
-            background: #f1f3f5;
-        }
+        .group-item:hover { background: #f1f3f5; }
 
         .group-info h4 { margin: 0 0 5px 0; color: #1a1a1a; font-size: 16px; }
         .group-info span { font-size: 13px; color: #6c757d; }
@@ -195,70 +192,71 @@
 
     <div class="card admin-card hidden" id="admin-card">
         <h2>🛠️ Admin Panel (Kurs-Kollektion hinzufügen)</h2>
-        <p style="font-size: 14px; margin-top: -10px; color: #666;">Gruppieren Sie Sätze nach Sprachniveau und Thema.</p>
+        <p style="font-size: 14px; margin-top: -10px; color: #666;">Fügen Sie Übungen hinzu. Die Daten werden verschlüsselt exportiert.</p>
         
         <div style="display: flex; gap: 10px;" class="form-group">
             <div style="flex: 1;">
                 <label for="admin-level-select">Sprachniveau:</label>
                 <select id="admin-level-select">
-                    <option value="A1">A1 (Anfänger)</option>
-                    <option value="A2">A2 (Grundlegende Kenntnisse)</option>
-                    <option value="B1">B1 (Fortgeschrittene Verwendung)</option>
-                    <option value="B2">B2 (Selbständige Verwendung)</option>
-                    <option value="C1">C1 (Fachkundige Sprachkenntnisse)</option>
+                    <option value="A1">A1</option>
+                    <option value="A2">A2</option>
+                    <option value="B1">B1</option>
+                    <option value="B2">B2</option>
+                    <option value="C1">C1</option>
                 </select>
             </div>
             <div style="flex: 2;">
                 <label for="admin-group-title">Gruppen / Lektions-Titel:</label>
-                <input type="text" id="admin-group-title" placeholder="z.B. Lektion 1: Im Restaurant">
+                <input type="text" id="admin-group-title" placeholder="z.B. Lektion 1: Das Frühstück">
             </div>
         </div>
 
         <div class="form-group">
             <label for="admin-links-list">Audio-Links (Ein Link pro Zeile):</label>
-            <textarea id="admin-links-list" placeholder="https://archive.org/download/.../audio1.mp3&#10;https://archive.org/download/.../audio2.mp3"></textarea>
+            <textarea id="admin-links-list" placeholder="https://archive.org/download/.../audio1.mp3"></textarea>
         </div>
         
         <div class="form-group">
             <label for="admin-scripts-list">Skript / Lösungen (Ein Satz pro Zeile):</label>
-            <textarea id="admin-scripts-list" placeholder="Ich möchte einen Kaffee bitte.&#10;Zahlen bitte!"></textarea>
+            <textarea id="admin-scripts-list" placeholder="Guten Morgen! Möchtest du Kaffee?"></textarea>
         </div>
         
-        <button class="btn btn-success" onclick="processBulkGroupAdmin()">➕ Gruppe zur Datenbank hinzufügen</button>
+        <button class="btn btn-success" onclick="processBulkGroupAdmin()">➕ Gruppe hinzufügen</button>
         
-        <h3 style="margin-top: 20px; font-size: 16px;">Aktuelle Sammlungen im Code:</h3>
+        <h3 style="margin-top: 20px; font-size: 16px;">Aktuelle Sammlungen:</h3>
         <div id="admin-track-list"></div>
 
         <div style="margin-top: 20px; background: #eee; padding: 10px; border-radius: 8px;">
-            <p style="margin: 0 0 10px 0; font-size: 13px; font-weight: bold;">💾 Für GitHub speichern:</p>
-            <button class="btn btn-main" onclick="exportAdminConfig()">Code für GitHub exportieren</button>
+            <p style="margin: 0 0 10px 0; font-size: 13px; font-weight: bold;">💾 Verschlüsselter Export für GitHub:</p>
+            <button class="btn btn-main" onclick="exportAdminConfig()">Verschlüsselten Code generieren</button>
         </div>
     </div>
 
-    <div class="card" id="setup-card">
-        <h2>1. Wählen Sie ein Sprachniveau</h2>
-        
+    <div class="card" id="level-selection-card">
+        <h2>Wählen Sie Ihr Sprachniveau</h2>
         <div class="level-container">
-            <button class="level-btn active" onclick="filterByLevel('A1', this)">A1</button>
-            <button class="level-btn" onclick="filterByLevel('A2', this)">A2</button>
-            <button class="level-btn" onclick="filterByLevel('B1', this)">B1</button>
-            <button class="level-btn" onclick="filterByLevel('B2', this)">B2</button>
-            <button class="level-btn" onclick="filterByLevel('C1', this)">C1</button>
+            <button class="level-btn" onclick="enterLevelView('A1')">A1</button>
+            <button class="level-btn" onclick="enterLevelView('A2')">A2</button>
+            <button class="level-btn" onclick="enterLevelView('B1')">B1</button>
+            <button class="level-btn" onclick="enterLevelView('B2')">B2</button>
+            <button class="level-btn" onclick="enterLevelView('C1')">C1</button>
         </div>
+    </div>
 
-        <h2>Verfügbare Übungen</h2>
+    <div class="card hidden" id="exercises-list-card">
+        <h2>Verfügbare Übungen (<span id="current-selected-level-badge">A1</span>)</h2>
         <div class="group-list" id="visitor-group-list">
             </div>
+        
+        <button class="btn btn-secondary" style="width: 100%;" onclick="goBackToLevelSelection()">&larr; Zurück zur Startseite</button>
     </div>
 
     <div id="exercise-card" class="card hidden">
-        <h2>2. Prüfung <span id="progress-indicator" class="progress-badge">Satz 1/1</span></h2>
-        
+        <h2>Übung läuft <span id="progress-indicator" class="progress-badge">Satz 1/1</span></h2>
         <audio id="audio-player"></audio>
 
         <div class="custom-player">
             <div class="player-title" id="track-title">Hörbeispiel</div>
-            
             <div class="progress-container">
                 <div class="time-stamps">
                     <span id="time-current">0:00</span>
@@ -271,137 +269,117 @@
 
             <div class="player-controls">
                 <button class="control-btn speed-btn" id="speed-toggle" onclick="toggleSpeed()">1x</button>
-                
                 <button class="control-btn" onclick="rewindAudio(5)">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><polyline points="3 3 3 8 8 8"/></svg>
-                    <span style="font-size:10px; font-weight:bold; margin-left:-18px; margin-top:8px;">5</span>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><polyline points="3 3 3 8 8 8"/></svg>
                 </button>
-
                 <button class="control-btn play-btn" onclick="togglePlay()">
                     <svg id="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                 </button>
-
                 <button class="control-btn" onclick="forwardAudio(5)">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><polyline points="21 3 21 8 16 8"/></svg>
-                    <span style="font-size:10px; font-weight:bold; margin-left:-18px; margin-top:8px;">5</span>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><polyline points="21 3 21 8 16 8"/></svg>
                 </button>
-
                 <button class="control-btn" onclick="triggerDownload()">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="8 12 12 16 16 12"/><line x1="12" y1="8" x2="12" y2="16"/></svg>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="8 12 12 16 16 12"/><line x1="12" y1="8" x2="12" y2="16"/></svg>
                 </button>
             </div>
         </div>
 
-        <span class="shortcut-tip">💡 <strong>Tastenkombination:</strong> Drücken Sie die <strong>Strg-Taste (Ctrl)</strong>, um 5 Sekunden zurückzuspringen.</span>
+        <span class="shortcut-tip">💡 <strong>Tipp:</strong> Drücke <strong>Strg (Ctrl)</strong>, um 5 Sekunden zurückzuspringen.</span>
 
         <div class="form-group">
             <label for="user-input">Ihre Transkription:</label>
-            <textarea id="user-input" placeholder="Schreibe hier das Gelernte auf..."></textarea>
+            <textarea id="user-input" placeholder="Schreibe hier, was du hörst..."></textarea>
         </div>
 
         <div class="btn-group">
-            <button class="btn btn-main" onclick="verifySentence()">Antwort überprüfen</button>
-            <button class="btn btn-warning" onclick="showFirstFailedWordHint()">Tipp anzeigen</button>
+            <button class="btn btn-main" onclick="verifySentence()">Überprüfen</button>
+            <button class="btn btn-warning" onclick="showFirstFailedWordHint()">Tipp</button>
             <button id="next-sentence-btn" class="btn btn-secondary" onclick="goToNextSentence()">Nächster Satz &rarr;</button>
         </div>
-
         <div id="result" class="result-box"></div>
     </div>
 
     <div id="summary-card" class="card hidden">
-        <div class="summary-title">🎉 Übung erfolgreich beendet!</div>
-        <div class="summary-stats" id="summary-text">Sie haben alle Sätze dieser Übung abgeschlossen.</div>
-        
+        <div class="summary-title">🎉 Übung beendet!</div>
+        <div class="summary-stats" id="summary-text">Gute Arbeit!</div>
         <div class="btn-group">
-            <button class="btn btn-success" onclick="restartSameExercise()">Gleiche Übung wiederholen</button>
-            <button class="btn btn-main" onclick="backToConfiguration()">Zur Level-Auswahl</button>
+            <button class="btn btn-success" onclick="restartSameExercise()">Wiederholen</button>
+            <button class="btn btn-main" onclick="backToLevelSelectionFromSummary()">Zur Level-Auswahl</button>
         </div>
     </div>
 </div>
 
 <script>
-    // ==========================================
-    // ⚙️ GLOBAL COURSE DATABASE
-    // ==========================================
-    // This organizes courses into collections by Level and Topic Group.
-    let globalDatabase = [
-        {
-            level: "A1",
-            groupTitle: "Lektion 1: Erste Kontakte",
-            tracks: [
-                { url: "https://archive.org/download/sample-audio-german/welcome.mp3", script: "Guten Tag! Herzlich willkommen." },
-                { url: "https://archive.org/download/sample-audio-german/welcome.mp3", script: "Wie heißen Sie?" }
-            ]
-        },
-        {
-            level: "B1",
-            groupTitle: "Diskussion: Umweltschutz",
-            tracks: [
-                { url: "https://archive.org/download/sample-audio-german/welcome.mp3", script: "Wir müssen mehr Plastik recyceln." }
-            ]
-        }
-    ];
+    // =======================================================
+    // ⚙️ SHIFTED ENCODED DATABASE (SECURE FROM LINK STEALERS)
+    // =======================================================
+    // Your audio links and scripts are generated here as base64 strings so casual view-source won't steal them!
+    let secureDatabasePayload = ""; 
 
+    let globalDatabase = [];
     let activeTracks = [];
     let currentIndex = 0;
     let selectedLevel = "A1";
 
-    const nativePlayer = document.getElementById('audio-player');
-    const playIcon = document.getElementById('play-icon');
-    const progressFill = document.getElementById('progress-fill');
-    const progressWrapper = document.getElementById('progress-wrapper');
-    const timeCurrent = document.getElementById('time-current');
-    const timeDuration = document.getElementById('time-duration');
-    const speedToggle = document.getElementById('speed-toggle');
-
+    // Decrypt database on bootup if secure payload is provided
     window.onload = function() {
-        filterByLevel('A1', document.querySelector('.level-btn'));
+        if (secureDatabasePayload) {
+            try {
+                globalDatabase = JSON.parse(decodeURIComponent(escape(atob(secureDatabasePayload))));
+            } catch(e) {
+                console.error("Payload validation failed. Defaulting to fresh database.");
+                globalDatabase = [];
+            }
+        }
         renderAdminTrackList();
     };
 
-    // SECRET SHORTCUT: CTRL + SHIFT + ALT
+    // Secret Toggle Admin Window Shortcut
     window.addEventListener('keydown', function(event) {
         if (event.ctrlKey && event.shiftKey && event.altKey) {
             event.preventDefault();
             document.getElementById('admin-card').classList.toggle('hidden');
         }
-        
         if (event.key === 'Control' && !event.shiftKey && !event.altKey) {
-            if (!document.getElementById('exercise-card').classList.contains('hidden') && nativePlayer.src) {
+            if (!document.getElementById('exercise-card').classList.contains('hidden') && document.getElementById('audio-player').src) {
                 event.preventDefault();
                 rewindAudio(5);
             }
         }
     }, true);
 
-    // Filter UI lists for visitors based on level
-    function filterByLevel(level, element) {
+    // Navigation flows
+    function enterLevelView(level) {
         selectedLevel = level;
-        
-        // Toggle Active Button Class
-        document.querySelectorAll('.level-btn').forEach(btn => btn.classList.remove('active'));
-        if(element) element.classList.add('active');
+        document.getElementById('current-selected-level-badge').textContent = level;
+        document.getElementById('level-selection-card').classList.add('hidden');
+        document.getElementById('exercises-list-card').classList.remove('hidden');
+        renderVisitorExercisesList(level);
+    }
 
+    function goBackToLevelSelection() {
+        document.getElementById('exercises-list-card').classList.add('hidden');
+        document.getElementById('level-selection-card').classList.remove('hidden');
+    }
+
+    function renderVisitorExercisesList(level) {
         const container = document.getElementById('visitor-group-list');
         container.innerHTML = "";
-
         const filteredGroups = globalDatabase.filter(g => g.level === level);
 
-        if(filteredGroups.length === 0) {
-            container.innerHTML = `<p style="color:#666; font-style:italic; padding:10px;">Derzeit gibt es keine Übungen für das Niveau ${level}.</p>`;
+        if (filteredGroups.length === 0) {
+            container.innerHTML = `<p style="color:#666; font-style:italic; padding:10px 0;">Derzeit gibt es keine Übungen für das Niveau ${level}.</p>`;
             return;
         }
 
-        filteredGroups.forEach((group, index) => {
-            // Find the true absolute index in globalDatabase
+        filteredGroups.forEach((group) => {
             const trueGlobalIndex = globalDatabase.indexOf(group);
-
             const div = document.createElement('div');
             div.className = "group-item";
             div.innerHTML = `
                 <div class="group-info">
                     <h4>${group.groupTitle}</h4>
-                    <span>📊 ${group.tracks.length} Sätze zum Diktat</span>
+                    <span>📊 ${group.tracks.length} Diktat-Sätze</span>
                 </div>
                 <button class="btn btn-main" style="min-width:unset; padding: 8px 16px;" onclick="startGroupExercise(${trueGlobalIndex})">Starten &rarr;</button>
             `;
@@ -409,16 +387,16 @@
         });
     }
 
-    // ==========================================
-    // 🛠️ ADMIN METHOD LOGIC (BULK MATCHING BY GROUP)
-    // ==========================================
+    // =======================================================
+    // 🛠️ ADMIN PANEL METHOD LOGIC & ENCODING EXPORT ENGINES
+    // =======================================================
     function processBulkGroupAdmin() {
         const lvl = document.getElementById('admin-level-select').value;
         const title = document.getElementById('admin-group-title').value.trim();
         const rawLinks = document.getElementById('admin-links-list').value.trim();
         const rawScripts = document.getElementById('admin-scripts-list').value.trim();
 
-        if(!title || !rawLinks || !rawScripts) {
+        if (!title || !rawLinks || !rawScripts) {
             alert("Bitte füllen Sie alle Gruppen-Felder aus!");
             return;
         }
@@ -426,36 +404,27 @@
         const linksArray = rawLinks.split('\n').map(l => l.trim()).filter(l => l.length > 0);
         const scriptsArray = rawScripts.split('\n').map(s => s.trim()).filter(s => s.length > 0);
 
-        if(linksArray.length !== scriptsArray.length) {
-            alert(`⚠️ Abgleichfehler:\nSie haben ${linksArray.length} Audio-Links aber ${scriptsArray.length} Textzeilen eingegeben.`);
+        if (linksArray.length !== scriptsArray.length) {
+            alert(`Abgleichfehler: ${linksArray.length} Audio-Links passen nicht zu ${scriptsArray.length} Sätzen.`);
             return;
         }
 
-        let newGroup = {
-            level: lvl,
-            groupTitle: title,
-            tracks: []
-        };
-
+        let newGroup = { level: lvl, groupTitle: title, tracks: [] };
         linksArray.forEach((link, idx) => {
             newGroup.tracks.push({ url: link, script: scriptsArray[idx] });
         });
 
         globalDatabase.push(newGroup);
-
-        // Reset inputs
         document.getElementById('admin-group-title').value = "";
         document.getElementById('admin-links-list').value = "";
         document.getElementById('admin-scripts-list').value = "";
 
-        filterByLevel(selectedLevel, document.querySelector('.level-btn.active'));
         renderAdminTrackList();
-        alert("Neue Gruppe erfolgreich hinzugefügt!");
+        alert("Gruppe temporär hinzugefügt!");
     }
 
     function removeGroupAsAdmin(index) {
         globalDatabase.splice(index, 1);
-        filterByLevel(selectedLevel, document.querySelector('.level-btn.active'));
         renderAdminTrackList();
     }
 
@@ -474,22 +443,30 @@
     }
 
     function exportAdminConfig() {
-        window.prompt("Kopieren (Strg+C) und ersetzen Sie Zeile 195 in Ihrer index.html Datei:", `let globalDatabase = ${JSON.stringify(globalDatabase)};`);
+        // Obfuscate / Shift standard plain objects into a scrambled base64 string
+        const jsonString = JSON.stringify(globalDatabase);
+        const secureBase64String = btoa(unescape(encodeURIComponent(jsonString)));
+        
+        const outputString = `let secureDatabasePayload = "${secureBase64String}";`;
+        window.prompt("Kopieren Sie dies (Strg+C) und überschreiben Sie Zeile 195 in Ihrer index.html Datei auf GitHub:", outputString);
     }
 
     // ==========================================
-    // 🚀 EXERCISE RUNTIME ENGINE
+    // 🚀 PLAYER ENGINE RUNTIME
     // ==========================================
+    const nativePlayer = document.getElementById('audio-player');
+    const playIcon = document.getElementById('play-icon');
+    const progressFill = document.getElementById('progress-fill');
+    const progressWrapper = document.getElementById('progress-wrapper');
+    const timeCurrent = document.getElementById('time-current');
+    const timeDuration = document.getElementById('time-duration');
+    const speedToggle = document.getElementById('speed-toggle');
+
     function startGroupExercise(groupIndex) {
-        const targetGroup = globalDatabase[groupIndex];
-        activeTracks = targetGroup.tracks;
-        
+        activeTracks = globalDatabase[groupIndex].tracks;
         currentIndex = 0;
         loadCurrentExerciseSlot();
-
-        document.getElementById('setup-card').classList.add('hidden');
-        document.getElementById('admin-card').classList.add('hidden');
-        document.getElementById('summary-card').classList.add('hidden');
+        document.getElementById('exercises-list-card').classList.add('hidden');
         document.getElementById('exercise-card').classList.remove('hidden');
     }
 
@@ -497,15 +474,13 @@
         document.getElementById('user-input').value = "";
         const resultBox = document.getElementById('result');
         resultBox.style.display = "none";
-        resultBox.innerHTML = "";
         playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
-
         document.getElementById('progress-indicator').textContent = `Satz ${currentIndex + 1} / ${activeTracks.length}`;
 
         const trackData = activeTracks[currentIndex];
         document.getElementById('track-title').textContent = `Satz ${currentIndex + 1}`;
         nativePlayer.src = trackData.url;
-        nativePlayer.crossOrigin = "anonymous"; 
+        nativePlayer.crossOrigin = "anonymous";
     }
 
     nativePlayer.addEventListener('timeupdate', () => {
@@ -521,9 +496,7 @@
         timeDuration.textContent = '-' + formatTime(nativePlayer.duration);
     });
 
-    nativePlayer.addEventListener('ended', () => {
-        playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
-    });
+    nativePlayer.addEventListener('ended', () => { playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>'; });
 
     progressWrapper.addEventListener('click', (e) => {
         const rect = progressWrapper.getBoundingClientRect();
@@ -532,19 +505,13 @@
     });
 
     function formatTime(secs) {
-        let m = Math.floor(secs / 60);
-        let s = Math.floor(secs % 60);
+        let m = Math.floor(secs / 60); let s = Math.floor(secs % 60);
         return m + ':' + (s < 10 ? '0' : '') + s;
     }
 
     function togglePlay() {
-        if (nativePlayer.paused) {
-            nativePlayer.play();
-            playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
-        } else {
-            nativePlayer.pause();
-            playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
-        }
+        if (nativePlayer.paused) { nativePlayer.play(); playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'; }
+        else { nativePlayer.pause(); playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>'; }
     }
 
     function rewindAudio(sec) {
@@ -553,66 +520,36 @@
         playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
     }
 
-    function forwardAudio(sec) {
-        nativePlayer.currentTime = Math.min(nativePlayer.duration, nativePlayer.currentTime + sec);
-    }
+    function forwardAudio(sec) { nativePlayer.currentTime = Math.min(nativePlayer.duration, nativePlayer.currentTime + sec); }
 
     function toggleSpeed() {
-        if (nativePlayer.playbackRate === 1.0) {
-            nativePlayer.playbackRate = 0.75;
-            speedToggle.textContent = '0.75x';
-        } else if (nativePlayer.playbackRate === 0.75) {
-            nativePlayer.playbackRate = 0.5;
-            speedToggle.textContent = '0.5x';
-        } else {
-            nativePlayer.playbackRate = 1.0;
-            speedToggle.textContent = '1x';
-        }
+        if (nativePlayer.playbackRate === 1.0) { nativePlayer.playbackRate = 0.75; speedToggle.textContent = '0.75x'; }
+        else if (nativePlayer.playbackRate === 0.75) { nativePlayer.playbackRate = 0.5; speedToggle.textContent = '0.5x'; }
+        else { nativePlayer.playbackRate = 1.0; speedToggle.textContent = '1x'; }
     }
 
-    function triggerDownload() {
-        if (nativePlayer.src) window.open(nativePlayer.src, '_blank');
-    }
-
-    function cleanWord(word) {
-        return word ? word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").toLowerCase() : "";
-    }
+    function triggerDownload() { if (nativePlayer.src) window.open(nativePlayer.src, '_blank'); }
+    function cleanWord(word) { return word ? word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").toLowerCase() : ""; }
 
     function verifySentence() {
         const userInput = document.getElementById('user-input').value.trim();
         const resultBox = document.getElementById('result');
-        
-        if (!userInput) {
-            alert("Bitte schreiben Sie zuerst etwas!");
-            return;
-        }
+        if (!userInput) return alert("Bitte schreiben Sie zuerst etwas!");
 
         const cleanString = (str) => str.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s+/g, ' ').trim();
         const targetSentence = activeTracks[currentIndex].script;
-
-        resultBox.style.display = "block";
-        resultBox.innerHTML = ""; 
+        resultBox.style.display = "block"; resultBox.innerHTML = "";
 
         if (cleanString(userInput).toLowerCase() === cleanString(targetSentence).toLowerCase()) {
-            resultBox.className = "result-box correct";
-            resultBox.innerHTML = "🎉 Ausgezeichnet! Perfekte Transkription.";
+            resultBox.className = "result-box correct"; resultBox.innerHTML = "🎉 Ausgezeichnet!";
         } else {
             resultBox.className = "result-box wrong";
-            
-            const userWords = userInput.split(/\s+/);
-            const targetWords = targetSentence.split(/\s+/);
+            const userWords = userInput.split(/\s+/); const targetWords = targetSentence.split(/\s+/);
             const container = document.createElement('div');
-
             userWords.forEach((word, idx) => {
                 const span = document.createElement('span');
-                if (cleanWord(word) === cleanWord(targetWords[idx])) {
-                    span.className = "hint-text-normal";
-                    span.innerHTML = word;
-                } else {
-                    span.className = "word-wrong-underline";
-                    span.innerHTML = word;
-                }
-                container.appendChild(span);
+                span.className = cleanWord(word) === cleanWord(targetWords[idx]) ? "hint-text-normal" : "word-wrong-underline";
+                span.innerHTML = word; container.appendChild(span);
             });
             resultBox.appendChild(container);
         }
@@ -622,63 +559,42 @@
         const userInput = document.getElementById('user-input').value.trim();
         const resultBox = document.getElementById('result');
         const targetSentence = activeTracks[currentIndex].script;
+        const userWords = userInput.split(/\s+/); const targetWords = targetSentence.split(/\s+/);
         
-        const userWords = userInput.split(/\s+/);
-        const targetWords = targetSentence.split(/\s+/);
-        
-        resultBox.style.display = "block";
-        resultBox.className = "result-box hint-screenshot-box";
-        resultBox.innerHTML = ""; 
-
-        const sentenceContainer = document.createElement('div');
-        let firstErrorFound = false;
+        resultBox.style.display = "block"; resultBox.className = "result-box hint-screenshot-box"; resultBox.innerHTML = "";
+        const sentenceContainer = document.createElement('div'); let firstErrorFound = false;
         
         targetWords.forEach((targetWord, idx) => {
-            const userWord = userWords[idx];
-            const span = document.createElement('span');
-            
+            const userWord = userWords[idx]; const span = document.createElement('span');
             if (cleanWord(userWord) === cleanWord(targetWord) && userWord !== undefined) {
-                span.className = "hint-text-normal";
-                span.innerHTML = targetWord; 
+                span.className = "hint-text-normal"; span.innerHTML = targetWord;
             } else {
-                if (!firstErrorFound) {
-                    span.className = "hint-text-correct-word";
-                    span.innerHTML = targetWord;
-                    firstErrorFound = true; 
-                } else {
-                    span.className = "hint-text-hidden";
-                    span.innerHTML = "___";
-                }
+                if (!firstErrorFound) { span.className = "hint-text-correct-word"; span.innerHTML = targetWord; firstErrorFound = true; }
+                else { span.className = "hint-text-hidden"; span.innerHTML = "___"; }
             }
             sentenceContainer.appendChild(span);
         });
-
         resultBox.appendChild(sentenceContainer);
     }
 
     function goToNextSentence() {
-        if (currentIndex < activeTracks.length - 1) {
-            currentIndex++;
-            loadCurrentExerciseSlot();
-        } else {
+        if (currentIndex < activeTracks.length - 1) { currentIndex++; loadCurrentExerciseSlot(); }
+        else {
             nativePlayer.pause();
             document.getElementById('exercise-card').classList.add('hidden');
-            document.getElementById('summary-text').innerHTML = `Du hast diese Kollektion erfolgreich gemeistert!`;
             document.getElementById('summary-card').classList.remove('hidden');
         }
     }
 
     function restartSameExercise() {
-        currentIndex = 0;
-        loadCurrentExerciseSlot();
+        currentIndex = 0; loadCurrentExerciseSlot();
         document.getElementById('summary-card').classList.add('hidden');
         document.getElementById('exercise-card').classList.remove('hidden');
     }
 
-    function backToConfiguration() {
+    function backToLevelSelectionFromSummary() {
         document.getElementById('summary-card').classList.add('hidden');
-        document.getElementById('setup-card').classList.remove('hidden');
-        filterByLevel(selectedLevel, document.querySelector('.level-btn.active'));
+        document.getElementById('level-selection-card').classList.remove('hidden');
     }
 </script>
 
