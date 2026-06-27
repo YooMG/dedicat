@@ -184,50 +184,22 @@
             text-transform: uppercase;
         }
 
-        .status-badge.open {
-            background-color: var(--success-color);
-            color: #ffffff;
-        }
+        .status-badge.open { background-color: var(--success-color); color: #ffffff; }
+        .status-badge.locked { background-color: var(--danger-color); color: #ffffff; }
+        .level-badge-tag { background-color: #ff9800; color: white; font-size: 11px; padding: 4px 8px; border-radius: 6px; font-weight: bold; }
 
-        .status-badge.locked {
-            background-color: var(--danger-color);
-            color: #ffffff;
-        }
-
-        .level-badge-tag { 
-            background-color: #ff9800; 
-            color: white; 
-            font-size: 11px; 
-            padding: 4px 8px; 
-            border-radius: 6px; 
-            font-weight: bold;
-        }
-
-        .anim-icon {
-            display: inline-block;
-            vertical-align: middle;
-            transition: transform 0.3s ease;
-        }
-
-        .open-status:hover .anim-icon, .status-badge.open .anim-icon {
-            animation: unlock-pulse 1.8s infinite ease-in-out;
-        }
-
-        .status-option input:checked + .custom-radio.locked-status .anim-icon, .status-badge.locked .anim-icon {
-            animation: lock-snap 0.45s ease-in-out;
-        }
+        .anim-icon { display: inline-block; vertical-align: middle; transition: transform 0.3s ease; }
+        .status-badge.open .anim-icon { animation: unlock-pulse 1.8s infinite ease-in-out; }
+        .status-badge.locked .anim-icon { animation: lock-snap 0.45s ease-in-out; }
 
         @keyframes unlock-pulse {
             0%, 100% { transform: translateY(0) rotate(0deg); }
             30% { transform: translateY(-2px) rotate(-6deg); }
             60% { transform: translateY(-1px) rotate(4deg); }
         }
-
         @keyframes lock-snap {
             0% { transform: scale(1); }
             30% { transform: scale(0.85) translateY(-2px); }
-            50% { transform: scale(1.05) rotate(8deg); }
-            70% { transform: rotate(-8deg); }
             100% { transform: scale(1) rotate(0deg); }
         }
 
@@ -248,7 +220,6 @@
         .player-controls { display: flex; justify-content: center; gap: 20px; align-items: center; margin-top: 20px; }
         .control-btn { background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #1a1a1a; padding: 5px; }
         .speed-btn { font-size: 15px; font-weight: bold; width: 40px; }
-        
         .play-btn { width: 50px; height: 50px; background: #111111; border-radius: 50%; color: white; }
         .play-btn svg { fill: white; width: 18px; height: 18px; }
 
@@ -258,7 +229,6 @@
         .btn-main { background-color: var(--primary-color); }
         .btn-main:hover { background-color: #001f4d; }
         .btn-success { background-color: var(--success-color); }
-        .btn-success:hover { background-color: #15803d; }
         .btn-secondary { background-color: #6c757d; }
         .btn-warning { background-color: #ff9800; }
         .btn-danger { background-color: var(--danger-color); }
@@ -268,59 +238,26 @@
         .result-box { margin-top: 15px; padding: 15px; border-radius: 10px; font-size: 18px; display: none; }
         .correct { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; font-weight: bold; }
         .wrong { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
-        
         .progress-badge { background: var(--accent-color); color: #333; padding: 3px 8px; border-radius: 12px; font-size: 13px; font-weight: bold; float: right; }
         .shortcut-tip { font-size: 12px; color: #666; margin-bottom: 10px; display: block; }
         
         .hidden { display: none !important; }
 
-        .toggle-status-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 4px;
-        }
-        .status-option {
-            flex: 1;
-            cursor: pointer;
-        }
+        .toggle-status-group { display: flex; gap: 10px; margin-top: 4px; }
+        .status-option { flex: 1; cursor: pointer; }
         .status-option input { display: none; }
         .custom-radio {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            padding: 10px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 14px;
-            color: #64748b;
-            background: #fff;
-            transition: all 0.2s ease;
+            display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px; border: 2px solid #e2e8f0; border-radius: 8px; font-weight: 600; font-size: 14px; color: #64748b; background: #fff; transition: all 0.2s ease;
         }
         .custom-radio svg { width: 16px; height: 16px; fill: currentColor; }
         
-        .status-option input:checked + .custom-radio.open-status {
-            border-color: var(--success-color);
-            background-color: #f0fdf4;
-            color: var(--success-color);
-        }
-        .status-option input:checked + .custom-radio.locked-status {
-            border-color: var(--danger-color);
-            background-color: #fef2f2;
-            color: var(--danger-color);
-        }
+        .status-option input:checked + .custom-radio.open-status { border-color: var(--success-color); background-color: #f0fdf4; color: var(--success-color); }
+        .status-option input:checked + .custom-radio.locked-status { border-color: var(--danger-color); background-color: #fef2f2; color: var(--danger-color); }
         
-        .crypto-preview-box {
-            background-color: #222; color: #00ff00; font-family: monospace; padding: 12px; border-radius: 6px; font-size: 11px; max-height: 120px; overflow-y: auto; word-break: break-all; margin-top: 10px;
-        }
+        .crypto-preview-box { background-color: #222; color: #00ff00; font-family: monospace; padding: 12px; border-radius: 6px; font-size: 11px; max-height: 120px; overflow-y: auto; word-break: break-all; margin-top: 10px; }
 
-        .chat-toggle-btn {
-            position: fixed; bottom: 15px; right: 15px; background-color: var(--primary-color); color: white; border: none; padding: 12px 18px; border-radius: 30px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.2); cursor: pointer; z-index: 1000; font-size: 14px;
-        }
-        .chat-window {
-            position: fixed; bottom: 70px; right: 15px; width: calc(100% - 30px); max-width: 360px; height: 400px; background: white; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; z-index: 1000; border: 1px solid #e0e0e0;
-        }
+        .chat-toggle-btn { position: fixed; bottom: 15px; right: 15px; background-color: var(--primary-color); color: white; border: none; padding: 12px 18px; border-radius: 30px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.2); cursor: pointer; z-index: 1000; font-size: 14px; }
+        .chat-window { position: fixed; bottom: 70px; right: 15px; width: calc(100% - 30px); max-width: 360px; height: 400px; background: white; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; z-index: 1000; border: 1px solid #e0e0e0; }
         .chat-header { background: var(--primary-color); color: white; padding: 12px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
         .chat-header input { background: rgba(255,255,255,0.2); border: none; color: white; padding: 4px 8px; border-radius: 6px; font-size: 12px; width: 100px; text-align: center; }
         .chat-messages { flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background-color: #f8f9fa; }
@@ -339,7 +276,6 @@
         
         .participant-box { background: #f8f9fa; border: 1px solid #e9ecef; padding: 12px; border-radius: 10px; font-size: 13px; }
         #participant-list { margin: 5px 0 0 0; padding-left: 15px; }
-
         .public-rooms-section { margin-top: 15px; border-top: 1px solid #eee; padding-top: 12px; }
         #remote-audio-container { display: none; }
     </style>
@@ -396,8 +332,8 @@
         
         <div id="voice-lobby-state">
             <div class="form-group">
-                <label for="voice-room-input">Raum-Code Name:</label>
-                <input type="text" id="voice-room-input" placeholder="z.B. B1-Praxis">
+                <label for="voice-room-input">Raum-Code Name / ID:</label>
+                <input type="text" id="voice-room-input" placeholder="z.B. B1-Praxis oder Private ID">
             </div>
             
             <div style="display: flex; gap: 10px; margin-bottom: 15px;">
@@ -414,27 +350,30 @@
                     <label>Raum-Sichtbarkeit:</label>
                     <div class="toggle-status-group">
                         <label class="status-option">
-                            <input type="radio" name="pre_room_privacy" value="open" checked>
+                            <input type="radio" name="pre_room_privacy" value="open" checked onchange="toggleRoomInputMode(false)">
                             <span class="custom-radio open-status">
                                 <svg class="anim-icon" viewBox="0 0 24 24"><path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6-5c1.66 0 3 1.34 3 3v2H9V6c0-1.66 1.34-3 3-3zm6 17H6V10h12v10z"/></svg>
-                                Offen
+                                Öffentlich (Offen)
                             </span>
                         </label>
                         <label class="status-option">
-                            <input type="radio" name="pre_room_privacy" value="locked">
+                            <input type="radio" name="pre_room_privacy" value="locked" onchange="toggleRoomInputMode(true)">
                             <span class="custom-radio locked-status">
                                 <svg class="anim-icon" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
-                                Gesperrt
+                                Privat (ID Link)
                             </span>
                         </label>
                     </div>
                 </div>
             </div>
 
-            <button class="btn btn-main" style="width:100%;" onclick="initiateCreateRoomWorkflow()">➕ Raum erstellen & starten</button>
+            <div class="btn-group" style="margin-top: 5px; gap:10px;">
+                <button class="btn btn-main" onclick="initiateCreateRoomWorkflow()">➕ Raum erstellen</button>
+                <button class="btn btn-success" onclick="initiateJoinRoomWorkflow()">🔑 Mit ID beitreten</button>
+            </div>
 
-            <div class="public-rooms-section">
-                <label>Aktive Räume auf der Website:</label>
+            <div class="public-rooms-section" id="public-rooms-wrapper">
+                <label>Aktive öffentliche Räume:</label>
                 <div class="group-list" id="public-voice-rooms-container" style="margin-top: 8px;">
                     <p style="color:#888; font-style:italic; font-size:13px;">Keine aktiven Räume vorhanden.</p>
                 </div>
@@ -444,15 +383,15 @@
         <div id="voice-call-state" class="hidden">
             <div class="call-status-banner">
                 <span class="pulse-indicator"></span>
-                <span>Raum: <strong id="active-room-label">---</strong></span>
+                <span>Raum Name/ID: <strong id="active-room-label" style="background:#fff; padding:2px 8px; border-radius:4px; border:1px solid #ccc;">---</strong></span>
             </div>
             <div class="participant-box">
-                <label>Teilnehmer:</label>
+                <label>Teilnehmer im Kanal:</label>
                 <ul id="participant-list"><li>Du (Warten...)</li></ul>
             </div>
             <div class="btn-group" style="margin-top: 15px;">
                 <button id="mic-toggle-btn" class="btn btn-warning" onclick="toggleMicrophoneMute()">🎙️ Mikrofon aktiv</button>
-                <button class="btn btn-danger" onclick="leaveAudioCallRoom()">❌ Verlassen</button>
+                <button class="btn btn-danger" onclick="leaveAudioCallRoom()">❌ Raum verlassen</button>
             </div>
         </div>
     </div>
@@ -535,10 +474,8 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, push, onChildAdded, onValue, limitToLast, set, get, remove, query } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    // Helper to decode masked strings cleanly
     const d = (str) => atob(str);
 
-    // Completely masked configuration parameters for standard plain-text file shields
     const firebaseConfig = {
       apiKey: d("QUl6YVN5QlZEd2l6UU43d0ZFUXczaFVHb28tMFlBLWM1X3R5dHg="),
       authDomain: d("ZGV1dHNjaC1kaWt0YXQtdHJhaW5lci5maXJlYmFzZWFwcC5jb20="),
@@ -629,10 +566,10 @@
                 const status = roomData.status || "open";
                 const lvl = roomData.level || "A1";
                 
-                let participantCount = 1;
-                if (roomData.peers) {
-                    participantCount = Object.keys(roomData.peers).length;
-                }
+                if (status === "locked") return; // Completely hide private rooms from public dashboard listings
+                
+                let participantCount = 0;
+                if (roomData.peers) participantCount = Object.keys(roomData.peers).length;
                 
                 const item = document.createElement('div');
                 item.className = "group-item";
@@ -640,11 +577,7 @@
                     <div class="group-info">
                         <h4>🗣️ Raum: ${roomName}</h4>
                         <div class="badge-container">
-                            <span class="status-badge ${status}">
-                                ${status === 'open' ? `
-                                <svg class="anim-icon" viewBox="0 0 24 24" style="width:12px;height:12px;margin-right:2px;fill:currentColor;"><path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6-5c1.66 0 3 1.34 3 3v2H9V6c0-1.66 1.34-3 3-3zm6 17H6V10h12v10z"/></svg> Offen` : `
-                                <svg class="anim-icon" viewBox="0 0 24 24" style="width:12px;height:12px;margin-right:2px;fill:currentColor;"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg> Gesperrt`}
-                            </span>
+                            <span class="status-badge open">🟢 Offen</span>
                             <span class="level-badge-tag">${lvl}</span>
                             <span style="font-size:11px; color:#777;">👥 Personen: ${participantCount}</span>
                         </div>
@@ -701,46 +634,60 @@
             if (!adminCard.classList.contains('hidden')) { adminCard.classList.add('hidden'); return; }
             
             const code = prompt("🔒 Admin-Code eingeben:");
-            if (btoa(code) === "eW9vdS5tZ0BnbWFpbC5jb20=") {
-                adminCard.classList.remove('hidden');
-            } else {
-                alert("Falscher Code!");
-            }
+            if (btoa(code) === "eW9vdS5tZ0BnbWFpbC5jb20=") { adminCard.classList.remove('hidden'); } 
+            else { alert("Falscher Code!"); }
         }
         if (event.key === 'Control' && !event.shiftKey && !event.altKey) {
-            if (!document.getElementById('exercise-card').classList.contains('hidden')) {
-                event.preventDefault(); rewindAudio(5);
-            }
+            if (!document.getElementById('exercise-card').classList.contains('hidden')) { event.preventDefault(); rewindAudio(5); }
         }
     }, true);
 
-    /* --- MULTI-USER FULL MESH AUDIO CONFERENCE SYSTEM --- */
+    window.toggleRoomInputMode = function(isPrivate) {
+        const input = document.getElementById('voice-room-input');
+        if(isPrivate) {
+            input.placeholder = "ID eingeben zum Beitritt (Leerlassen für Auto-ID)";
+        } else {
+            input.placeholder = "z.B. B1-Praxis";
+        }
+    }
+
+    /* --- WEBRTC MULTI-USER AUDIO ENGINE --- */
     let localAudioStream = null; 
     let peerInstance = null; 
     let myFirebaseRoomNodeKey = null; 
     let activePeerCallsList = {}; 
     let currentRoomNameString = "";
+    let isRoomHost = false;
+    let roomHostListenerRef = null;
+
+    // Generates completely unique random client strings so users never clash/lock up
+    const myUniqueClientPeerNameString = 'User_' + Math.floor(Math.random() * 10000) + '_' + Date.now().toString().slice(-4);
 
     async function requestMicrophoneAccess() {
         try { localAudioStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false }); return true; }
-        catch (e) { alert("Mikrofon-Zugriff verweigert!"); return false; }
+        catch (e) { alert("Fehler: Zugriff auf das Mikrofon verweigert!"); return false; }
     }
 
     function initializePeerNetworkConnection(cb) {
-        peerInstance = new Peer();
+        // Feed the explicit unique name inside Peer JS directly
+        peerInstance = new Peer(myUniqueClientPeerNameString);
         peerInstance.on('open', (id) => { if (cb) cb(id); });
         peerInstance.on('error', (err) => { console.error(err); leaveAudioCallRoom(); });
     }
 
     async function initiateCreateRoomWorkflow() {
-        const roomName = document.getElementById('voice-room-input').value.trim();
+        let roomName = document.getElementById('voice-room-input').value.trim();
         const roomLevel = document.getElementById('voice-level-select').value;
         const privacySetting = document.querySelector('input[name="pre_room_privacy"]:checked').value;
         
-        if (!roomName) return alert("Raumnamen eingeben!");
+        if (privacySetting === "locked" && !roomName) {
+            roomName = "ROOM-" + Math.floor(Math.random() * 9000 + 1000);
+        }
+        if (!roomName) return alert("Bitte einen Raumnamen eingeben!");
         if (!(await requestMicrophoneAccess())) return;
 
         currentRoomNameString = roomName;
+        isRoomHost = true;
         document.getElementById('active-room-label').textContent = roomName;
         document.getElementById('voice-lobby-state').classList.add('hidden');
         document.getElementById('voice-call-state').classList.remove('hidden');
@@ -750,6 +697,7 @@
             if(db) {
                 window.setFirebaseData(window.getFirebaseRef(db, 'voice_rooms/' + roomName + '/status'), privacySetting);
                 window.setFirebaseData(window.getFirebaseRef(db, 'voice_rooms/' + roomName + '/level'), roomLevel);
+                window.setFirebaseData(window.getFirebaseRef(db, 'voice_rooms/' + roomName + '/hostId'), myId);
                 
                 const myPeerRef = window.pushFirebaseData(window.getFirebaseRef(db, 'voice_rooms/' + roomName + '/peers'), myId);
                 myFirebaseRoomNodeKey = myPeerRef.key;
@@ -771,44 +719,46 @@
 
     async function initiateJoinRoomWorkflow() {
         const roomName = document.getElementById('voice-room-input').value.trim();
-        if (!roomName) return alert("Raumname fehlt!");
+        if (!roomName) return alert("Bitte gültigen Raumnamen oder eine ID eingeben!");
         if (!(await requestMicrophoneAccess())) return;
 
         const db = window.getFirebaseDb();
         if(!db) return;
 
         window.getFirebaseData(window.getFirebaseRef(db, 'voice_rooms/' + roomName)).then((snap) => {
-            if (snap.exists()) {
-                const data = snap.val();
-                if(data.status === 'locked') { alert("🔒 Dieser Raum ist privat/gesperrt!"); return; }
+            if (!snap.exists()) { alert("Raum existiert nicht mehr oder wurde geschlossen!"); return; }
+            
+            const data = snap.val();
+            currentRoomNameString = roomName;
+            isRoomHost = false;
+            
+            document.getElementById('active-room-label').textContent = roomName;
+            document.getElementById('voice-lobby-state').classList.add('hidden');
+            document.getElementById('voice-call-state').classList.remove('hidden');
+
+            initializePeerNetworkConnection((myId) => {
+                const myPeerRef = window.pushFirebaseData(window.getFirebaseRef(db, 'voice_rooms/' + roomName + '/peers'), myId);
+                myFirebaseRoomNodeKey = myPeerRef.key;
                 
-                currentRoomNameString = roomName;
-                document.getElementById('active-room-label').textContent = roomName;
-                document.getElementById('voice-lobby-state').classList.add('hidden');
-                document.getElementById('voice-call-state').classList.remove('hidden');
+                // Instantly call everyone currently tracked inside this room mapping
+                if (data.peers) {
+                    Object.keys(data.peers).forEach((key) => {
+                        const remotePeerId = data.peers[key];
+                        if (remotePeerId !== myId) {
+                            const call = peerInstance.call(remotePeerId, localAudioStream);
+                            handleIncomingStreamConnection(call);
+                        }
+                    });
+                }
+                
+                listenToRoomPeerChanges(db, roomName, myId);
+                listenToHostStatus(db, roomName);
+            });
 
-                initializePeerNetworkConnection((myId) => {
-                    const myPeerRef = window.pushFirebaseData(window.getFirebaseRef(db, 'voice_rooms/' + roomName + '/peers'), myId);
-                    myFirebaseRoomNodeKey = myPeerRef.key;
-                    
-                    if (data.peers) {
-                        Object.keys(data.peers).forEach((key) => {
-                            const remotePeerId = data.peers[key];
-                            if (remotePeerId !== myId) {
-                                const call = peerInstance.call(remotePeerId, localAudioStream);
-                                handleIncomingStreamConnection(call);
-                            }
-                        });
-                    }
-                    
-                    listenToRoomPeerChanges(db, roomName, myId);
-                });
-
-                peerInstance.on('call', (call) => {
-                    call.answer(localAudioStream);
-                    handleIncomingStreamConnection(call);
-                });
-            }
+            peerInstance.on('call', (call) => {
+                call.answer(localAudioStream);
+                handleIncomingStreamConnection(call);
+            });
         });
     }
 
@@ -817,15 +767,25 @@
         onValue(listRef, (snapshot) => {
             const listContainer = document.getElementById('participant-list');
             listContainer.innerHTML = "";
-            
             if (snapshot.exists()) {
-                let indexCounter = 1;
+                let count = 1;
                 snapshot.forEach((child) => {
-                    const peerId = child.val();
+                    const val = child.val();
                     const li = document.createElement('li');
-                    li.textContent = peerId === myId ? `Du (Verbunden)` : `Sprecher ${indexCounter++}`;
+                    li.textContent = val === myId ? `Du (Verbunden)` : `Sprecher ${count++}`;
                     listContainer.appendChild(li);
                 });
+            }
+        });
+    }
+
+    function listenToHostStatus(db, roomName) {
+        roomHostListenerRef = window.getFirebaseRef(db, 'voice_rooms/' + roomName + '/hostId');
+        onValue(roomHostListenerRef, (snapshot) => {
+            // If hostId is completely missing from database, kick user immediately
+            if (!snapshot.exists()) {
+                alert("Der Ersteller hat den Raum geschlossen. Alle Teilnehmer wurden getrennt!");
+                leaveAudioCallRoom();
             }
         });
     }
@@ -834,7 +794,6 @@
         activePeerCallsList[call.peer] = call;
         call.on('stream', (remoteStream) => {
             if (document.getElementById('audio-' + call.peer)) return;
-            
             const audioNode = document.createElement('audio');
             audioNode.id = 'audio-' + call.peer;
             audioNode.autoplay = true;
@@ -852,16 +811,19 @@
 
     function leaveAudioCallRoom() {
         const db = window.getFirebaseDb();
-        if (db && currentRoomNameString && myFirebaseRoomNodeKey) {
-            window.removeFirebaseData(window.getFirebaseRef(db, 'voice_rooms/' + currentRoomNameString + '/peers/' + myFirebaseRoomNodeKey));
-            
-            window.getFirebaseData(window.getFirebaseRef(db, 'voice_rooms/' + currentRoomNameString + '/peers')).then((snap) => {
-                if (!snap.exists() || Object.keys(snap.val()).length === 0) {
-                    window.removeFirebaseData(window.getFirebaseRef(db, 'voice_rooms/' + currentRoomNameString));
-                }
-            });
+        
+        if (db && currentRoomNameString) {
+            if (isRoomHost) {
+                // Ersteller leaves -> completely terminate and clear the room out for everyone
+                window.removeFirebaseData(window.getFirebaseRef(db, 'voice_rooms/' + currentRoomNameString));
+            } else if (myFirebaseRoomNodeKey) {
+                // Regular speaker leaves -> simply drop their peer mapping node
+                window.removeFirebaseData(window.getFirebaseRef(db, 'voice_rooms/' + currentRoomNameString + '/peers/' + myFirebaseRoomNodeKey));
+            }
         }
 
+        // Drop listeners
+        if (roomHostListenerRef) { roomHostListenerRef = null; }
         if (localAudioStream) { localAudioStream.getTracks().forEach(t => t.stop()); localAudioStream = null; }
         
         Object.keys(activePeerCallsList).forEach(peerId => {
@@ -873,6 +835,7 @@
 
         myFirebaseRoomNodeKey = null;
         currentRoomNameString = "";
+        isRoomHost = false;
         
         document.getElementById('voice-call-state').classList.add('hidden');
         document.getElementById('voice-lobby-state').classList.remove('hidden');
@@ -888,7 +851,7 @@
         document.getElementById('mic-toggle-btn').innerHTML = track.enabled ? "🎙️ Mikrofon aktiv" : "🔇 Stummgeschaltet";
     }
 
-    /* --- CODES & INTERFACE ENGINE --- */
+    /* --- MAIN DISPLAY CONTROL LOOPS --- */
     function renderHomeLevelButtons() {
         const container = document.getElementById('home-level-container');
         container.innerHTML = "";
@@ -958,9 +921,7 @@
         editingGroupIndex = i; const g = globalDatabase[i];
         document.getElementById('admin-level-select').value = g.level;
         document.getElementById('admin-group-title').value = g.groupTitle;
-        document.getElementById('admin-links-list').value = g.tracks.map(t=> {
-            try { return atob(t.url); } catch(e) { return t.url; }
-        }).join('\n');
+        document.getElementById('admin-links-list').value = g.tracks.map(t=> { try { return atob(t.url); } catch(e) { return t.url; } }).join('\n');
         document.getElementById('admin-scripts-list').value = g.tracks.map(t=>t.script).join('\n');
     }
     window.removeGroupAsAdmin = function(i) { globalDatabase.splice(i,1); renderAdminTrackList(); renderHomeLevelButtons(); }
@@ -969,7 +930,7 @@
         document.getElementById('crypto-output-container').classList.remove('hidden');
     }
 
-    /* --- AUDIO CORE PLAYER --- */
+    /* --- PLAYER CONTROLS --- */
     const nativePlayer = document.getElementById('audio-player');
     const playIcon = document.getElementById('play-icon');
     const progressFill = document.getElementById('progress-fill');
@@ -988,10 +949,8 @@
         document.getElementById('result').style.display = "none";
         playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
         document.getElementById('progress-indicator').textContent = `Satz ${currentIndex + 1}/${activeTracks.length}`;
-        
         const obfuscatedUrl = activeTracks[currentIndex].url;
-        try { nativePlayer.src = atob(obfuscatedUrl); } 
-        catch(e) { nativePlayer.src = obfuscatedUrl; }
+        try { nativePlayer.src = atob(obfuscatedUrl); } catch(e) { nativePlayer.src = obfuscatedUrl; }
     }
 
     nativePlayer.addEventListener('timeupdate', () => {
@@ -1023,10 +982,7 @@
         else { res.className = "result-box wrong"; res.innerHTML = "Falsch geschrieben! Versuche es noch einmal."; }
     }
 
-    window.showFirstFailedWordHint = function() {
-        alert("Hinweis: " + activeTracks[currentIndex].script.substring(0, 8) + "...");
-    }
-
+    window.showFirstFailedWordHint = function() { alert("Hinweis: " + activeTracks[currentIndex].script.substring(0, 8) + "..."); }
     window.goToNextSentence = function() {
         if (currentIndex < activeTracks.length - 1) { currentIndex++; loadCurrentExerciseSlot(); }
         else { document.getElementById('exercise-card').classList.add('hidden'); document.getElementById('summary-card').classList.remove('hidden'); }
