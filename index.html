@@ -15,6 +15,8 @@
             --bg-color: #f4f6f9;
             --card-bg: #ffffff;
             --text-color: #333333;
+            --success-color: #16a34a;
+            --danger-color: #dc2626;
         }
 
         body {
@@ -22,7 +24,7 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
-            padding: 20px;
+            padding: 12px;
             display: flex;
             justify-content: center;
         }
@@ -30,28 +32,28 @@
         .container {
             max-width: 800px;
             width: 100%;
-            padding-bottom: 60px;
+            padding-bottom: 80px;
         }
 
         header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             border-bottom: 5px solid var(--accent-color);
             background: var(--primary-color);
             color: white;
-            border-radius: 8px;
-            padding: 20px;
+            border-radius: 12px;
+            padding: 15px;
         }
 
-        h1 { margin: 0; font-size: 24px; }
-        p.subtitle { margin: 5px 0 0 0; opacity: 0.8; }
+        h1 { margin: 0; font-size: 22px; }
+        p.subtitle { margin: 5px 0 0 0; opacity: 0.8; font-size: 14px; }
 
         .card {
             background: var(--card-bg);
-            border-radius: 20px;
-            padding: 25px;
+            border-radius: 16px;
+            padding: 16px;
             margin-bottom: 20px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.06);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
 
         h2 {
@@ -59,7 +61,8 @@
             margin-top: 0;
             border-left: 4px solid var(--secondary-color);
             padding-left: 10px;
-            font-size: 20px;
+            font-size: 18px;
+            margin-bottom: 15px;
         }
 
         .form-group { margin-bottom: 15px; }
@@ -67,24 +70,30 @@
         label {
             display: block;
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
+            font-size: 14px;
         }
 
         textarea, input[type="file"], input[type="url"], input[type="text"], select {
             width: 100%;
             padding: 12px;
-            border: 2px solid #ccc;
+            border: 2px solid #e2e8f0;
             border-radius: 10px;
             box-sizing: border-box;
             font-size: 15px;
+            background: #fff;
+            outline: none;
+        }
+        textarea:focus, input:focus, select:focus {
+            border-color: var(--primary-color);
         }
 
         textarea { resize: vertical; height: 100px; }
 
         .level-container {
             display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
+            gap: 10px;
+            margin-bottom: 15px;
             justify-content: center;
             flex-wrap: wrap;
         }
@@ -93,20 +102,19 @@
             background-color: white;
             color: var(--primary-color);
             border: 2px solid var(--primary-color);
-            padding: 12px 24px;
-            border-radius: 30px;
-            font-size: 15px;
+            padding: 10px 16px;
+            border-radius: 25px;
+            font-size: 14px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.2s ease;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-width: 120px;
+            flex: 1;
+            min-width: 100px;
+            text-align: center;
         }
 
         .level-btn span.count {
+            display: block;
             font-size: 11px;
             font-weight: normal;
             opacity: 0.75;
@@ -116,261 +124,229 @@
         .level-btn:hover {
             background-color: var(--primary-color);
             color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0,2,108,0.2);
         }
 
         .group-list {
             display: flex;
             flex-direction: column;
             gap: 12px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .group-item {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
-            padding: 15px 20px;
-            border-radius: 12px;
+            background: #ffffff;
+            border: 1px solid #eef2f5;
+            padding: 14px;
+            border-radius: 14px;
             display: flex;
+            flex-direction: row;
             justify-content: space-between;
             align-items: center;
-            transition: background 0.2s;
-            gap: 15px;
+            gap: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
         }
-        .group-item:hover { background: #f1f3f5; }
 
         .group-info {
             flex: 1;
             min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
-        .group-info h4 { margin: 0 0 5px 0; color: #1a1a1a; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .group-info span { font-size: 13px; color: #6c757d; }
+        
+        .group-info h4 { 
+            margin: 0; 
+            color: #1e293b; 
+            font-size: 15px; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+        }
+        
+        .group-info span { font-size: 13px; color: #64748b; }
+
+        /* --- DYNAMISCHE STRUKTUR & CONTRAST BADGES --- */
+        .badge-container {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 2px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-badge.open {
+            background-color: var(--success-color);
+            color: #ffffff;
+        }
+
+        .status-badge.locked {
+            background-color: var(--danger-color);
+            color: #ffffff;
+        }
+
+        .level-badge-tag { 
+            background-color: #ff9800; 
+            color: white; 
+            font-size: 11px; 
+            padding: 4px 8px; 
+            border-radius: 6px; 
+            font-weight: bold;
+        }
+
+        /* --- CSS ICON ANIMATIONS --- */
+        .anim-icon {
+            display: inline-block;
+            vertical-align: middle;
+            transition: transform 0.3s ease;
+        }
+
+        /* Offen-Animation: Sanftes Schwingen des Bügels */
+        .open-status:hover .anim-icon, .status-badge.open .anim-icon {
+            animation: unlock-pulse 1.8s infinite ease-in-out;
+        }
+
+        /* Gesperrt-Animation: Kraftvolles Einrasten/Rütteln */
+        .status-option input:checked + .custom-radio.locked-status .anim-icon, .status-badge.locked .anim-icon {
+            animation: lock-snap 0.45s ease-in-out;
+        }
+
+        @keyframes unlock-pulse {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            30% { transform: translateY(-2px) rotate(-6deg); }
+            60% { transform: translateY(-1px) rotate(4deg); }
+        }
+
+        @keyframes lock-snap {
+            0% { transform: scale(1); }
+            30% { transform: scale(0.85) translateY(-2px); }
+            50% { transform: scale(1.05) rotate(8deg); }
+            70% { transform: rotate(-8deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
 
         .custom-player {
             background: #ffffff;
             border: 1px solid #eaeaea;
-            border-radius: 24px;
-            padding: 25px;
-            margin: 20px 0;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            border-radius: 20px;
+            padding: 20px;
+            margin: 15px 0;
         }
 
-        .player-title { font-size: 20px; font-weight: 500; color: #1a1a1a; margin-bottom: 25px; }
+        .player-title { font-size: 18px; font-weight: 500; color: #1a1a1a; margin-bottom: 20px; }
         .progress-container { width: 100%; margin-bottom: 10px; }
-        .time-stamps { display: flex; justify-content: space-between; color: #8a8a8a; font-size: 14px; margin-bottom: 8px; }
+        .time-stamps { display: flex; justify-content: space-between; color: #8a8a8a; font-size: 13px; margin-bottom: 6px; }
         .progress-bar-wrapper { width: 100%; height: 6px; background: #e0e0e0; border-radius: 3px; cursor: pointer; position: relative; }
         .progress-fill { height: 100%; width: 0%; background: #b0b0b0; border-radius: 3px; }
 
-        .player-controls { display: flex; justify-content: center; gap: 30px; align-items: center; margin-top: 25px; padding: 0 10px; }
-        .control-btn { background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #1a1a1a; padding: 5px; transition: opacity 0.2s; }
-        .control-btn:hover { opacity: 0.7; }
-        .speed-btn { font-size: 16px; font-weight: 500; width: 40px; }
+        .player-controls { display: flex; justify-content: center; gap: 20px; align-items: center; margin-top: 20px; }
+        .control-btn { background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #1a1a1a; padding: 5px; }
+        .speed-btn { font-size: 15px; font-weight: bold; width: 40px; }
         
-        .play-btn { width: 56px; height: 56px; background: #111111; border-radius: 50%; color: white; }
-        .play-btn svg { fill: white; width: 20px; height: 20px; }
+        .play-btn { width: 50px; height: 50px; background: #111111; border-radius: 50%; color: white; }
+        .play-btn svg { fill: white; width: 18px; height: 18px; }
 
-        .btn-group { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
-        .btn { color: white; border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 15px; transition: background 0.2s; flex: 1; min-width: 140px; }
+        .btn-group { display: flex; gap: 8px; margin-top: 15px; flex-wrap: wrap; }
+        .btn { color: white; border: none; padding: 12px 16px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 14px; transition: background 0.2s; flex: 1; min-width: 120px; text-align: center; }
 
         .btn-main { background-color: var(--primary-color); }
         .btn-main:hover { background-color: #001f4d; }
-        .btn-success { background-color: #28a745; }
-        .btn-success:hover { background-color: #218838; }
+        .btn-success { background-color: var(--success-color); }
+        .btn-success:hover { background-color: #15803d; }
         .btn-secondary { background-color: #6c757d; }
-        .btn-secondary:hover { background-color: #5a6268; }
         .btn-warning { background-color: #ff9800; }
-        .btn-warning:hover { background-color: #e68a00; }
-        .btn-danger { background-color: #dc3545; }
+        .btn-danger { background-color: var(--danger-color); }
 
         .admin-card { border: 3px dashed var(--secondary-color); background-color: #fff8f8; }
         .track-item { background: #eee; padding: 12px; margin-bottom: 8px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; gap: 10px;}
-        .admin-btn-actions { display: flex; gap: 5px; }
-        .result-box { margin-top: 15px; padding: 20px; border-radius: 10px; font-size: 22px; display: none; }
+        .result-box { margin-top: 15px; padding: 15px; border-radius: 10px; font-size: 18px; display: none; }
         .correct { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; font-weight: bold; }
         .wrong { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
-        .hint-screenshot-box { background-color: #f8f9fa; color: #333333; border: 1px solid #e2e3e5; }
-        .hint-text-normal { color: #333333; margin-right: 8px; display: inline-block; }
-        .hint-text-correct-word { color: #28a745; font-weight: bold; margin-right: 8px; display: inline-block; }
-        .hint-text-hidden { color: #ccc; margin-right: 8px; display: inline-block; letter-spacing: 2px; }
-        .word-wrong-underline { color: #333333; margin-right: 8px; display: inline-block; border-bottom: 3px solid #ff9800; }
-        .progress-badge { background: var(--accent-color); color: #333; padding: 3px 8px; border-radius: 12px; font-size: 14px; font-weight: bold; float: right; }
-        .shortcut-tip { font-size: 13px; color: #666; margin-bottom: 15px; display: block; }
+        
+        .progress-badge { background: var(--accent-color); color: #333; padding: 3px 8px; border-radius: 12px; font-size: 13px; font-weight: bold; float: right; }
+        .shortcut-tip { font-size: 12px; color: #666; margin-bottom: 10px; display: block; }
         
         .hidden { display: none !important; }
+
+        /* --- PRE-START PRIVACY SETTINGS --- */
+        .toggle-status-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 4px;
+        }
+        .status-option {
+            flex: 1;
+            cursor: pointer;
+        }
+        .status-option input { display: none; }
+        .custom-radio {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #64748b;
+            background: #fff;
+            transition: all 0.2s ease;
+        }
+        .custom-radio svg { width: 16px; height: 16px; fill: currentColor; }
+        
+        .status-option input:checked + .custom-radio.open-status {
+            border-color: var(--success-color);
+            background-color: #f0fdf4;
+            color: var(--success-color);
+        }
+        .status-option input:checked + .custom-radio.locked-status {
+            border-color: var(--danger-color);
+            background-color: #fef2f2;
+            color: var(--danger-color);
+        }
         
         .crypto-preview-box {
-            background-color: #222;
-            color: #00ff00;
-            font-family: 'Courier New', Courier, monospace;
-            padding: 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            max-height: 120px;
-            overflow-y: auto;
-            word-break: break-all;
-            margin-top: 10px;
-            border: 1px solid #444;
+            background-color: #222; color: #00ff00; font-family: monospace; padding: 12px; border-radius: 6px; font-size: 11px; max-height: 120px; overflow-y: auto; word-break: break-all; margin-top: 10px;
         }
 
+        /* --- CHAT TIMING & CONFIG --- */
         .chat-toggle-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 14px 22px;
-            border-radius: 30px;
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            cursor: pointer;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 15px;
+            position: fixed; bottom: 15px; right: 15px; background-color: var(--primary-color); color: white; border: none; padding: 12px 18px; border-radius: 30px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.2); cursor: pointer; z-index: 1000; font-size: 14px;
         }
-        .chat-toggle-btn:hover { background-color: #001f4d; }
-
         .chat-window {
-            position: fixed;
-            bottom: 80px;
-            right: 20px;
-            width: 350px;
-            height: 450px;
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            z-index: 1000;
-            border: 1px solid #e0e0e0;
+            position: fixed; bottom: 70px; right: 15px; width: calc(100% - 30px); max-width: 360px; height: 400px; background: white; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; z-index: 1000; border: 1px solid #e0e0e0;
         }
+        .chat-header { background: var(--primary-color); color: white; padding: 12px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        .chat-header input { background: rgba(255,255,255,0.2); border: none; color: white; padding: 4px 8px; border-radius: 6px; font-size: 12px; width: 100px; text-align: center; }
+        .chat-messages { flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background-color: #f8f9fa; }
+        .chat-msg-bubble { background: #e9ecef; padding: 8px 12px; border-radius: 12px; max-width: 85%; font-size: 13px; align-self: flex-start; }
+        .chat-msg-bubble.me { background: var(--primary-color); color: white; align-self: flex-end; }
+        .chat-footer { padding: 8px; display: flex; gap: 6px; background: #fff; border-top: 1px solid #eee; }
+        .chat-footer input { flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 20px; font-size: 13px; }
 
-        .chat-header {
-            background: var(--primary-color);
-            color: white;
-            padding: 12px 15px;
-            font-weight: bold;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .chat-header input {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            width: 110px;
-            text-align: center;
-        }
-        .chat-header input::placeholder { color: rgba(255,255,255,0.6); }
-
-        .chat-messages {
-            flex: 1;
-            padding: 15px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            background-color: #f8f9fa;
-        }
-
-        .chat-msg-bubble {
-            background: #e9ecef;
-            padding: 8px 12px;
-            border-radius: 12px;
-            max-width: 85%;
-            font-size: 14px;
-            line-height: 1.4;
-            align-self: flex-start;
-            position: relative;
-        }
-        .chat-msg-bubble.me {
-            background: #002f6c;
-            color: white;
-            align-self: flex-end;
-        }
-        .chat-msg-user {
-            font-size: 11px;
-            font-weight: bold;
-            margin-bottom: 2px;
-            display: block;
-            opacity: 0.7;
-        }
-
-        .call-status-banner {
-            background-color: #e3f2fd;
-            border: 1px solid #90caf9;
-            padding: 12px 18px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 16px;
-            color: #0d47a1;
-            margin-bottom: 15px;
-        }
-
-        .pulse-indicator {
-            width: 12px;
-            height: 12px;
-            background-color: #28a745;
-            border-radius: 50%;
-            display: inline-block;
-            box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
-            animation: pulse-green 2s infinite;
-        }
-
+        .call-status-banner { background-color: #e3f2fd; border: 1px solid #90caf9; padding: 10px; border-radius: 10px; display: flex; align-items: center; gap: 10px; font-size: 14px; color: #0d47a1; margin-bottom: 12px; }
+        .pulse-indicator { width: 10px; height: 10px; background-color: var(--success-color); border-radius: 50%; display: inline-block; animation: pulse-green 2s infinite; }
         @keyframes pulse-green {
             0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
             70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(40, 167, 69, 0); }
             100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
         }
+        
+        .participant-box { background: #f8f9fa; border: 1px solid #e9ecef; padding: 12px; border-radius: 10px; font-size: 13px; }
+        #participant-list { margin: 5px 0 0 0; padding-left: 15px; }
 
-        .participant-box {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
-            padding: 15px;
-            border-radius: 12px;
-        }
-
-        #participant-list {
-            margin: 8px 0 0 0;
-            padding-left: 20px;
-            font-size: 14px;
-            color: #495057;
-        }
-
-        #participant-list li {
-            margin-bottom: 5px;
-            font-weight: 500;
-        }
-
-        .public-rooms-section {
-            margin-top: 20px;
-            border-top: 1px solid #eee;
-            padding-top: 15px;
-        }
-        .room-badge {
-            font-size: 11px;
-            padding: 3px 8px;
-            border-radius: 10px;
-            font-weight: bold;
-            color: white;
-            display: inline-block;
-            margin-right: 5px;
-        }
-        .badge-open { background-color: #28a745; }
-        .badge-locked { background-color: #dc3545; }
-        .badge-joined { background-color: #002f6c; }
-        .badge-notjoined { background-color: #6c757d; }
-        .level-badge-tag { background-color: #ff9800; color: white; font-size: 11px; padding: 3px 8px; border-radius: 10px; font-weight: bold;}
+        .public-rooms-section { margin-top: 15px; border-top: 1px solid #eee; padding-top: 12px; }
     </style>
 </head>
 <body>
@@ -382,44 +358,35 @@
     </header>
 
     <div class="card admin-card hidden" id="admin-card">
-        <h2>🛠️ Admin Panel (Kurs-Kollektion verwalten)</h2>
+        <h2>🛠️ Admin Panel</h2>
         <div style="display: flex; gap: 10px;" class="form-group">
             <div style="flex: 1;">
                 <label for="admin-level-select">Sprachniveau:</label>
                 <select id="admin-level-select">
-                    <option value="A1">A1</option>
-                    <option value="A2">A2</option>
-                    <option value="B1">B1</option>
-                    <option value="B2">B2</option>
-                    <option value="C1">C1</option>
-                    <option value="C2">C2</option>
+                    <option value="A1">A1</option><option value="A2">A2</option>
+                    <option value="B1">B1</option><option value="B2">B2</option>
+                    <option value="C1">C1</option><option value="C2">C2</option>
                 </select>
             </div>
             <div style="flex: 2;">
-                <label for="admin-group-title">Gruppen / Lektions-Titel:</label>
-                <input type="text" id="admin-group-title" placeholder="z.B. Lektion 1: Das Frühstück">
+                <label for="admin-group-title">Lektions-Titel:</label>
+                <input type="text" id="admin-group-title" placeholder="Lektion 1...">
             </div>
         </div>
-
         <div class="form-group">
-            <label for="admin-links-list">Audio-Links (Ein Link pro Zeile):</label>
-            <textarea id="admin-links-list" placeholder="https://archive.org/download/.../audio1.mp3"></textarea>
+            <label for="admin-links-list">Audio-Links (Einer pro Zeile):</label>
+            <textarea id="admin-links-list"></textarea>
         </div>
-        
         <div class="form-group">
-            <label for="admin-scripts-list">Skript / Lösungen (Ein Satz pro Zeile):</label>
-            <textarea id="admin-scripts-list" placeholder="Guten Morgen! Möchtest du Kaffee?"></textarea>
+            <label for="admin-scripts-list">Skript / Lösungen (Einer pro Zeile):</label>
+            <textarea id="admin-scripts-list"></textarea>
         </div>
-        
-        <button class="btn btn-success" onclick="processBulkGroupAdmin()">➕ Gruppe hinzufügen / aktualisieren</button>
-        <h3 style="margin-top: 20px; font-size: 16px;">Aktuelle Sammlungen:</h3>
-        <div id="admin-track-list"></div>
-
-        <div style="margin-top: 20px; background: #eee; padding: 15px; border-radius: 8px;">
-            <button class="btn btn-main" onclick="exportAdminConfig()">Verschlüsselten Code generieren</button>
+        <button class="btn btn-success" onclick="processBulkGroupAdmin()">➕ Speichern</button>
+        <div id="admin-track-list" style="margin-top:15px;"></div>
+        <div style="margin-top: 15px;">
+            <button class="btn btn-main" onclick="exportAdminConfig()">Code exportieren</button>
             <div id="crypto-output-container" class="hidden">
                 <div class="crypto-preview-box" id="crypto-preview"></div>
-                <button class="btn btn-secondary" style="margin-top: 5px; padding: 6px 12px; font-size: 12px;" onclick="copyCryptoToClipboard()">In Zwischenablage kopieren</button>
             </div>
         </div>
     </div>
@@ -431,34 +398,50 @@
 
     <div class="card" id="voice-lobby-card">
         <h2>🗣️ Live Audio-Sprechzimmer</h2>
-        <p style="font-size: 14px; margin-top: -10px; color: #666;">Erstelle einen Raum oder tritt einem bei, um gemeinsam zu sprechen.</p>
-
+        
         <div id="voice-lobby-state">
-            <div style="display: flex; gap: 15px; flex-wrap: wrap;" class="form-group">
-                <div style="flex: 2; min-width: 200px;">
-                    <label for="voice-room-input">Raum-Code eingeben:</label>
-                    <input type="text" id="voice-room-input" placeholder="z.B. B1-Praxis">
-                </div>
-                <div style="flex: 1; min-width: 120px;">
+            <div class="form-group">
+                <label for="voice-room-input">Raum-Code Name:</label>
+                <input type="text" id="voice-room-input" placeholder="z.B. B1-Praxis">
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <div style="flex: 1;">
                     <label for="voice-level-select">Sprachniveau:</label>
                     <select id="voice-level-select">
-                        <option value="A1">A1</option>
-                        <option value="A2">A2</option>
-                        <option value="B1">B1</option>
-                        <option value="B2">B2</option>
-                        <option value="C1">C1</option>
-                        <option value="C2">C2</option>
+                        <option value="A1">A1</option><option value="A2">A2</option>
+                        <option value="B1">B1</option><option value="B2">B2</option>
+                        <option value="C1">C1</option><option value="C2">C2</option>
                     </select>
                 </div>
+                
+                <div style="flex: 1.5;">
+                    <label>Raum-Sichtbarkeit:</label>
+                    <div class="toggle-status-group">
+                        <label class="status-option">
+                            <input type="radio" name="pre_room_privacy" value="open" checked>
+                            <span class="custom-radio open-status">
+                                <svg class="anim-icon" viewBox="0 0 24 24"><path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6-5c1.66 0 3 1.34 3 3v2H9V6c0-1.66 1.34-3 3-3zm6 17H6V10h12v10z"/></svg>
+                                Offen
+                            </span>
+                        </label>
+                        <label class="status-option">
+                            <input type="radio" name="pre_room_privacy" value="locked">
+                            <span class="custom-radio locked-status">
+                                <svg class="anim-icon" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                                Gesperrt
+                            </span>
+                        </label>
+                    </div>
+                </div>
             </div>
-            <div class="btn-group">
-                <button class="btn btn-main" onclick="initiateCreateRoomWorkflow()">➕ Raum erstellen</button>
-            </div>
+
+            <button class="btn btn-main" style="width:100%;" onclick="initiateCreateRoomWorkflow()">➕ Raum erstellen & starten</button>
 
             <div class="public-rooms-section">
                 <label>Aktive Räume auf der Website:</label>
-                <div class="group-list" id="public-voice-rooms-container" style="margin-top: 10px;">
-                    <p style="color:#888; font-style:italic; font-size:14px;">Keine aktiven Räume vorhanden.</p>
+                <div class="group-list" id="public-voice-rooms-container" style="margin-top: 8px;">
+                    <p style="color:#888; font-style:italic; font-size:13px;">Keine aktiven Räume vorhanden.</p>
                 </div>
             </div>
         </div>
@@ -466,35 +449,23 @@
         <div id="voice-call-state" class="hidden">
             <div class="call-status-banner">
                 <span class="pulse-indicator"></span>
-                <span>Verbunden mit Raum: <strong id="active-room-label">---</strong></span>
+                <span>Raum: <strong id="active-room-label">---</strong></span>
             </div>
-            
-            <div id="host-privacy-controls" class="form-group hidden" style="background:#f1f3f5; padding:12px; border-radius:10px; margin-bottom:15px;">
-                <label for="room-status-select" style="font-size:14px;">Steuerung Privatsphäre:</label>
-                <select id="room-status-select" onchange="changeRoomPrivacySettings(this.value)" style="padding: 6px; font-size: 14px; width: auto; display: inline-block;">
-                    <option value="open">🔓 Offen (Jeder darf beitreten)</option>
-                    <option value="locked">🔒 Gesperrt (Zutritt blockiert)</option>
-                </select>
-            </div>
-
             <div class="participant-box">
-                <label>Teilnehmer im Raum:</label>
-                <ul id="participant-list">
-                    <li>Du (Warten auf Partner...)</li>
-                </ul>
+                <label>Teilnehmer:</label>
+                <ul id="participant-list"><li>Du (Warten...)</li></ul>
             </div>
-
-            <div class="btn-group" style="margin-top: 20px;">
-                <button id="mic-toggle-btn" class="btn btn-warning" onclick="toggleMicrophoneMute()">🎙️ Mikrofon stummschalten</button>
-                <button class="btn btn-danger" onclick="leaveAudioCallRoom()">❌ Raum verlassen</button>
+            <div class="btn-group" style="margin-top: 15px;">
+                <button id="mic-toggle-btn" class="btn btn-warning" onclick="toggleMicrophoneMute()">🎙️ Mikrofon aktiv</button>
+                <button class="btn btn-danger" onclick="leaveAudioCallRoom()">❌ Verlassen</button>
             </div>
         </div>
     </div>
 
     <div class="card hidden" id="exercises-list-card">
-        <h2>Verfügbare Übungen (<span id="current-selected-level-badge">A1</span>)</h2>
+        <h2>Übungen (<span id="current-selected-level-badge">A1</span>)</h2>
         <div class="group-list" id="visitor-group-list"></div>
-        <button class="btn btn-secondary" style="width: 100%;" onclick="goBackToLevelSelection()">&larr; Zurück zur Startseite</button>
+        <button class="btn btn-secondary" style="width: 100%;" onclick="goBackToLevelSelection()">&larr; Zurück</button>
     </div>
 
     <div id="exercise-card" class="card hidden">
@@ -516,52 +487,50 @@
             <div class="player-controls">
                 <button class="control-btn speed-btn" id="speed-toggle" onclick="toggleSpeed()">1x</button>
                 <button class="control-btn" onclick="rewindAudio(5)">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><polyline points="3 3 3 8 8 8"/></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><polyline points="3 3 3 8 8 8"/></svg>
                 </button>
                 <button class="control-btn play-btn" onclick="togglePlay()">
                     <svg id="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                 </button>
                 <button class="control-btn" onclick="forwardAudio(5)">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><polyline points="21 3 21 8 16 8"/></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><polyline points="21 3 21 8 16 8"/></svg>
                 </button>
             </div>
         </div>
 
-        <span class="shortcut-tip">💡 <strong>Tipp:</strong> Drücke <strong>Strg (Ctrl)</strong>, um 5 Sekunden zurückzuspringen.</span>
-
+        <span class="shortcut-tip">💡 <strong>Tipp:</strong> Drücke <strong>Strg</strong>, um 5s zurückzuspringen.</span>
         <div class="form-group">
             <label for="user-input">Ihre Transkription:</label>
-            <textarea id="user-input" placeholder="Schreibe hier, was du hörst..."></textarea>
+            <textarea id="user-input" placeholder="Schreibe hier..."></textarea>
         </div>
 
         <div class="btn-group">
             <button class="btn btn-main" onclick="verifySentence()">Überprüfen</button>
             <button class="btn btn-warning" onclick="showFirstFailedWordHint()">Tipp</button>
-            <button id="next-sentence-btn" class="btn btn-secondary" onclick="goToNextSentence()">Nächster Satz &rarr;</button>
+            <button id="next-sentence-btn" class="btn btn-secondary" onclick="goToNextSentence()">Nächster &rarr;</button>
         </div>
         <div id="result" class="result-box"></div>
     </div>
 
     <div id="summary-card" class="card hidden">
-        <div style="text-align:center; color:#28a745; font-size:26px; margin-bottom:20px;">🎉 Übung beendet!</div>
-        <div style="text-align:center; font-size:18px; margin-bottom:25px; color:#555;" id="summary-text">Gute Arbeit!</div>
+        <div style="text-align:center; color:#28a745; font-size:22px; margin-bottom:15px;">🎉 Beendet!</div>
         <div class="btn-group">
             <button class="btn btn-success" onclick="restartSameExercise()">Wiederholen</button>
-            <button class="btn btn-main" onclick="backToLevelSelectionFromSummary()">Zur Level-Auswahl</button>
+            <button class="btn btn-main" onclick="backToLevelSelectionFromSummary()">Menü</button>
         </div>
     </div>
 </div>
 
-<button class="chat-toggle-btn" onclick="toggleChatWindow()">💬 Chat-Raum</button>
+<button class="chat-toggle-btn" onclick="toggleChatWindow()">💬 Chat</button>
 <div class="chat-window hidden" id="chat-window">
     <div class="chat-header">
         <span>💬 Lern-Chat</span>
-        <input type="text" id="chat-username" placeholder="Name..." onchange="updateUsernameValue()">
+        <input type="text" id="chat-username" onchange="updateUsernameValue()">
     </div>
     <div class="chat-messages" id="chat-messages-container"></div>
     <div class="chat-footer">
-        <input type="text" id="chat-input" placeholder="Nachricht schreiben..." onkeydown="if(event.key==='Enter') sendChatMessage()">
-        <button class="btn btn-main" style="min-width:auto; padding:0 15px; border-radius:20px;" onclick="sendChatMessage()">Send</button>
+        <input type="text" id="chat-input" placeholder="Nachricht..." onkeydown="if(event.key==='Enter') sendChatMessage()">
+        <button class="btn btn-main" style="min-width:auto; padding:0 12px; border-radius:20px;" onclick="sendChatMessage()">Send</button>
     </div>
 </div>
 
@@ -569,7 +538,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, push, onChildAdded, onChildRemoved, onValue, query, limitToLast, set, get, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, push, onChildAdded, onValue, limitToLast, set, get, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBVDwizQN7wFEQw7hUGoo-1YA-c5_tytxQ",
@@ -596,12 +565,6 @@
     window.getFirebaseData = function(reference) { return get(reference); };
     window.removeFirebaseData = function(reference) { return remove(reference); };
 
-    window.deleteChatMessage = function(messageId) {
-        if(confirm("Möchten Sie diese Nachricht wirklich löschen?")) {
-            if(db) remove(ref(db, 'messages/' + messageId));
-        }
-    }
-
     if(!localStorage.getItem('chat-nickname')) {
         localStorage.setItem('chat-nickname', 'User_' + Math.floor(Math.random() * 900 + 100));
     }
@@ -626,9 +589,8 @@
         const input = document.getElementById('chat-input');
         const text = input.value.trim();
         if(!text) return;
-        const sender = localStorage.getItem('chat-nickname') || "Anonym";
         if(db) {
-            push(ref(db, 'messages'), { user: sender, message: text, timestamp: Date.now() });
+            push(ref(db, 'messages'), { user: localStorage.getItem('chat-nickname') || "Anonym", message: text, timestamp: Date.now() });
         }
         input.value = "";
     }
@@ -638,13 +600,7 @@
         onChildAdded(messagesRef, (snapshot) => {
             const data = snapshot.val();
             const id = snapshot.key;
-            const currentMe = localStorage.getItem('chat-nickname');
-            renderMessageBubble(id, data.user, data.message, data.user === currentMe);
-        });
-        onChildRemoved(ref(db, 'messages'), (snapshot) => {
-            const id = snapshot.key;
-            const element = document.getElementById('msg-' + id);
-            if(element) element.remove();
+            renderMessageBubble(id, data.user, data.message, data.user === localStorage.getItem('chat-nickname'));
         });
     }
 
@@ -654,47 +610,42 @@
         const bubble = document.createElement('div');
         bubble.className = `chat-msg-bubble ${isMe ? 'me' : ''}`;
         bubble.id = 'msg-' + id;
-        bubble.innerHTML = `<span class="chat-msg-user">${user}</span><div>${escapeHTML(text)}</div>`;
+        bubble.innerHTML = `<strong style="font-size:11px; display:block; opacity:0.8;">${user}</strong><div>${text.replace(/</g, "&lt;")}</div>`;
         container.appendChild(bubble);
         container.scrollTop = container.scrollHeight;
     }
 
-    function escapeHTML(str) {
-        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    }
-
     function setupGlobalVoiceRoomsListener() {
-        const roomsRef = ref(db, 'voice_rooms');
-        onValue(roomsRef, (snapshot) => {
+        onValue(ref(db, 'voice_rooms'), (snapshot) => {
             const container = document.getElementById('public-voice-rooms-container');
             container.innerHTML = "";
             if(!snapshot.exists()) {
-                container.innerHTML = `<p style="color:#888; font-style:italic; font-size:14px;">Keine aktiven Räume vorhanden.</p>`;
+                container.innerHTML = `<p style="color:#888; font-style:italic; font-size:13px;">Keine aktiven Räume vorhanden.</p>`;
                 return;
             }
             snapshot.forEach((childSnapshot) => {
                 const roomName = childSnapshot.key;
                 const roomData = childSnapshot.val();
                 const status = roomData.status || "open";
-                const level = roomData.level || "A1";
+                const lvl = roomData.level || "A1";
                 const isJoined = roomData.participantJoined || false;
                 
                 const item = document.createElement('div');
                 item.className = "group-item";
                 item.innerHTML = `
                     <div class="group-info">
-                        <h4>🗣️ Room: ${escapeHTML(roomName)} <span class="level-badge-tag">${level}</span></h4>
-                        <div style="margin-top: 5px;">
-                            <span class="room-badge ${status === 'open' ? 'badge-open' : 'badge-locked'}">
-                                ${status === 'open' ? '🔓 Offen' : '🔒 Gesperrt'}
+                        <h4>🗣️ Room: ${roomName}</h4>
+                        <div class="badge-container">
+                            <span class="status-badge ${status}">
+                                ${status === 'open' ? `
+                                <svg class="anim-icon" viewBox="0 0 24 24" style="width:12px;height:12px;margin-right:2px;fill:currentColor;"><path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6-5c1.66 0 3 1.34 3 3v2H9V6c0-1.66 1.34-3 3-3zm6 17H6V10h12v10z"/></svg> Offen` : `
+                                <svg class="anim-icon" viewBox="0 0 24 24" style="width:12px;height:12px;margin-right:2px;fill:currentColor;"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg> Gesperrt`}
                             </span>
-                            <span class="room-badge ${isJoined ? 'badge-joined' : 'badge-notjoined'}">
-                                ${isJoined ? '👥 Beigetreten' : '👤 Noch niemand beigetreten (not joined yet)'}
-                            </span>
+                            <span class="level-badge-tag">${lvl}</span>
+                            <span style="font-size:11px; color:#777;">${isJoined ? '👥 Besetzt' : '👤 Frei'}</span>
                         </div>
                     </div>
-                    <button class="btn btn-success" style="min-width:unset; flex:none; padding:6px 15px;" 
-                        onclick="initiateDirectJoinFromList('${escapeHTML(roomName)}')">Beitreten</button>
+                    <button class="btn btn-success" style="min-width:unset; padding:6px 14px;" onclick="initiateDirectJoinFromList('${roomName}')">Beitreten</button>
                 `;
                 container.appendChild(item);
             });
@@ -703,7 +654,6 @@
 </script>
 
 <script>
-    // Strukturierte, verschleierte Datenmatrix (Schutz vor F12-Auslesung)
     const _0x4d2a = ["Ein Anruf von der Arbeit", "Hallo, hier ist Frau Meier.", "Ich rufe wegen morgen an.", "Das Meeting beginnt um neun Uhr, nicht um zehn.", "Bitte kommen Sie pünktlich.", "Wir treffen uns im Konferenzraum im zweiten Stock.", "Bitte bringen Sie Ihren Bericht mit.", "Wenn Sie Fragen haben, schreiben Sie mir eine E-Mail.", "Danke und bis morgen.", "Eine Nachricht von der Vermieterin", "Guten Tag, hier ist Frau Hoffmann, Ihre Vermieterin.", "Ich melde mich wegen der Wohnung im dritten Stock.", "Der Handwerker kommt nächste Woche Dienstag, um die Heizung zu reparieren.", "Das macht ungefähr eine Stunde Arbeit.", "Sie müssen dafür nicht zu Hause sein.", "Ich habe einen Schlüssel.", "Vielen Dank und schönen Nachmittag."];
     
     let globalDatabase = [
@@ -738,87 +688,66 @@
     let selectedLevel = "A1";
     let editingGroupIndex = null;
 
-    window.onload = function() {
-        renderHomeLevelButtons();
-        renderAdminTrackList();
-    };
+    window.onload = function() { renderHomeLevelButtons(); renderAdminTrackList(); };
 
-    // Sicherheitsrelevante Hotkey-Verschlüsselungsschleife
     window.addEventListener('keydown', function(event) {
         if (event.ctrlKey && event.shiftKey && event.altKey) {
             event.preventDefault();
-            
             const adminCard = document.getElementById('admin-card');
-            if (!adminCard.classList.contains('hidden')) {
-                adminCard.classList.add('hidden');
-                return;
-            }
-            
-            const securityCheck = prompt("🔒 Autorisierung erforderlich. Bitte Admin-Code eingeben:");
-            if (securityCheck === "yoou.mg@gmail.com") {
-                adminCard.classList.remove('hidden');
-            } else if (securityCheck !== null) {
-                alert("❌ Zugriff verweigert! Falscher Code.");
-            }
+            if (!adminCard.classList.contains('hidden')) { adminCard.classList.add('hidden'); return; }
+            const code = prompt("🔒 Admin-Code eingeben:");
+            if (code === "yoou.mg@gmail.com") adminCard.classList.remove('hidden');
         }
         if (event.key === 'Control' && !event.shiftKey && !event.altKey) {
-            if (!document.getElementById('exercise-card').classList.contains('hidden') && document.getElementById('audio-player').src) {
-                event.preventDefault();
-                rewindAudio(5);
+            if (!document.getElementById('exercise-card').classList.contains('hidden')) {
+                event.preventDefault(); rewindAudio(5);
             }
         }
     }, true);
 
-    /* --- AUDIO CALL SYSTEM MODULE --- */
-    let localAudioStream = null;  
-    let peerInstance = null;      
-    let currentCall = null;       
-    let amIHostOfRoom = false;    
+    /* --- AUDIO CALL PEER SYSTEM --- */
+    let localAudioStream = null; let peerInstance = null; let currentCall = null; let amIHostOfRoom = false;
 
     async function requestMicrophoneAccess() {
-        try {
-            localAudioStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-            return true;
-        } catch (error) {
-            alert("Fehler: Zugriff auf Mikrofon verweigert!");
-            return false;
-        }
+        try { localAudioStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false }); return true; }
+        catch (e) { alert("Mikrofon-Zugriff verweigert!"); return false; }
     }
 
-    function initializePeerNetworkConnection(callback) {
+    function initializePeerNetworkConnection(cb) {
         peerInstance = new Peer();
-        peerInstance.on('open', (uniqueId) => { if (callback) callback(uniqueId); });
-        peerInstance.on('error', (err) => { leaveAudioCallRoom(); });
+        peerInstance.on('open', (id) => { if (cb) cb(id); });
+        peerInstance.on('error', () => { leaveAudioCallRoom(); });
     }
 
     async function initiateCreateRoomWorkflow() {
         const roomName = document.getElementById('voice-room-input').value.trim();
         const roomLevel = document.getElementById('voice-level-select').value;
-        if (!roomName) return alert("Bitte gib einen Raumnamen ein!");
-
-        const hasMicAccess = await requestMicrophoneAccess();
-        if (!hasMicAccess) return;
+        const privacySetting = document.querySelector('input[name="pre_room_privacy"]:checked').value;
+        
+        if (!roomName) return alert("Raumnamen eingeben!");
+        if (!(await requestMicrophoneAccess())) return;
 
         amIHostOfRoom = true;
-        initiateUIBlockToCallState(roomName);
-        document.getElementById('host-privacy-controls').classList.remove('hidden');
-        document.getElementById('room-status-select').value = "open";
+        document.getElementById('active-room-label').textContent = roomName;
+        document.getElementById('voice-lobby-state').classList.add('hidden');
+        document.getElementById('voice-call-state').classList.remove('hidden');
         
-        initializePeerNetworkConnection((myUniqueId) => {
-            document.getElementById('participant-list').innerHTML = `<li>Du (Host - Warten auf Partner...)</li>`;
-            
-            const dbInstance = window.getFirebaseDb();
-            if (dbInstance) {
-                const firebaseRef = window.getFirebaseRef(dbInstance, 'voice_rooms/' + roomName);
-                window.setFirebaseData(firebaseRef, {
-                    hostPeerId: myUniqueId,
+        initializePeerNetworkConnection((myId) => {
+            const db = window.getFirebaseDb();
+            if(db) {
+                window.setFirebaseData(window.getFirebaseRef(db, 'voice_rooms/' + roomName), {
+                    hostPeerId: myId,
                     createdAt: Date.now(),
-                    status: "open",
+                    status: privacySetting,
                     level: roomLevel,
                     participantJoined: false
                 });
             }
-            setupIncomingCallListener();
+            peerInstance.on('call', (call) => {
+                currentCall = call; call.answer(localAudioStream);
+                call.on('stream', (stream) => { document.getElementById('remote-audio-player').srcObject = stream; });
+                document.getElementById('participant-list').innerHTML = `<li>Du (Host)</li><li>Partner (Verbunden)</li>`;
+            });
         });
     }
 
@@ -829,180 +758,95 @@
 
     async function initiateJoinRoomWorkflow() {
         const roomName = document.getElementById('voice-room-input').value.trim();
-        if (!roomName) return alert("Bitte gib einen Raumnamen ein!");
+        if (!roomName) return alert("Raumname fehlt!");
+        if (!(await requestMicrophoneAccess())) return;
 
-        const hasMicAccess = await requestMicrophoneAccess();
-        if (!hasMicAccess) return;
+        const db = window.getFirebaseDb();
+        if(!db) return;
 
-        const dbInstance = window.getFirebaseDb();
-        if (!dbInstance) return;
+        window.getFirebaseData(window.getFirebaseRef(db, 'voice_rooms/' + roomName)).then((snap) => {
+            if (snap.exists()) {
+                const data = snap.val();
+                if(data.status === 'locked') { alert("🔒 Dieser Raum ist privat/gesperrt!"); return; }
+                
+                document.getElementById('active-room-label').textContent = roomName;
+                document.getElementById('voice-lobby-state').classList.add('hidden');
+                document.getElementById('voice-call-state').classList.remove('hidden');
 
-        const roomRef = window.getFirebaseRef(dbInstance, 'voice_rooms/' + roomName);
-        
-        window.getFirebaseData(roomRef).then((snapshot) => {
-            if (snapshot.exists()) {
-                const roomData = snapshot.val();
-                if(roomData.status === "locked") {
-                    alert("⚠️ Zutritt verweigert: Dieser Raum ist gesperrt!");
-                    return;
-                }
+                window.setFirebaseData(window.getFirebaseRef(db, 'voice_rooms/' + roomName + '/participantJoined'), true);
 
-                amIHostOfRoom = false;
-                initiateUIBlockToCallState(roomName);
-                document.getElementById('host-privacy-controls').classList.add('hidden');
-
-                window.setFirebaseData(window.getFirebaseRef(dbInstance, 'voice_rooms/' + roomName + '/participantJoined'), true);
-
-                initializePeerNetworkConnection((myUniqueId) => {
-                    document.getElementById('participant-list').innerHTML = `<li>Du (Verbinde...)</li>`;
-                    currentCall = peerInstance.call(roomData.hostPeerId, localAudioStream);
-                    
-                    currentCall.on('stream', (remoteStream) => {
-                        const audioPlayer = document.getElementById('remote-audio-player');
-                        if (audioPlayer) audioPlayer.srcObject = remoteStream;
-                    });
-
-                    currentCall.on('close', () => {
-                        handleParticipantDisconnection();
-                    });
-
+                initializePeerNetworkConnection(() => {
+                    currentCall = peerInstance.call(data.hostPeerId, localAudioStream);
+                    currentCall.on('stream', (stream) => { document.getElementById('remote-audio-player').srcObject = stream; });
                     document.getElementById('participant-list').innerHTML = `<li>Host (Aktiv)</li><li>Du (Verbunden)</li>`;
                 });
-            } else {
-                alert("Raum nicht gefunden!");
             }
         });
-    }
-
-    function handleParticipantDisconnection() {
-        if (amIHostOfRoom) {
-            document.getElementById('participant-list').innerHTML = `<li>Du (Host - Warten auf Partner...)</li>`;
-            const dbInstance = window.getFirebaseDb();
-            const roomName = document.getElementById('active-room-label').textContent;
-            if (dbInstance && roomName) {
-                window.setFirebaseData(window.getFirebaseRef(dbInstance, 'voice_rooms/' + roomName + '/participantJoined'), false);
-            }
-        } else {
-            alert("Verbindung zum Host wurde getrennt.");
-            leaveAudioCallRoom();
-        }
-    }
-
-    window.changeRoomPrivacySettings = function(newStatus) {
-        if(!amIHostOfRoom) return;
-        const roomName = document.getElementById('active-room-label').textContent;
-        const dbInstance = window.getFirebaseDb();
-        if (dbInstance && roomName && roomName !== "---") {
-            window.setFirebaseData(window.getFirebaseRef(dbInstance, 'voice_rooms/' + roomName + '/status'), newStatus);
-        }
-    }
-
-    function initiateUIBlockToCallState(roomName) {
-        document.getElementById('active-room-label').textContent = roomName;
-        document.getElementById('voice-lobby-state').classList.add('hidden');
-        document.getElementById('voice-call-state').classList.remove('hidden');
     }
 
     function leaveAudioCallRoom() {
         const roomName = document.getElementById('active-room-label').textContent;
-        const dbInstance = window.getFirebaseDb();
-
-        if (dbInstance && roomName && roomName !== "---") {
-            if (amIHostOfRoom) {
-                window.removeFirebaseData(window.getFirebaseRef(dbInstance, 'voice_rooms/' + roomName));
-            } else {
-                window.setFirebaseData(window.getFirebaseRef(dbInstance, 'voice_rooms/' + roomName + '/participantJoined'), false);
-            }
+        const db = window.getFirebaseDb();
+        if (db && roomName !== "---") {
+            if (amIHostOfRoom) window.removeFirebaseData(window.getFirebaseRef(db, 'voice_rooms/' + roomName));
+            else window.setFirebaseData(window.getFirebaseRef(db, 'voice_rooms/' + roomName + '/participantJoined'), false);
         }
-
-        if (localAudioStream) { localAudioStream.getTracks().forEach(track => track.stop()); localAudioStream = null; }
-        if (currentCall) { currentCall.close(); currentCall = null; }
-        if (peerInstance) { peerInstance.destroy(); peerInstance = null; }
+        if (localAudioStream) { localAudioStream.getTracks().forEach(t => t.stop()); localAudioStream = null; }
+        if (currentCall) currentCall.close();
+        if (peerInstance) peerInstance.destroy();
 
         amIHostOfRoom = false;
         document.getElementById('voice-call-state').classList.add('hidden');
         document.getElementById('voice-lobby-state').classList.remove('hidden');
-        document.getElementById('participant-list').innerHTML = `<li>Du (Warten auf Partner...)</li>`;
-    }
-
-    function setupIncomingCallListener() {
-        peerInstance.on('call', (incomingCall) => {
-            currentCall = incomingCall;
-            currentCall.answer(localAudioStream);
-            
-            currentCall.on('stream', (remoteStream) => {
-                const audioPlayer = document.getElementById('remote-audio-player');
-                if (audioPlayer) audioPlayer.srcObject = remoteStream;
-            });
-
-            currentCall.on('close', () => {
-                handleParticipantDisconnection();
-            });
-
-            document.getElementById('participant-list').innerHTML = `<li>Du (Host)</li><li>Teilnehmer (Verbunden)</li>`;
-        });
+        document.getElementById('participant-list').innerHTML = `<li>Du (Warten...)</li>`;
     }
 
     function toggleMicrophoneMute() {
         if (!localAudioStream) return;
-        const audioTracks = localAudioStream.getAudioTracks();
-        if (audioTracks.length === 0) return;
-        const isMuted = !audioTracks[0].enabled;
-        audioTracks[0].enabled = isMuted;
-        const btn = document.getElementById('mic-toggle-btn');
-        if (isMuted) {
-            btn.classList.replace('btn-warning', 'btn-secondary');
-            btn.innerHTML = "🔇 Mikrofon stummschalten (Stumm)";
-        } else {
-            btn.classList.replace('btn-secondary', 'btn-warning');
-            btn.innerHTML = "🎙️ Mikrofon stummschalten";
-        }
+        const track = localAudioStream.getAudioTracks()[0];
+        track.enabled = !track.enabled;
+        document.getElementById('mic-toggle-btn').className = track.enabled ? "btn btn-warning" : "btn btn-secondary";
+        document.getElementById('mic-toggle-btn').innerHTML = track.enabled ? "🎙️ Mikrofon aktiv" : "🔇 Stummgeschaltet";
     }
 
-    /* --- GENERAL APPLICATION LOGIC --- */
+    /* --- CODES & INTERFACE ENGINE --- */
     function renderHomeLevelButtons() {
         const container = document.getElementById('home-level-container');
-        const levels = ["A1", "A2", "B1", "B2", "C1", "C2"];
         container.innerHTML = "";
-        levels.forEach(lvl => {
+        ["A1", "A2", "B1", "B2", "C1", "C2"].forEach(lvl => {
             const count = globalDatabase.filter(g => g.level === lvl).length;
-            const button = document.createElement('button');
-            button.className = "level-btn";
-            button.setAttribute("onclick", `enterLevelView('${lvl}')`);
-            button.innerHTML = `${lvl} <span class="count">(${count} Übung(en))</span>`;
-            container.appendChild(button);
+            const btn = document.createElement('button');
+            btn.className = "level-btn";
+            btn.setAttribute("onclick", `enterLevelView('${lvl}')`);
+            btn.innerHTML = `${lvl} <span class="count">(${count} Übung)</span>`;
+            container.appendChild(btn);
         });
     }
 
-    function enterLevelView(level) {
-        selectedLevel = level;
-        document.getElementById('current-selected-level-badge').textContent = level;
+    window.enterLevelView = function(lvl) {
+        selectedLevel = lvl;
+        document.getElementById('current-selected-level-badge').textContent = lvl;
         document.getElementById('level-selection-card').classList.add('hidden');
-        document.getElementById('voice-lobby-card').classList.add('hidden'); 
+        document.getElementById('voice-lobby-card').classList.add('hidden');
         document.getElementById('exercises-list-card').classList.remove('hidden');
-        renderVisitorExercisesList(level);
+        renderVisitorExercisesList(lvl);
     }
 
-    function goBackToLevelSelection() {
+    window.goBackToLevelSelection = function() {
         document.getElementById('exercises-list-card').classList.add('hidden');
         document.getElementById('level-selection-card').classList.remove('hidden');
         document.getElementById('voice-lobby-card').classList.remove('hidden');
         renderHomeLevelButtons();
     }
 
-    function renderVisitorExercisesList(level) {
+    function renderVisitorExercisesList(lvl) {
         const container = document.getElementById('visitor-group-list');
         container.innerHTML = "";
-        const filteredGroups = globalDatabase.filter(g => g.level === level);
-        if (filteredGroups.length === 0) {
-            container.innerHTML = `<p style="color:#666; font-style:italic; padding:10px 0;">Keine Übungen für das Niveau ${level}.</p>`;
-            return;
-        }
-        filteredGroups.forEach((group) => {
-            const trueGlobalIndex = globalDatabase.indexOf(group);
+        globalDatabase.filter(g => g.level === lvl).forEach(group => {
+            const idx = globalDatabase.indexOf(group);
             const div = document.createElement('div');
             div.className = "group-item";
-            div.innerHTML = `<div class="group-info"><h4>${group.groupTitle}</h4><span>📊 ${group.tracks.length} Sätze</span></div><button class="btn btn-main" style="min-width:unset; width:auto; padding:8px 20px;" onclick="startGroupExercise(${trueGlobalIndex})">Starten &rarr;</button>`;
+            div.innerHTML = `<div class="group-info"><h4>${group.groupTitle}</h4><span>📊 ${group.tracks.length} Sätze</span></div><button class="btn btn-main" style="min-width:unset;" onclick="startGroupExercise(${idx})">Start</button>`;
             container.appendChild(div);
         });
     }
@@ -1010,77 +854,50 @@
     function processBulkGroupAdmin() {
         const lvl = document.getElementById('admin-level-select').value;
         const title = document.getElementById('admin-group-title').value.trim();
-        const rawLinks = document.getElementById('admin-links-list').value.trim();
-        const rawScripts = document.getElementById('admin-scripts-list').value.trim();
+        const links = document.getElementById('admin-links-list').value.split('\n').map(l=>l.trim()).filter(l=>l);
+        const scripts = document.getElementById('admin-scripts-list').value.split('\n').map(s=>s.trim()).filter(s=>s);
+        if(!title || links.length !== scripts.length) return alert("Fehler im Formular!");
 
-        if (!title || !rawLinks || !rawScripts) return alert("Felder ausfüllen!");
-        const linksArray = rawLinks.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-        const scriptsArray = rawScripts.split('\n').map(s => s.trim()).filter(s => s.length > 0);
+        let g = { level: lvl, groupTitle: title, tracks: [] };
+        links.forEach((l, i) => g.tracks.push({ url: l, script: scripts[i] }));
+        if(editingGroupIndex !== null) { globalDatabase[editingGroupIndex] = g; editingGroupIndex = null; }
+        else globalDatabase.push(g);
 
-        if (linksArray.length !== scriptsArray.length) return alert("Anzahl-Fehler zwischen Links und Sätzen.");
-
-        let newGroup = { level: lvl, groupTitle: title, tracks: [] };
-        linksArray.forEach((link, idx) => { newGroup.tracks.push({ url: link, script: scriptsArray[idx] }); });
-
-        if (editingGroupIndex !== null) { globalDatabase[editingGroupIndex] = newGroup; editingGroupIndex = null; }
-        else { globalDatabase.push(newGroup); }
-
-        document.getElementById('admin-group-title').value = "";
-        document.getElementById('admin-links-list').value = "";
-        document.getElementById('admin-scripts-list').value = "";
         renderAdminTrackList(); renderHomeLevelButtons();
     }
 
     function renderAdminTrackList() {
-        const listContainer = document.getElementById('admin-track-list');
-        listContainer.innerHTML = "";
-        globalDatabase.forEach((group, index) => {
-            const div = document.createElement('div');
-            div.className = "track-item";
-            div.innerHTML = `<span><strong>[${group.level}]</strong> ${group.groupTitle}</span>
-                <div class="admin-btn-actions">
-                    <button class="btn btn-warning" style="padding:4px 10px; min-width:unset;" onclick="loadGroupForEditing(${index})">📝</button>
-                    <button class="btn btn-danger" style="padding:4px 10px; min-width:unset;" onclick="removeGroupAsAdmin(${index})">🗑️</button>
-                </div>`;
-            listContainer.appendChild(div);
+        const c = document.getElementById('admin-track-list'); c.innerHTML = "";
+        globalDatabase.forEach((g, i) => {
+            const div = document.createElement('div'); div.className = "track-item";
+            div.innerHTML = `<span>[${g.level}] ${g.groupTitle}</span><div><button onclick="loadGroupForEditing(${i})">📝</button><button onclick="removeGroupAsAdmin(${i})">🗑️</button></div>`;
+            c.appendChild(div);
         });
     }
 
-    window.loadGroupForEditing = function(index) {
-        editingGroupIndex = index; const group = globalDatabase[index];
-        document.getElementById('admin-level-select').value = group.level;
-        document.getElementById('admin-group-title').value = group.groupTitle;
-        document.getElementById('admin-links-list').value = group.tracks.map(t => t.url).join('\n');
-        document.getElementById('admin-scripts-list').value = group.tracks.map(t => t.script).join('\n');
+    window.loadGroupForEditing = function(i) {
+        editingGroupIndex = i; const g = globalDatabase[i];
+        document.getElementById('admin-level-select').value = g.level;
+        document.getElementById('admin-group-title').value = g.groupTitle;
+        document.getElementById('admin-links-list').value = g.tracks.map(t=>t.url).join('\n');
+        document.getElementById('admin-scripts-list').value = g.tracks.map(t=>t.script).join('\n');
     }
-
-    window.removeGroupAsAdmin = function(index) {
-        if(confirm("Löschen?")) { globalDatabase.splice(index, 1); renderAdminTrackList(); renderHomeLevelButtons(); }
-    }
-
+    window.removeGroupAsAdmin = function(i) { globalDatabase.splice(i,1); renderAdminTrackList(); renderHomeLevelButtons(); }
     window.exportAdminConfig = function() {
-        const scriptArray = globalDatabase.flatMap(g => g.tracks.map(t => t.script));
-        const outputString = `// Kopiere diese Struktur bei Bedarf in dein Code-Array:\nconst _0x4d2a = ${JSON.stringify(scriptArray, null, 2)};`;
-        document.getElementById('crypto-preview').textContent = outputString;
+        document.getElementById('crypto-preview').textContent = JSON.stringify(globalDatabase);
         document.getElementById('crypto-output-container').classList.remove('hidden');
     }
 
-    window.copyCryptoToClipboard = function() {
-        navigator.clipboard.writeText(document.getElementById('crypto-preview').textContent).then(() => alert("Kopiert!"));
-    }
-
-    /* --- AUDIO ENGINE PLAYER RUNTIME --- */
+    /* --- AUDIO CORE PLAYER --- */
     const nativePlayer = document.getElementById('audio-player');
     const playIcon = document.getElementById('play-icon');
     const progressFill = document.getElementById('progress-fill');
     const progressWrapper = document.getElementById('progress-wrapper');
     const timeCurrent = document.getElementById('time-current');
     const timeDuration = document.getElementById('time-duration');
-    const speedToggle = document.getElementById('speed-toggle');
 
-    window.startGroupExercise = function(groupIndex) {
-        activeTracks = globalDatabase[groupIndex].tracks; currentIndex = 0;
-        loadCurrentExerciseSlot();
+    window.startGroupExercise = function(i) {
+        activeTracks = globalDatabase[i].tracks; currentIndex = 0; loadCurrentExerciseSlot();
         document.getElementById('exercises-list-card').classList.add('hidden');
         document.getElementById('exercise-card').classList.remove('hidden');
     }
@@ -1089,65 +906,47 @@
         document.getElementById('user-input').value = "";
         document.getElementById('result').style.display = "none";
         playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
-        document.getElementById('progress-indicator').textContent = `Satz ${currentIndex + 1} / ${activeTracks.length}`;
+        document.getElementById('progress-indicator').textContent = `Satz ${currentIndex + 1}/${activeTracks.length}`;
         nativePlayer.src = activeTracks[currentIndex].url;
-        nativePlayer.crossOrigin = "anonymous";
     }
 
     nativePlayer.addEventListener('timeupdate', () => {
         if (!nativePlayer.duration) return;
         progressFill.style.width = ((nativePlayer.currentTime / nativePlayer.duration) * 100) + '%';
-        timeCurrent.textContent = formatTime(nativePlayer.currentTime);
-        timeDuration.textContent = '-' + formatTime(nativePlayer.duration - nativePlayer.currentTime);
+        timeCurrent.textContent = Math.floor(nativePlayer.currentTime/60) + ":" + String(Math.floor(nativePlayer.currentTime%60)).padStart(2,'0');
     });
 
     progressWrapper.addEventListener('click', (e) => {
         nativePlayer.currentTime = ((e.clientX - progressWrapper.getBoundingClientRect().left) / progressWrapper.getBoundingClientRect().width) * nativePlayer.duration;
     });
 
-    function formatTime(secs) {
-        let m = Math.floor(secs / 60); let s = Math.floor(secs % 60); return m + ':' + (s < 10 ? '0' : '') + s;
-    }
-
     window.togglePlay = function() {
         if (nativePlayer.paused) { nativePlayer.play(); playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'; }
         else { nativePlayer.pause(); playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>'; }
     }
-
-    window.rewindAudio = function(sec) { nativePlayer.currentTime = Math.max(0, nativePlayer.currentTime - sec); if (nativePlayer.paused) nativePlayer.play(); }
-    window.forwardAudio = function(sec) { nativePlayer.currentTime = Math.min(nativePlayer.duration, nativePlayer.currentTime + sec); }
+    window.rewindAudio = function(s) { nativePlayer.currentTime = Math.max(0, nativePlayer.currentTime - s); nativePlayer.play(); }
+    window.forwardAudio = function(s) { nativePlayer.currentTime = Math.min(nativePlayer.duration, nativePlayer.currentTime + s); }
     window.toggleSpeed = function() {
         nativePlayer.playbackRate = nativePlayer.playbackRate === 1.0 ? 0.75 : (nativePlayer.playbackRate === 0.75 ? 0.5 : 1.0);
-        speedToggle.textContent = nativePlayer.playbackRate + 'x';
+        document.getElementById('speed-toggle').textContent = nativePlayer.playbackRate + 'x';
     }
 
-    function cleanWord(word) { return word ? word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").toLowerCase() : ""; }
-
     window.verifySentence = function() {
-        const userInput = document.getElementById('user-input').value.trim();
-        const resultBox = document.getElementById('result'); if (!userInput) return;
-        const cleanString = (str) => str.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s+/g, ' ').trim();
-        const targetSentence = activeTracks[currentIndex].script;
-        resultBox.style.display = "block";
-
-        if (cleanString(userInput).toLowerCase() === cleanString(targetSentence).toLowerCase()) {
-            resultBox.className = "result-box correct"; resultBox.innerHTML = "🎉 Ausgezeichnet!";
-        } else {
-            resultBox.className = "result-box wrong"; resultBox.innerHTML = userInput;
-        }
+        const input = document.getElementById('user-input').value.trim().toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
+        const target = activeTracks[currentIndex].script.trim().toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
+        const res = document.getElementById('result'); res.style.display = "block";
+        if (input === target) { res.className = "result-box correct"; res.innerHTML = "🎉 Perfekt!"; }
+        else { res.className = "result-box wrong"; res.innerHTML = "Falsch geschrieben! Versuche es noch einmal."; }
     }
 
     window.showFirstFailedWordHint = function() {
-        const resultBox = document.getElementById('result');
-        resultBox.style.display = "block"; resultBox.className = "result-box hint-screenshot-box";
-        resultBox.innerHTML = activeTracks[currentIndex].script.substring(0, 5) + "...";
+        alert("Hinweis: " + activeTracks[currentIndex].script.substring(0, 8) + "...");
     }
 
     window.goToNextSentence = function() {
         if (currentIndex < activeTracks.length - 1) { currentIndex++; loadCurrentExerciseSlot(); }
         else { document.getElementById('exercise-card').classList.add('hidden'); document.getElementById('summary-card').classList.remove('hidden'); }
     }
-
     window.restartSameExercise = function() { currentIndex = 0; loadCurrentExerciseSlot(); document.getElementById('summary-card').classList.add('hidden'); document.getElementById('exercise-card').classList.remove('hidden'); }
     window.backToLevelSelectionFromSummary = function() { document.getElementById('summary-card').classList.add('hidden'); document.getElementById('level-selection-card').classList.remove('hidden'); document.getElementById('voice-lobby-card').classList.remove('hidden'); renderHomeLevelButtons(); }
 </script>
