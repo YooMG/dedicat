@@ -288,6 +288,11 @@
         <p class="subtitle">Satz-für-Satz Hörverständnis-Übung</p>
     </header>
 
+    <div style="text-align:right; margin-bottom: 8px;">
+        <button id="admin-login-btn" class="btn btn-secondary" style="min-width:auto; padding: 6px 14px; font-size:13px;" onclick="adminLogin()">🔒 Admin Login</button>
+        <button id="admin-logout-btn" class="btn btn-danger hidden" style="min-width:auto; padding: 6px 14px; font-size:13px;" onclick="adminLogout()">🚪 Logout</button>
+    </div>
+
     <div class="card admin-card hidden" id="admin-card">
         <h2>🛠️ Admin Panel</h2>
         <div style="display: flex; gap: 10px;" class="form-group">
@@ -473,6 +478,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, push, onChildAdded, onValue, limitToLast, set, get, remove, query } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     const d = (str) => atob(str);
 
@@ -487,13 +493,43 @@
       measurementId: d("Ry0zR1BUQlNRV1dX")
     };
 
-    let db = null;
-    if(firebaseConfig.apiKey) {
-        const app = initializeApp(firebaseConfig);
-        db = getDatabase(app);
-        setupChatListeningEngine();
-        setupGlobalVoiceRoomsListener();
-    }
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const auth = getAuth(app);
+
+    setupChatListeningEngine();
+    setupGlobalVoiceRoomsListener();
+
+    onAuthStateChanged(auth, (user) => {
+        const adminCard = document.getElementById('admin-card');
+        const adminBtn = document.getElementById('admin-login-btn');
+        const adminLogoutBtn = document.getElementById('admin-logout-btn');
+        if (user) {
+            adminCard.classList.remove('hidden');
+            if(adminBtn) adminBtn.classList.add('hidden');
+            if(adminLogoutBtn) adminLogoutBtn.classList.remove('hidden');
+        } else {
+            adminCard.classList.add('hidden');
+            if(adminBtn) adminBtn.classList.remove('hidden');
+            if(adminLogoutBtn) adminLogoutBtn.classList.add('hidden');
+        }
+    });
+
+    window.adminLogin = async function() {
+        const email = prompt("Admin Email:");
+        if(!email) return;
+        const pass = prompt("Passwort:");
+        if(!pass) return;
+        try {
+            await signInWithEmailAndPassword(auth, email, pass);
+        } catch(e) {
+            alert("Falscher Code oder keine Berechtigung!");
+        }
+    };
+
+    window.adminLogout = async function() {
+        await signOut(auth);
+    };
 
     window.getFirebaseDb = function() { return db; };
     window.getFirebaseRef = function(database, path) { return ref(database, path); };
@@ -628,15 +664,6 @@
     window.onload = function() { renderHomeLevelButtons(); renderAdminTrackList(); };
 
     window.addEventListener('keydown', function(event) {
-        if (event.ctrlKey && event.shiftKey && event.altKey) {
-            event.preventDefault();
-            const adminCard = document.getElementById('admin-card');
-            if (!adminCard.classList.contains('hidden')) { adminCard.classList.add('hidden'); return; }
-            
-            const code = prompt("🔒 Admin-Code eingeben:");
-            if (btoa(code) === btoa("Admin@DiktatPro#2026!")) { adminCard.classList.remove('hidden'); } 
-            else { alert("Falscher Code!"); }
-        }
         if (event.key === 'Control' && !event.shiftKey && !event.altKey) {
             if (!document.getElementById('exercise-card').classList.contains('hidden')) { event.preventDefault(); rewindAudio(5); }
         }
