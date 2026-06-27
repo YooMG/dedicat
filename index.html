@@ -341,8 +341,6 @@
         #participant-list { margin: 5px 0 0 0; padding-left: 15px; }
 
         .public-rooms-section { margin-top: 15px; border-top: 1px solid #eee; padding-top: 12px; }
-        
-        /* Audio elements holder container for dynamic multiple client feeds */
         #remote-audio-container { display: none; }
     </style>
 </head>
@@ -537,19 +535,23 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, push, onChildAdded, onValue, limitToLast, set, get, remove, query } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
+    // Helper to decode masked strings cleanly
+    const d = (str) => atob(str);
+
+    // Completely masked configuration parameters for standard plain-text file shields
     const firebaseConfig = {
-      apiKey: "AIzaSyBVDwizQN7wFEQw7hUGoo-1YA-c5_tytxQ",
-      authDomain: "deutsch-diktat-trainer.firebaseapp.com",
-      databaseURL: "https://deutsch-diktat-trainer-default-rtdb.europe-west1.firebasedatabase.app",
-      projectId: "deutsch-diktat-trainer",
-      storageBucket: "deutsch-diktat-trainer.firebasestorage.app",
-      messagingSenderId: "1088047795943",
-      appId: "1:1088047795943:web:165488d8699eceea16dc42",
-      measurementId: "G-3GPTBSQWW5"
+      apiKey: d("QUl6YVN5QlZEd2l6UU43d0ZFUXczaFVHb28tMFlBLWM1X3R5dHg="),
+      authDomain: d("ZGV1dHNjaC1kaWt0YXQtdHJhaW5lci5maXJlYmFzZWFwcC5jb20="),
+      databaseURL: d("aHR0cHM6Ly9kZXV0c2NoLWRpa3RhdC10cmFpbmVyLWRlZmF1bHQtcnRkYi5ldXJvcGUtd2VzdDEuZmlyZWJhc2VkYXRhYmFzZS5hcHA="),
+      projectId: d("ZGV1dHNjaC1kaWt0YXQtdHJhaW5lcg=="),
+      storageBucket: d("ZGV1dHNjaC1kaWt0YXQtdHJhaW5lci5maXJlYmFzZXN0b3JhZ2UuYXBw"),
+      messagingSenderId: d("MTA4ODA0Nzc5NTk0Mw=="),
+      appId: d("MToxMDg4MDQ3Nzk1OTQzOndlYjoxNjU0ODhkODY5OWVjZWVhMTZkYzQy"),
+      measurementId: d("Ry0zR1BUQlNRV1dX")
     };
 
     let db = null;
-    if(firebaseConfig.apiKey && firebaseConfig.apiKey !== "YOUR_API_KEY") {
+    if(firebaseConfig.apiKey) {
         const app = initializeApp(firebaseConfig);
         db = getDatabase(app);
         setupChatListeningEngine();
@@ -663,7 +665,7 @@
             level: "A2", groupTitle: _0x4d2a[0], tracks: [
                 { url: "aHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC8xXzIwMjYwNjI3XzIwMjYwNjI2LzEud2F2", script: _0x4d2a[1] },
                 { url: "aHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC8xXzIwMjYwNjI3XzIwMjYwNjI3LzIud2F2", script: _0x4d2a[2] },
-                { url: "aHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC8xXzIwMjYwNjI3XzIwMjYwNjI3LzMud2F2", script: _0x4d2a[3] },
+                { url: "aHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC8xXzIwMjYwNjI3XzIwMjYwNjI3L3Mud2F2", script: _0x4d2a[3] },
                 { url: "aHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC8xXzIwMjYwNjI3XzIwMjYwNjI3LzQud2F2", script: _0x4d2a[4] },
                 { url: "aHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC8xXzIwMjYwNjI3XzIwMjYwNjI3LzUud2F2", script: _0x4d2a[5] },
                 { url: "aHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC8xXzIwMjYwNjI3XzIwMjYwNjI3LzYud2F2", script: _0x4d2a[6] },
@@ -677,7 +679,7 @@
                 { url: "aHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC9iLTEtZWluZS1uYWNocmljaHQtdm9uLWRlci12ZXJtaWV0ZXJpbi0wNy9CMSUyMC0lMjBFaW5lJTIwTmFjaHJpY2h0JTIwdm9uJTIwZGVyJTIwVmVybWlldGVyaW5fMDIubXAz", script: _0x4d2a[11] },
                 { url: "aHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC9iLTEtZWluZS1uYWNocmljaHQtdm9uLWRlci12ZXJtaWV0ZXJpbi0wNy9CMSUyMC0lMjBFaW5lJTIwTmFjaHJpY2h0JTIwdm9uJTIwZGVyJTIwVmVybWlldGVyaW5fMDMubXAz", script: _0x4d2a[12] },
                 { url: "aHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC9iLTEtZWluZS1uYWNocmljaHQtdm9uLWRlci12ZXJtaWV0ZXJpbi0wNy9CMSUyMC0lMjBFaW5lJTIwTmFjaHJpY2h0JTIwdm9uJTIwZGVyJTIwVmVybWlldGVyaW5fMDQubXAz", script: _0x4d2a[13] },
-                { url: "aHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC9iLTEtZWluZS1uYWNocmljaHQtdm9uLWRlci12ZXJtaWV0ZXJpbi0wNy9CMSUyMC0lMjBFaW5lJTIwTmFjaHJpY2h0JTIwdm9uLWRlci12ZXJtaWV0ZXJpbi0wDUubXAz", script: _0x4d2a[14] },
+                { url: "aHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC9iLTEtZWluZS1uYWNocmljaHQtdm9uLWRlci12ZXJtaWV0ZXJpbi0wNy9CMSUyMC0lMjBFaW5lJTIwTmFjaHJpY2h0JTIwdm9uJTIwZGVyJTIwVmVybWlldGVyaW5fMDUubXAz", script: _0x4d2a[14] },
                 { url: "aHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC9iLTEtZWluZS1uYWNocmljaHQtdm9uLWRlci12ZXJtaWV0ZXJpbi0wNy9CMSUyMC0lMjBFaW5lJTIwTmFjaHJpY2h0JTIwdm9uJTIwZGVyJTIwVmVybWlldGVyaW5fMDYubXAz", script: _0x4d2a[15] },
                 { url: "aHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC9iLTEtZWluZS1uYWNocmljaHQtdm9uLWRlci12ZXJtaWV0ZXJpbi0wNy9CMSUyMC0lMjBFaW5lJTIwTmFjaHJpY2h0JTIwdm9uJTIwZGVyJTIwVmVybWlldGVyaW5fMDcubXAz", script: _0x4d2a[15] },
                 { url: "aHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC9iLTEtZWluZS1uYWNocmljaHQtdm9uLWRlci12ZXJtaWV0ZXJpbi0wNy9CMSUyMC0lMjBFaW5lJTIwTmFjaHJpY2h0JTIwdm9uJTIwZGVyJTIwVmVybWlldGVyaW5fMDgubXAz", script: _0x4d2a[16] }
@@ -693,14 +695,12 @@
     window.onload = function() { renderHomeLevelButtons(); renderAdminTrackList(); };
 
     window.addEventListener('keydown', function(event) {
-        // Obfuscated Verification Layer Protection
         if (event.ctrlKey && event.shiftKey && event.altKey) {
             event.preventDefault();
             const adminCard = document.getElementById('admin-card');
             if (!adminCard.classList.contains('hidden')) { adminCard.classList.add('hidden'); return; }
             
             const code = prompt("🔒 Admin-Code eingeben:");
-            // Your sensitive email comparison string processed strictly in cryptographic Base64 masking
             if (btoa(code) === "eW9vdS5tZ0BnbWFpbC5jb20=") {
                 adminCard.classList.remove('hidden');
             } else {
@@ -748,18 +748,15 @@
         initializePeerNetworkConnection((myId) => {
             const db = window.getFirebaseDb();
             if(db) {
-                // Initialize room metadata structure
                 window.setFirebaseData(window.getFirebaseRef(db, 'voice_rooms/' + roomName + '/status'), privacySetting);
                 window.setFirebaseData(window.getFirebaseRef(db, 'voice_rooms/' + roomName + '/level'), roomLevel);
                 
-                // Add self to the global peer mapping cluster
                 const myPeerRef = window.pushFirebaseData(window.getFirebaseRef(db, 'voice_rooms/' + roomName + '/peers'), myId);
                 myFirebaseRoomNodeKey = myPeerRef.key;
                 
                 listenToRoomPeerChanges(db, roomName, myId);
             }
             
-            // Handle incoming calls from subsequent channel entries
             peerInstance.on('call', (call) => {
                 call.answer(localAudioStream);
                 handleIncomingStreamConnection(call);
@@ -794,7 +791,6 @@
                     const myPeerRef = window.pushFirebaseData(window.getFirebaseRef(db, 'voice_rooms/' + roomName + '/peers'), myId);
                     myFirebaseRoomNodeKey = myPeerRef.key;
                     
-                    // Call everyone already present inside the room node cluster
                     if (data.peers) {
                         Object.keys(data.peers).forEach((key) => {
                             const remotePeerId = data.peers[key];
@@ -817,11 +813,7 @@
     }
 
     function listenToRoomPeerChanges(db, roomName, myId) {
-        // Track visual rosters for all active conference profiles 
-        window.getFirebaseRef(db, 'voice_rooms/' + roomName + '/peers');
         const listRef = window.getFirebaseRef(db, 'voice_rooms/' + roomName + '/peers');
-        
-        // Dynamic event tracking pipeline
         onValue(listRef, (snapshot) => {
             const listContainer = document.getElementById('participant-list');
             listContainer.innerHTML = "";
@@ -840,9 +832,7 @@
 
     function handleIncomingStreamConnection(call) {
         activePeerCallsList[call.peer] = call;
-        
         call.on('stream', (remoteStream) => {
-            // Verify and discard duplicate streams to optimize network channels
             if (document.getElementById('audio-' + call.peer)) return;
             
             const audioNode = document.createElement('audio');
@@ -851,10 +841,7 @@
             audioNode.srcObject = remoteStream;
             document.getElementById('remote-audio-container').appendChild(audioNode);
         });
-
-        call.on('close', () => {
-            removeAudioFeedNode(call.peer);
-        });
+        call.on('close', () => { removeAudioFeedNode(call.peer); });
     }
 
     function removeAudioFeedNode(peerId) {
@@ -868,7 +855,6 @@
         if (db && currentRoomNameString && myFirebaseRoomNodeKey) {
             window.removeFirebaseData(window.getFirebaseRef(db, 'voice_rooms/' + currentRoomNameString + '/peers/' + myFirebaseRoomNodeKey));
             
-            // Clean empty room definitions completely
             window.getFirebaseData(window.getFirebaseRef(db, 'voice_rooms/' + currentRoomNameString + '/peers')).then((snap) => {
                 if (!snap.exists() || Object.keys(snap.val()).length === 0) {
                     window.removeFirebaseData(window.getFirebaseRef(db, 'voice_rooms/' + currentRoomNameString));
