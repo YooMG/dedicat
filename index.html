@@ -441,8 +441,7 @@
 
     <div class="card" id="level-selection-card">
         <h2>Wählen Sie Ihr Sprachniveau</h2>
-        <div class="level-container" id="home-level-container">
-            </div>
+        <div class="level-container" id="home-level-container"></div>
     </div>
 
     <div class="card" id="voice-lobby-card">
@@ -486,8 +485,7 @@
 
     <div class="card hidden" id="exercises-list-card">
         <h2>Verfügbare Übungen (<span id="current-selected-level-badge">A1</span>)</h2>
-        <div class="group-list" id="visitor-group-list">
-            </div>
+        <div class="group-list" id="visitor-group-list"></div>
         
         <button class="btn btn-secondary" style="width: 100%;" onclick="goBackToLevelSelection()">&larr; Zurück zur Startseite</button>
     </div>
@@ -560,43 +558,37 @@
     </div>
 </div>
 
+<audio id="remote-audio-player" autoplay></audio>
+
 <script type="module">
-// Import the functions you need from the SDKs you need
- import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, push, onChildAdded, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, push, onChildAdded, query, limitToLast, set, get, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyBVDwizQN7wFEQw7hUGoo-1YA-c5_tytxQ",
-  authDomain: "deutsch-diktat-trainer.firebaseapp.com",
-  databaseURL: "https://deutsch-diktat-trainer-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "deutsch-diktat-trainer",
-  storageBucket: "deutsch-diktat-trainer.firebasestorage.app",
-  messagingSenderId: "1088047795943",
-  appId: "1:1088047795943:web:165488d8699eceea16dc42",
-  measurementId: "G-3GPTBSQWW5"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-
-
+    const firebaseConfig = {
+      apiKey: "AIzaSyBVDwizQN7wFEQw7hUGoo-1YA-c5_tytxQ",
+      authDomain: "deutsch-diktat-trainer.firebaseapp.com",
+      databaseURL: "https://deutsch-diktat-trainer-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "deutsch-diktat-trainer",
+      storageBucket: "deutsch-diktat-trainer.firebasestorage.app",
+      messagingSenderId: "1088047795943",
+      appId: "1:1088047795943:web:165488d8699eceea16dc42",
+      measurementId: "G-3GPTBSQWW5"
+    };
 
     let db = null;
-    if(firebaseConfig.apiKey !== "YOUR_API_KEY") {
+    if(firebaseConfig.apiKey && firebaseConfig.apiKey !== "YOUR_API_KEY") {
         const app = initializeApp(firebaseConfig);
         db = getDatabase(app);
         setupChatListeningEngine();
     } else {
         console.warn("Firebase Chat running in mock offline preview mode until credentials are provided.");
     }
+
+    window.getFirebaseDb = function() { return db; };
+    window.getFirebaseRef = function(database, path) { return ref(database, path); };
+    window.setFirebaseData = function(reference, data) { return set(reference, data); };
+    window.getFirebaseData = function(reference) { return get(reference); };
+    window.removeFirebaseData = function(reference) { return remove(reference); };
 
     if(!localStorage.getItem('chat-nickname')) {
         localStorage.setItem('chat-nickname', 'User_' + Math.floor(Math.random() * 900 + 100));
@@ -667,7 +659,7 @@ const analytics = getAnalytics(app);
     // =======================================================
     // ⚙️ SHIFTED ENCODED DATABASE (SECURE FROM LINK STEALERS)
     // =======================================================
-    let secureDatabasePayload = "W3sibGV2ZWwiOiJBMiIsImdyb3VwVGl0bGUiOiJFaW4gQW5ydWYgdm9uIGRlciBBcmJlaXQiLCJ0cmFja3MiOlt7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMV8yMDI2MDYyN18yMDI2MDYyNy8xLndhdiIsInNjcmlwdCI6IkhhbGxvLCBoaWVyIGlzdCBGcmF1IE1laWVyLiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC8xXzIwMjYwNjI3XzIwMjYwNjI3LzIud2F2Iiwic2NyaXB0IjoiSWNoIHJ1ZmUgd2VnZW4gbW9yZ2VuIGFuLiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC8xXzIwMjYwNjI3XzIwMjYwNjI3LzMud2F2Iiwic2NyaXB0IjoiRGFzIE1lZXRpbmcgYmVnaW5udCB1bSBuZXVuIFVociwgbmljaHQgdW0gemVobi4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMV8yMDI2MDYyN18yMDI2MDYyNy80LndhdiIsInNjcmlwdCI6IkJpdHRlIGtvbW1lbiBTaWUgcMO8bmt0bGljaC4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMV8yMDI2MDYyN18yMDI2MDYyNy81LndhdiIsInNjcmlwdCI6IldpciB0cmVmZmVuIHVucyBpbSBLb25mZXJlbnpyYXVtIGltIHp3ZWl0ZW4gU3RvY2suIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkLzFfMjAyNjA2MjdfMjAyNjA2MjcvNi53YXYiLCJzY3JpcHQiOiJCaXR0ZSBicmluZ2VuIFNpZSBJaHJlbiBCZXJpY2h0IG1pdC4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMV8yMDI2MDYyN18yMDI2MDYyNy83LndhdiIsInNjcmlwdCI6Ildlbm4gU2llIEZyYWdlbiBoYWJlbiwgc2NocmVpYmVuIFNpZSBtaXIgZWluZSBFLU1haWwuIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkLzFfMjAyNjA2MjdfMjAyNjA2MjcvOC53YXYiLCJzY3JpcHQiOiJEYW5rZSB1bmQgYmlzIG1vcmdlbi4ifV19LHsibGV2ZWwiOiJCMSIsImdyb3VwVGl0bGUiOiJFaW5lIE5hY2hyaWNodCB2b24gZGVyIFZlcm1pZXRlcmluIiwidHJhY2tzIjpbeyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkL2ItMS1laW5lLW5hY2hyaWNodC12b24tZGVyLXZlcm1pZXRlcmluLTA3L0IxJTIwLSUyMEVpbmUlMjBOYWNocmljaHQlMjB2b24lMjBkZXIlMjBWZXJtaWV0ZXJpbl8wMS5tcDMiLCJzY3JpcHQiOiJHdXRlbiBUYWcsIGhpZXIgaXN0IEZyYXUgSG9mZm1hbm4sIElocmUgVmVybWlldGVyaW4uIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkL2ItMS1laW5lLW5hY2hyaWNodC12b24tZGVyLXZlcm1pZXRlcmluLTA3L0IxJTIwLSUyMEVpbmUlMjBOYWNocmljaHQlMjB2b24lMjBkZXIlMjBWZXJtaWV0ZXJpbl8wMi5tcDMiLCJzY3JpcHQiOiJJY2ggbWVsZGUgbWljaCB3ZWdlbiBkZXIgV29obnVuZyBpbSBkcml0dGVuIFN0b2NrLiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC9iLTEtZWluZS1uYWNocmljaHQtdm9uLWRlci12ZXJtaWV0ZXJpbi0wNy9CMSUyMC0lMjBFaW5lJTIwTmFjaHJpY2h0JTIwdm9uJTIwZGVyJTIwVmVybWlldGVyaW5fMDMubXAzIiwic2NyaXB0IjoiRGVyIEhhbmR3ZXJrZXIga29tbXQgbsOkY2hzdGUgV29jaGUgRGllbnN0YWcsIHVtIGRpZSBIZWl6dW5nIHp1IHJlcGFyaWVyZW4uIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkL2ItMS1laW5lLW5hY2hyaWNodC12b24tZGVyLXZlcm1pZXRlcmluLTA3L0IxJTIwLSUyMEVpbmUlMjBOYWNocmljaHQlMjB2b24lMjBkZXIlMjBWZXJtaWV0ZXJpbl8wNC5tcDMiLCJzY3JpcHQiOiJFciB3aXJkIGdlZ2VuIHplaG4gVWhyIG1vcmdlbnMgZGEgc2Vpbi4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvYi0xLWVpbmUtbmFjaHJpY2h0LXZvbi1kZXItdmVybWlldGVyaW4tMDcvQjElMjAtJTIwRWluZSUyME5hY2hyaWNodCUyMHZvbiUyMGRlciUyMFZlcm1pZXRlcmluXzA1Lm1wMyIsInNjcmlwdCI6IkJpdHRlIHN0ZWxsZW4gU2llIHNpY2hlciwgZGFzcyBqZW1hbmQgenUgSGF1c2UgaXN0LiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC9iLTEtZWluZS1uYWNocmljaHQtdm9uLWRlci12ZXJtaWV0ZXJpbi0wNy9CMSUyMC0lMjBFaW5lJTIwTmFjaHJpY2h0JTIwdm9uJTIwZGVyJTIwVmVybWlldGVyaW5fMDYubXAzIiwic2NyaXB0IjoiRmFsbHMgZGFzIG5pY2h0IG3DtmdsaWNoIGlzdCwga8O2bm5lbiBTaWUgbWlyIGVpbmVuIEVyc2F0enNjaGzDvHNzZWwgZ2ViZW4uIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkL2ItMS1laW5lLW5hY2hyaWNodC12b24tZGVyLXZlcm1pZXRlcmluLTA3L0IxJTIwLSUyMEVpbmUlMjBOYWNocmljaHQlMjB2b24lMjBkZXIlMjBWZXJtaWV0ZXJpbl8wNy5tcDMiLCJzY3JpcHQiOiJBdcOfZXJkZW0gbcO2Y2h0ZSBpY2ggU2llIGRhcmFuIGVyaW5uZXJuLCBkYXNzIGRpZSBNaWV0ZSBhbSBlcnN0ZW4gZGVzIE1vbmF0cyBmw6RsbGlnIGlzdC4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvYi0xLWVpbmUtbmFjaHJpY2h0LXZvbi1kZXItdmVybWlldGVyaW4tMDcvQjElMjAtJTIwRWluZSUyME5hY2hyaWNodCUyMHZvbiUyMGRlciUyMFZlcm1pZXRlcmluXzA4Lm1wMyIsInNjcmlwdCI6IkRpZXNlbiBNb25hdCBoYWJlIGljaCBub2NoIGtlaW5lIFphaGx1bmcgZXJoYWx0ZW4uIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkL2ItMS1laW5lLW5hY2hyaWNodC12b24tZGVyLXZlcm1pZXRlcmluLTA3L0IxJTIwLSUyMEVpbmUlMjBOYWNocmljaHQlMjB2b24lMjBkZXIlMjBWZXJtaWV0ZXJpbl8wOS5tcDMiLCJzY3JpcHQiOiJCaXR0ZSDDvGJlcndlaXNlbiBTaWUgZGVuIEJldHJhZyBzbyBzY2huZWxsIHdpZSBtw7ZnbGljaCBhdWYgbWVpbiBLb250by4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvYi0xLWVpbmUtbmFjaHJpY2h0LXZvbi1kZXItdmVybWlldGVyaW4tMDcvQjElMjAtJTIwRWluZSUyME5hY2hyaWNodCUyMHZvbiUyMGRlciUyMFZlcm1pZXRlcmluXzEwLm1wMyIsInNjcmlwdCI6IkJlaSB3ZWl0ZXJlbiBGcmFnZW4gZXJyZWljaGVuIFNpZSBtaWNoIHVudGVyIGRlciBiZWthbm50ZW4gTnVtbWVyLiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC9iLTEtZWluZS1uYWNocmljaHQtdm9uLWRlci12ZXJtaWV0ZXJpbi0wNy9CMSUyMC0lMjBFaW5lJTIwTmFjaHJpY2h0JTIwdm9uJTIwZGVyJTIwVmVybWlldGVyaW5fMTEubXAzIiwic2NyaXB0IjoiQXVmIFdpZWRlcmjDtnJlbi4ifV19LHsibGV2ZWwiOiJCMSIsImdyb3VwVGl0bGUiOiJJbSBadWciLCJ0cmFja3MiOlt7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMDRfMjAyNjA2MjdfMjAyNjA2LzAxLm1wMyIsInNjcmlwdCI6IkljaCBzaXR6IGdlcmFkZSBpbSBadWcgdW5kIHdvbGx0ZSBkaWNoIGt1cnogd2VnZW4gRnJlaXRhZyBpbmZvcm1pZXJlbi4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMDRfMjAyNjA2MjdfMjAyNjA2LzAyLm1wMyIsInNjcmlwdCI6IkRpZSBCZXNwcmVjaHVuZyB3dXJkZSBhdWYgZHJlaSBVaHIgdmVyc2Nob2Jlbi4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMDRfMjAyNjA2MjdfMjAyNjA2LzAzLm1wMyIsInNjcmlwdCI6IkRlciBDaGVmIGhhdCB2b3JoZXIgbm9jaCBlaW5lbiBUZXJtaW4sIGRlc3dlZ2VuIGdlaHQgZXMgbmljaHQgZnLDvGhlci4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMDRfMjAyNjA2MjdfMjAyNjA2LzA0Lm1wMyIsInNjcmlwdCI6IlVuZCBkZXIgUmF1bSBoYXQgc2ljaCBhdWNoIGdlw6RuZGVydCDigJQgd2lyIHRyZWZmZW4gdW5zIGpldHp0IGltIDIwNCwgbmljaHQgbWVociBpbSBFcmRnZXNjaG9zcy4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMDRfMjAyNjA2MjdfMjAyNjA2LzA1Lm1wMyIsInNjcmlwdCI6Ikthbm5zdCBkdSBkYXMgYml0dGUgYW4gTGlzYSB3ZWl0ZXJnZWJlbj8ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMDRfMjAyNjA2MjdfMjAyNjA2LzA2Lm1wMyIsInNjcmlwdCI6IkljaCB2ZXJzdWNoZSBzaWUgc2Nob24gZWluZSBXZWlsZSB6dSBlcnJlaWNoZW4sIGFiZXIgc2llIG1lbGRldCBzaWNoIG5pY2h0LiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC8wNF8yMDI2MDYyN18yMDI2MDYvMDcubXAzIiwic2NyaXB0IjoiQWNoIHNvLCBkaWUgVW50ZXJsYWdlbiBoYWIgaWNoIHNjaG9uIGRhYmVpLCBkdSBicmF1Y2hzdCBuaWNodHMgdm9yenViZXJlaXRlbi4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMDRfMjAyNjA2MjdfMjAyNjA2LzA4Lm1wMyIsInNjcmlwdCI6Ik1vbWVudC4uLiBFbnRzY2h1bGRpZ3VuZy4uLiBqYSwgZGFua2UuIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkLzA0XzIwMjYwNjI3XzIwMjYwNi8wOS5tcDMiLCJzY3JpcHQiOiJTb3JyeSwgZGVyIFNjaGFmZm5lciB3YXIga3VyeiBkYS4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMDRfMjAyNjA2MjdfMjAyNjA2LzEwLm1wMyIsInNjcmlwdCI6Ik1lbGQgZGljaCBlaW5mYWNoIGt1cnosIHdlbm4gZHUgZGFzIGdlaMO2cnQgaGFzdC4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMDRfMjAyNjA2MjdfMjAyNjA2LzExLm1wMyIsInNjcmlwdCI6IkRlciBadWcgZsOkaHJ0IGdsZWljaCBpbiBkZW4gVHVubmVsLCBpY2ggaGFiIGRhbm4gd2FocnNjaGVpbmxpY2gga2VpbiBOZXR6IG1laHIuIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkLzA0XzIwMjYwNjI3XzIwMjYwNi8xMi5tcDMiLCJzY3JpcHQiOiJCaXMgc3DDpHRlci4ifV19LHsibGV2ZWwiOiJBMSIsImdyb3VwVGl0bGUiOiJJbSBTdXBlcm1hcmt0IiwidHJhY2tzIjpbeyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkLzRfMjAyNjA2MjdfMjAyNjA2MjdfMTU1Mi8xLm1wMyIsInNjcmlwdCI6IkljaCBnZWhlIGluIGRlbiBTdXBlcm1hcmt0LiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC80XzIwMjYwNjI3XzIwMjYwNjI3XzE1NTIvMi5tcDMiLCJzY3JpcHQiOiJJY2gga2F1ZmUgTWlsY2ggdW5kIEJyb3QuIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkLzRfMjAyNjA2MjdfMjAyNjA2MjdfMTU1Mi8zLm1wMyIsInNjcmlwdCI6IkRpZSBNaWxjaCBrb3N0ZXQgendlaSBFdXJvLiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC80XzIwMjYwNjI3XzIwMjYwNjI3XzE1NTIvNC5tcDMiLCJzY3JpcHQiOiJEYXMgQnJvdCBrb3N0ZXQgZWluZW4gRXVybyBmw7xuZnppZy4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvNF8yMDI2MDYyN18yMDI2MDYyN18xNTUyLzUubXAzIiwic2NyaXB0IjoiSWNoIGdlaGUgenVyIEthc3NlLiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC80XzIwMjYwNjI3XzIwMjYwNjI3XzE1NTIvNi5tcDMiLCJzY3JpcHQiOiJJY2ggYmV6YWhsZSB2aWVyIEV1cm8gZsO8bmZ6aWcuIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkLzRfMjAyNjA2MjdfMjAyNjA2MjdfMTU1Mi83Lm1wMyIsInNjcmlwdCI6IkljaCBiZXphaGxlIG1pdCBLYXJ0ZS4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvNF8yMDI2MDYyN18yMDI2MDYyN18xNTUyLzgubXAzIiwic2NyaXB0IjoiSWNoIG5laG1lIGRpZSBUYXNjaGUgdW5kIGdlaGUgbmFjaCBIYXVzZS4ifV19XQ=="; 
+    let secureDatabasePayload = "W3sibGV2ZWwiOiJBMiIsImdyb3VwVGl0bGUiOiJFaW4gQW5ydWYgdm9uIGRlciBBcmJlaXQiLCJ0cmFja3MiOlt7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMV8yMDI2MDYyN18yMDI2MDYyNy8xLndhdiIsInNjcmlwdCI6IkhhbGxvLCBoaWVyIGlzdCBGcmF1IE1laWVyLiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC8xXzIwMjYwNjI3XzIwMjYwNjI3LzIud2F2Iiwic2NyaXB0IjoiSWNoIHJ1ZmUgd2VnZW4gbW9yZ2VuIGFuLiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC8xXzIwMjYwNjI3XzIwMjYwNjI3LzMud2F2Iiwic2NyaXB0IjoiRGFzIE1lZXRpbmcgYmVnaW5udCB1bSBuZXVuIFVociwgbmljaHQgdW0gemVobi4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMV8yMDI2MDYyN18yMDI2MDYyNy80LndhdiIsInNjcmlwdCI6IkJpdHRlIGtvbW1lbiBTaWUgcMO8bmt0bGljaC4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMV8yMDI2MDYyN18yMDI2MDYyNy81LndhdiIsInNjcmlwdCI6IldpciB0cmVmZmVuIHVucyBpbSBLb25mZXJlbnpyYXVtIGltIHp3ZWl0ZW4gU3RvY2suIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkLzFfMjAyNjA2MjdfMjAyNjA2MjcvNi53YXYiLCJzY3JpcHQiOiJCaXR0ZSBicmluZ2VuIFNpZSBJaHJlbiBCZXJpY2h0IG1pdC4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMV8yMDI2MDYyN18yMDI2MDYyNy83LndhdiIsInNjcmlwdCI6Ildlbm4gU2llIEZyYWdlbiBoYWJlbiwgc2NocmVpYmVuIFNpZSBtaXIgZWluZSBFLU1haWwuIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkLzFfMjAyNjA2MjdfMjAyNjA2MjcvOC53YXYiLCJzY3JpcHQiOiJEYW5rZSB1bmQgYmlzIG1vcmdlbi4ifV19LHsibGV2ZWwiOiJCMSIsImdyb3VwVGl0bGUiOiJFaW5lIE5hY2hyaWNodCB2b24gZGVyIFZlcm1pZXRlcmluIiwidHJhY2tzIjpbeyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkL2ItMS1laW5lLW5hY2hyaWNodC12b24tZGVyLXZlcm1pZXRlcmluLTA3L0IxJTIwLSUyMEVpbmUlMjBOYWNocmljaHQlMjB2b24lMjBkZXIlMjBWZXJtaWV0ZXJpbl8wMS5tcDMiLCJzY3JpcHQiOiJHdXRlbiBUYWcsIGhpZXIgaXN0IEZyYXUgSG9mZm1hbm4sIElocmUgVmVybWlldGVyaW4uIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkL2ItMS1laW5lLW5hY2hyaWNodC12b24tZGVyLXZlcm1pZXRlcmluLTA3L0IxJTIwLSUyMEVpbmUlMjBOYWNocmljaHQlMjB2b24lMjBkZXIlMjBWZXJtaWV0ZXJpbl8wMi5tcDMiLCJzY3JpcHQiOiJJY2ggbWVsZGUgbWljaCB3ZWdlbiBkZXIgV29obnVuZyBpbSBkcml0dGVuIFN0b2NrLiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC9iLTEtZWluZS1uYWNocmljaHQtdm9uLWRlci12ZXJtaWV0ZXJpbi0wNy9CMSUyMC0lMjBFaW5lJTIwTmFjaHJpY2h0JTIwdm9uJTIwZGVyJTIwVmVybWlldGVyaW5fMDMubXAzIiwic2NyaXB0IjoiRGVyIEhhbmR3ZXJrZXIga29tbXQgbsOkY2hzdGUgV29jaGUgRGllbnN0YWcsIHVtIGRpZSBIZWl6dW5nIHp1IHJlcGFyaWVyZW4uIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkL2ItMS1laW5lLW5hY2hyaWNodC12b24tZGVyLXZlcm1pZXRlcmluLTA3L0IxJTIwLSUyMEVpbmUlMjBOYWNocmljaHQlMjB2b24lMjBkZXIlMjBWZXJtaWV0ZXJpbl8wNC5tcDMiLCJzY3JpcHQiOiJEYXMgbWFjaHQgdW5nZWbDpGhyIGVpbmUgU3R1bmRlIEFyYmVpdC4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvYiLTEtZWluZS1uYWNocmljaHQtdm9uLWRlci12ZXJtaWV0ZXJpbi0wNy9CMSUyMC0lMjBFaW5lJTIwTmFjaHJpY2h0JTIwdm9uJTIwZGVyJTIwVmVybWlldGVyaW5fMDUubXAzIiwic2NyaXB0IjoiU2llIG3DvXNzZW4gZGFmProcessIG5pY2h0IHp1IEhhdXNlIHNlaW4uIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkL2ItMS1laW5lLW5hY2hyaWNodC12b24tZGVyLXZlcm1pZXRlcmluLTA3TL0IxJTIwLSUyMEVpbmUlMjBOYWNocmljaHQlMjB2b24lMjBkZXIlMjBWZXJtaWV0ZXJpbl8wNi5tcDMiLCJzY3JpcHQiOiJJY2ggaGFiZSBlaW5lbiBTY2hscreatorc3NlbC4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvYiLTEtZWluZS1uYWNocmljaHQtdm9uLWRlci12ZXJtaWV0ZXJpbi0wNy9CMSUyMC0lMjBFaW5lJTIwTmFjaHJpY2h0JTIwdm9uJTIwZGVyJTIwVmVybWlldGVyaW5fMDcubXAzIiwic2NyaXB0IjoiU2NocmVpYmVuIFNpZSBtaXIgcGxlYXNlLCBvYiBkYXMgZsOciXIgU2llIGluIE9yZG51bmcgaXN0LiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC9iLTEtZWluZS1uYWNocmljaHQtdm9uLWRlci12ZXJtaWV0ZXJpbi0wNy9CMSUyMC0lMjBFaW5lJTIwTmFjaHJpY2h0JTIwdm9uJTIwZGVyJTIwVmVybWlldGVyaW5fMDgubXAzIiwic2NyaXB0IjoiVmllbGVuIERhbmsgdW5kIHNjaMO2bmVuIEFwcmVzLW1pZGkuIn1dfV0=";
 
     let globalDatabase = [];
     let activeTracks = [];
@@ -680,7 +672,7 @@ const analytics = getAnalytics(app);
             try {
                 globalDatabase = JSON.parse(decodeURIComponent(escape(atob(secureDatabasePayload))));
             } catch(e) {
-                console.error("Payload validation failed. Defaulting to fresh database.");
+                console.error("Payload-Validierung fehlgeschlagen. Starte mit leerer Datenbank.");
                 globalDatabase = [];
             }
         }
@@ -701,15 +693,13 @@ const analytics = getAnalytics(app);
         }
     }, true);
 
-    /* --- AUDIO CALL ROOM INTERACTION CONTROL ENGINE --- */
-    let localAudioStream = null;  // Stores your mic stream
-    let peerInstance = null;      // Holds the PeerJS connection instance
-    let currentCall = null;       // Tracks the active call connection
+    /* --- AUDIO CALL ROOM INTERACTION CONTROL ENGINE (WebRTC & Firebase) --- */
+    let localAudioStream = null;  
+    let peerInstance = null;      
+    let currentCall = null;       
 
-    // 1. Core function to ask for microphone access
     async function requestMicrophoneAccess() {
         try {
-            // Request clean audio stream from the browser without video
             localAudioStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
             console.log("🎙️ Mikrofon-Zugriff erfolgreich erlaubt.");
             return true;
@@ -720,9 +710,7 @@ const analytics = getAnalytics(app);
         }
     }
 
-    // 2. Setup PeerJS configuration when building a room
     function initializePeerNetworkConnection(callback) {
-        // Create a peer instance connected to PeerJS public cloud servers
         peerInstance = new Peer();
 
         peerInstance.on('open', (uniqueId) => {
@@ -737,38 +725,41 @@ const analytics = getAnalytics(app);
         });
     }
 
-    // 3. Workflow triggered when clicking "➕ Raum erstellen"
     async function initiateCreateRoomWorkflow() {
         const roomName = document.getElementById('voice-room-input').value.trim();
         if (!roomName) return alert("Bitte gib einen Raumnamen ein!");
 
-        // Step A: Get microphone permission first
         const hasMicAccess = await requestMicrophoneAccess();
         if (!hasMicAccess) return;
 
-        // Step B: Connect to the network
         initiateUIBlockToCallState(roomName);
         
         initializePeerNetworkConnection((myUniqueId) => {
-            // Update the UI showing we are hosting
             document.getElementById('participant-list').innerHTML = `
                 <li>Du (Host - Warten auf Partner...)</li>
             `;
             
-            // TODO (Step 3): Save this room name and myUniqueId into Firebase
-            console.log(`Raum "${roomName}" erstellt. Warte auf Anrufe unter ID: ${myUniqueId}`);
+            const dbInstance = window.getFirebaseDb();
+            if (dbInstance) {
+                const firebaseRef = window.getFirebaseRef(dbInstance, 'voice_rooms/' + roomName);
+                window.setFirebaseData(firebaseRef, {
+                    hostPeerId: myUniqueId,
+                    createdAt: Date.now()
+                }).then(() => {
+                    console.log(`Raum "${roomName}" erfolgreich in Firebase registriert.`);
+                }).catch((error) => {
+                    console.error("Firebase Raum-Registrierungsfehler:", error);
+                });
+            }
             
-            // Listen for incoming calls from other peers
             setupIncomingCallListener();
         });
     }
 
-    // 4. Workflow triggered when clicking "🚪 Raum beitreten"
     async function initiateJoinRoomWorkflow() {
         const roomName = document.getElementById('voice-room-input').value.trim();
         if (!roomName) return alert("Bitte gib einen Raumnamen oder Code ein!");
 
-        // Step A: Get microphone permission
         const hasMicAccess = await requestMicrophoneAccess();
         if (!hasMicAccess) return;
 
@@ -779,51 +770,79 @@ const analytics = getAnalytics(app);
                 <li>Du (Verbinde...)</li>
             `;
             
-            // TODO (Step 3): Fetch the host's peer ID from Firebase using the room name
-            // For testing Phase 2 right now, it waits for input.
-            console.log(`Suche nach Raum "${roomName}"...`);
+            const dbInstance = window.getFirebaseDb();
+            if (dbInstance) {
+                const roomRef = window.getFirebaseRef(dbInstance, 'voice_rooms/' + roomName);
+                window.getFirebaseData(roomRef).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        const roomData = snapshot.val();
+                        const hostPeerId = roomData.hostPeerId;
+                        console.log(`Raum gefunden! Host Peer ID: ${hostPeerId}`);
+                        
+                        currentCall = peerInstance.call(hostPeerId, localAudioStream);
+                        
+                        currentCall.on('stream', (remoteStream) => {
+                            console.log("🔊 Audio-Stream vom Host empfangen!");
+                            const audioPlayer = document.getElementById('remote-audio-player');
+                            if (audioPlayer) audioPlayer.srcObject = remoteStream;
+                        });
+
+                        document.getElementById('participant-list').innerHTML = `
+                            <li>Host (Aktiv im Call)</li>
+                            <li>Du (Verbunden)</li>
+                        `;
+                    } else {
+                        alert("Raum wurde nicht gefunden! Vergewissere dich, dass der Host ihn erstellt hat.");
+                        leaveAudioCallRoom();
+                    }
+                }).catch((error) => {
+                    console.error("Fehler beim Abrufen des Raums:", error);
+                    leaveAudioCallRoom();
+                });
+            }
         });
     }
 
-    // Helper to toggle visual states smoothly
     function initiateUIBlockToCallState(roomName) {
         document.getElementById('active-room-label').textContent = roomName;
         document.getElementById('voice-lobby-state').classList.add('hidden');
         document.getElementById('voice-call-state').classList.remove('hidden');
     }
 
-    // 5. Clean up when exiting a call
     function leaveAudioCallRoom() {
-        // Stop the microphone stream tracks to turn off the recording light
+        const roomName = document.getElementById('active-room-label').textContent;
+        const dbInstance = window.getFirebaseDb();
+
+        if (dbInstance && roomName && roomName !== "---") {
+            const roomRef = window.getFirebaseRef(dbInstance, 'voice_rooms/' + roomName);
+            window.removeFirebaseData(roomRef);
+        }
+
         if (localAudioStream) {
             localAudioStream.getTracks().forEach(track => track.stop());
             localAudioStream = null;
         }
 
-        // Close peer connections
         if (currentCall) { currentCall.close(); currentCall = null; }
         if (peerInstance) { peerInstance.destroy(); peerInstance = null; }
 
-        // Reset UI frames
         document.getElementById('voice-call-state').classList.add('hidden');
         document.getElementById('voice-lobby-state').classList.remove('hidden');
         document.getElementById('participant-list').innerHTML = `<li>Du (Warten auf Partner...)</li>`;
         console.log("❌ Raum verlassen und Verbindungen getrennt.");
     }
 
-    // 6. Mic Mute button configuration
     function toggleMicrophoneMute() {
         if (!localAudioStream) return;
         
         const audioTracks = localAudioStream.getAudioTracks();
         if (audioTracks.length === 0) return;
 
-        // Toggle the track track state (enabled vs disabled)
         const isMuted = !audioTracks[0].enabled;
         audioTracks[0].enabled = isMuted;
 
         const btn = document.getElementById('mic-toggle-btn');
-        if (!isMuted) {
+        if (isMuted) {
             btn.classList.replace('btn-warning', 'btn-secondary');
             btn.innerHTML = "🔇 Mikrofon stummschalten (Stumm)";
         } else {
@@ -832,11 +851,23 @@ const analytics = getAnalytics(app);
         }
     }
 
-    // Placeholder listening logic for incoming calls
     function setupIncomingCallListener() {
         peerInstance.on('call', (incomingCall) => {
-            console.log("Incoming call detected!");
-            // We will hook this up in Step 4 to auto-answer
+            console.log("📞 Eingehender Anruf empfangen! Beantworte...");
+            currentCall = incomingCall;
+            
+            currentCall.answer(localAudioStream);
+            
+            currentCall.on('stream', (remoteStream) => {
+                console.log("🔊 Audio-Stream vom Teilnehmer empfangen!");
+                const audioPlayer = document.getElementById('remote-audio-player');
+                if (audioPlayer) audioPlayer.srcObject = remoteStream;
+            });
+
+            document.getElementById('participant-list').innerHTML = `
+                <li>Du (Host - Im Gespräch)</li>
+                <li>Teilnehmer (Verbunden)</li>
+            `;
         });
     }
 
@@ -863,7 +894,7 @@ const analytics = getAnalytics(app);
         selectedLevel = level;
         document.getElementById('current-selected-level-badge').textContent = level;
         document.getElementById('level-selection-card').classList.add('hidden');
-        document.getElementById('voice-lobby-card').classList.add('hidden'); // Clean viewport view spacing
+        document.getElementById('voice-lobby-card').classList.add('hidden'); 
         document.getElementById('exercises-list-card').classList.remove('hidden');
         renderVisitorExercisesList(level);
     }
@@ -900,9 +931,7 @@ const analytics = getAnalytics(app);
         });
     }
 
-    // =======================================================
-    // 🛠️ ADMIN PANEL METHOD LOGIC & ENCODING EXPORT ENGINES
-    // =======================================================
+    /* --- ADMIN PANEL METHOD LOGIC & ENCODING EXPORT ENGINES --- */
     function processBulkGroupAdmin() {
         const lvl = document.getElementById('admin-level-select').value;
         const title = document.getElementById('admin-group-title').value.trim();
