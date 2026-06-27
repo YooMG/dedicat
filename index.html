@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Deutsch Diktat-Trainer Pro</title>
+    
+    <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+
     <style>
         :root {
             --primary-color: #002f6c;
@@ -27,6 +30,7 @@
         .container {
             max-width: 800px;
             width: 100%;
+            padding-bottom: 60px; /* Space for chat toggle */
         }
 
         header {
@@ -211,6 +215,171 @@
             margin-top: 10px;
             border: 1px solid #444;
         }
+
+        /* LIVE SYSTEM CHAT ROOM CSS */
+        .chat-toggle-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 14px 22px;
+            border-radius: 30px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+        }
+        .chat-toggle-btn:hover { background-color: #001f4d; }
+
+        .chat-window {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 350px;
+            height: 450px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 1000;
+            border: 1px solid #e0e0e0;
+        }
+
+        .chat-header {
+            background: var(--primary-color);
+            color: white;
+            padding: 12px 15px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-header input {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            width: 110px;
+            text-align: center;
+        }
+        .chat-header input::placeholder { color: rgba(255,255,255,0.6); }
+
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background-color: #f8f9fa;
+        }
+
+        .chat-msg-bubble {
+            background: #e9ecef;
+            padding: 8px 12px;
+            border-radius: 12px;
+            max-width: 85%;
+            font-size: 14px;
+            line-height: 1.4;
+            align-self: flex-start;
+        }
+        .chat-msg-bubble.me {
+            background: #002f6c;
+            color: white;
+            align-self: flex-end;
+        }
+        .chat-msg-user {
+            font-size: 11px;
+            font-weight: bold;
+            margin-bottom: 2px;
+            display: block;
+            opacity: 0.7;
+        }
+        .chat-msg-bubble.me .chat-msg-user { color: var(--accent-color); opacity: 1; }
+
+        .chat-footer {
+            display: flex;
+            padding: 10px;
+            background: white;
+            border-top: 1px solid #eee;
+            gap: 8px;
+        }
+        .chat-footer input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        /* VOICE ROOM SYSTEM CSS MODULE */
+        .call-status-banner {
+            background-color: #e3f2fd;
+            border: 1px solid #90caf9;
+            padding: 12px 18px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 16px;
+            color: #0d47a1;
+            margin-bottom: 15px;
+        }
+
+        .pulse-indicator {
+            width: 12px;
+            height: 12px;
+            background-color: #28a745;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+            animation: pulse-green 2s infinite;
+        }
+
+        @keyframes pulse-green {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+            }
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 6px rgba(40, 167, 69, 0);
+            }
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+            }
+        }
+
+        .participant-box {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 15px;
+            border-radius: 12px;
+        }
+
+        #participant-list {
+            margin: 8px 0 0 0;
+            padding-left: 20px;
+            font-size: 14px;
+            color: #495057;
+        }
+
+        #participant-list li {
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
@@ -276,6 +445,45 @@
             </div>
     </div>
 
+    <div class="card" id="voice-lobby-card">
+        <h2>🗣️ Live Audio-Sprechzimmer</h2>
+        <p style="font-size: 14px; margin-top: -10px; color: #666;">
+            Erstelle einen Raum oder tritt einem bei, um gemeinsam mit anderen Deutsch zu sprechen.
+        </p>
+
+        <div id="voice-lobby-state">
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;" class="form-group">
+                <div style="flex: 1; min-width: 200px;">
+                    <label for="voice-room-input">Raum-Name oder Code:</label>
+                    <input type="text" id="voice-room-input" placeholder="z.B. B1-Praxis oder raum-123">
+                </div>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-main" onclick="initiateCreateRoomWorkflow()">➕ Raum erstellen</button>
+                <button class="btn btn-success" onclick="initiateJoinRoomWorkflow()">🚪 Raum beitreten</button>
+            </div>
+        </div>
+
+        <div id="voice-call-state" class="hidden">
+            <div class="call-status-banner">
+                <span class="pulse-indicator"></span>
+                <span>Verbunden mit Raum: <strong id="active-room-label">---</strong></span>
+            </div>
+            
+            <div class="participant-box">
+                <label>Teilnehmer im Raum:</label>
+                <ul id="participant-list">
+                    <li>Du (Warten auf Partner...)</li>
+                </ul>
+            </div>
+
+            <div class="btn-group" style="margin-top: 20px;">
+                <button id="mic-toggle-btn" class="btn btn-warning" onclick="toggleMicrophoneMute()">🎙️ Mikrofon stummschalten</button>
+                <button class="btn btn-danger" onclick="leaveAudioCallRoom()">❌ Raum verlassen</button>
+            </div>
+        </div>
+    </div>
+
     <div class="card hidden" id="exercises-list-card">
         <h2>Verfügbare Übungen (<span id="current-selected-level-badge">A1</span>)</h2>
         <div class="group-list" id="visitor-group-list">
@@ -339,11 +547,128 @@
     </div>
 </div>
 
+<button class="chat-toggle-btn" onclick="toggleChatWindow()">💬 Chat-Raum</button>
+<div class="chat-window hidden" id="chat-window">
+    <div class="chat-header">
+        <span>💬 Lern-Chat</span>
+        <input type="text" id="chat-username" placeholder="Name..." onchange="updateUsernameValue()">
+    </div>
+    <div class="chat-messages" id="chat-messages-container"></div>
+    <div class="chat-footer">
+        <input type="text" id="chat-input" placeholder="Nachricht schreiben..." onkeydown="if(event.key==='Enter') sendChatMessage()">
+        <button class="btn btn-main" style="min-width:auto; padding:0 15px; margin:0; border-radius:20px;" onclick="sendChatMessage()">Send</button>
+    </div>
+</div>
+
+<script type="module">
+// Import the functions you need from the SDKs you need
+ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, push, onChildAdded, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyBVDwizQN7wFEQw7hUGoo-1YA-c5_tytxQ",
+  authDomain: "deutsch-diktat-trainer.firebaseapp.com",
+  databaseURL: "https://deutsch-diktat-trainer-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "deutsch-diktat-trainer",
+  storageBucket: "deutsch-diktat-trainer.firebasestorage.app",
+  messagingSenderId: "1088047795943",
+  appId: "1:1088047795943:web:165488d8699eceea16dc42",
+  measurementId: "G-3GPTBSQWW5"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+
+
+
+    let db = null;
+    if(firebaseConfig.apiKey !== "YOUR_API_KEY") {
+        const app = initializeApp(firebaseConfig);
+        db = getDatabase(app);
+        setupChatListeningEngine();
+    } else {
+        console.warn("Firebase Chat running in mock offline preview mode until credentials are provided.");
+    }
+
+    if(!localStorage.getItem('chat-nickname')) {
+        localStorage.setItem('chat-nickname', 'User_' + Math.floor(Math.random() * 900 + 100));
+    }
+    document.getElementById('chat-username').value = localStorage.getItem('chat-nickname');
+
+    window.updateUsernameValue = function() {
+        let name = document.getElementById('chat-username').value.trim();
+        if(!name) name = "Anonym";
+        localStorage.setItem('chat-nickname', name);
+    }
+
+    window.toggleChatWindow = function() {
+        const win = document.getElementById('chat-window');
+        win.classList.toggle('hidden');
+        if(!win.classList.contains('hidden')) {
+            const container = document.getElementById('chat-messages-container');
+            container.scrollTop = container.scrollHeight;
+        }
+    }
+
+    window.sendChatMessage = function() {
+        const input = document.getElementById('chat-input');
+        const text = input.value.trim();
+        if(!text) return;
+
+        const sender = localStorage.getItem('chat-nickname') || "Anonym";
+
+        if(db) {
+            push(ref(db, 'messages'), {
+                user: sender,
+                message: text,
+                timestamp: Date.now()
+            });
+        } else {
+            renderMessageBubble(sender, text, true);
+        }
+        input.value = "";
+    }
+
+    function setupChatListeningEngine() {
+        const messagesRef = query(ref(db, 'messages'), limitToLast(50));
+        onChildAdded(messagesRef, (snapshot) => {
+            const data = snapshot.val();
+            const currentMe = localStorage.getItem('chat-nickname');
+            renderMessageBubble(data.user, data.message, data.user === currentMe);
+        });
+    }
+
+    function renderMessageBubble(user, text, isMe) {
+        const container = document.getElementById('chat-messages-container');
+        const bubble = document.createElement('div');
+        bubble.className = `chat-msg-bubble ${isMe ? 'me' : ''}`;
+        bubble.innerHTML = `
+            <span class="chat-msg-user">${user}</span>
+            <div>${escapeHTML(text)}</div>
+        `;
+        container.appendChild(bubble);
+        container.scrollTop = container.scrollHeight;
+    }
+
+    function escapeHTML(str) {
+        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+</script>
+
 <script>
     // =======================================================
     // ⚙️ SHIFTED ENCODED DATABASE (SECURE FROM LINK STEALERS)
     // =======================================================
-    let secureDatabasePayload = "W3sibGV2ZWwiOiJBMiIsImdyb3VwVGl0bGUiOiJFaW4gQW5ydWYgdm9uIGRlciBBcmJlaXQiLCJ0cmFja3MiOlt7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMV8yMDI2MDYyN18yMDI2MDYyNy8xLndhdiIsInNjcmlwdCI6IkhhbGxvLCBoaWVyIGlzdCBGcmF1IE1laWVyLiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC8xXzIwMjYwNjI3XzIwMjYwNjI3LzIud2F2Iiwic2NyaXB0IjoiSWNoIHJ1ZmUgd2VnZW4gbW9yZ2VuIGFuLiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC8xXzIwMjYwNjI3XzIwMjYwNjI3LzMud2F2Iiwic2NyaXB0IjoiRGFzIE1lZXRpbmcgYmVnaW5udCB1bSBuZXVuIFVociwgbmljaHQgdW0gemVobi4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMV8yMDI2MDYyN18yMDI2MDYyNy80LndhdiIsInNjcmlwdCI6IkJpdHRlIGtvbW1lbiBTaWUgcMO8bmt0bGljaC4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMV8yMDI2MDYyN18yMDI2MDYyNy81LndhdiIsInNjcmlwdCI6IldpciB0cmVmZmVuIHVucyBpbSBLb25mZXJlbnpyYXVtIGltIHp3ZWl0ZW4gU3RvY2suIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkLzFfMjAyNjA2MjdfMjAyNjA2MjcvNi53YXYiLCJzY3JpcHQiOiJCaXR0ZSBicmluZ2VuIFNpZSBJaHJlbiBCZXJpY2h0IG1pdC4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMV8yMDI2MDYyN18yMDI2MDYyNy83LndhdiIsInNjcmlwdCI6Ildlbm4gU2llIEZyYWdlbiBoYWJlbiwgc2NocmVpYmVuIFNpZSBtaXIgZWluZSBFLU1haWwuIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkLzFfMjAyNjA2MjdfMjAyNjA2MjcvOC53YXYiLCJzY3JpcHQiOiJEYW5rZSB1bmQgYmlzIG1vcmdlbi4ifV19LHsibGV2ZWwiOiJCMSIsImdyb3VwVGl0bGUiOiJFaW5lIE5hY2hyaWNodCB2b24gZGVyIFZlcm1pZXRlcmluIiwidHJhY2tzIjpbeyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkL2ItMS1laW5lLW5hY2hyaWNodC12b24tZGVyLXZlcm1pZXRlcmluLTA3L0IxJTIwLSUyMEVpbmUlMjBOYWNocmljaHQlMjB2b24lMjBkZXIlMjBWZXJtaWV0ZXJpbl8wMS5tcDMiLCJzY3JpcHQiOiJHdXRlbiBUYWcsIGhpZXIgaXN0IEZyYXUgSG9mZm1hbm4sIElocmUgVmVybWlldGVyaW4uIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkL2ItMS1laW5lLW5hY2hyaWNodC12b24tZGVyLXZlcm1pZXRlcmluLTA3L0IxJTIwLSUyMEVpbmUlMjBOYWNocmljaHQlMjB2b24lMjBkZXIlMjBWZXJtaWV0ZXJpbl8wMi5tcDMiLCJzY3JpcHQiOiJJY2ggbWVsZGUgbWljaCB3ZWdlbiBkZXIgV29obnVuZyBpbSBkcml0dGVuIFN0b2NrLiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC9iLTEtZWluZS1uYWNocmljaHQtdm9uLWRlci12ZXJtaWV0ZXJpbi0wNy9CMSUyMC0lMjBFaW5lJTIwTmFjaHJpY2h0JTIwdm9uJTIwZGVyJTIwVmVybWlldGVyaW5fMDMubXAzIiwic2NyaXB0IjoiRGVyIEhhbmR3ZXJrZXIga29tbXQgbsOkY2hzdGUgV29jaGUgRGllbnN0YWcsIHVtIGRpZSBIZWl6dW5nIHp1IHJlcGFyaWVyZW4uIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkL2ItMS1laW5lLW5hY2hyaWNodC12b24tZGVyLXZlcm1pZXRlcmluLTA3L0IxJTIwLSUyMEVpbmUlMjBOYWNocmljaHQlMjB2b24lMjBkZXIlMjBWZXJtaWV0ZXJpbl8wNC5tcDMiLCJzY3JpcHQiOiJFciB3aXJkIGdlZ2VuIHplaG4gVWhyIG1vcmdlbnMgZGEgc2Vpbi4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvYi0xLWVpbmUtbmFjaHJpY2h0LXZvbi1kZXItdmVybWlldGVyaW4tMDcvQjElMjAtJTIwRWluZSUyME5hY2hyaWNodCUyMHZvbiUyMGRlciUyMFZlcm1pZXRlcmluXzA1Lm1wMyIsInNjcmlwdCI6IkJpdHRlIHN0ZWxsZW4gU2llIHNpY2hlciwgZGFzcyBqZW1hbmQgenUgSGF1c2UgaXN0LiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC9iLTEtZWluZS1uYWNocmljaHQtdm9uLWRlci12ZXJtaWV0ZXJpbi0wNy9CMSUyMC0lMjBFaW5lJTIwTmFjaHJpY2h0JTIwdm9uJTIwZGVyJTIwVmVybWlldGVyaW5fMDYubXAzIiwic2NyaXB0IjoiRmFsbHMgZGFzIG5pY2h0IG3DtmdsaWNoIGlzdCwga8O2bm5lbiBTaWUgbWlyIGVpbmVuIEVyc2F0enNjaGzDvHNzZWwgZ2ViZW4uIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkL2ItMS1laW5lLW5hY2hyaWNodC12b24tZGVyLXZlcm1pZXRlcmluLTA3L0IxJTIwLSUyMEVpbmUlMjBOYWNocmljaHQlMjB2b24lMjBkZXIlMjBWZXJtaWV0ZXJpbl8wNy5tcDMiLCJzY3JpcHQiOiJBdcOfZXJkZW0gbcO2Y2h0ZSBpY2ggU2llIGRhcmFuIGVyaW5uZXJuLCBkYXNzIGRpZSBNaWV0ZSBhbSBlcnN0ZW4gZGVzIE1vbmF0cyBmw6RsbGlnIGlzdC4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvYi0xLWVpbmUtbmFjaHJpY2h0LXZvbi1kZXItdmVybWlldGVyaW4tMDcvQjElMjAtJTIwRWluZSUyME5hY2hyaWNodCUyMHZvbiUyMGRlciUyMFZlcm1pZXRlcmluXzA4Lm1wMyIsInNjcmlwdCI6IkRpZXNlbiBNb25hdCBoYWJlIGljaCBub2NoIGtlaW5lIFphaGx1bmcgZXJoYWx0ZW4uIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkL2ItMS1laW5lLW5hY2hyaWNodC12b24tZGVyLXZlcm1pZXRlcmluLTA3L0IxJTIwLSUyMEVpbmUlMjBOYWNocmljaHQlMjB2b24lMjBkZXIlMjBWZXJtaWV0ZXJpbl8wOS5tcDMiLCJzY3JpcHQiOiJCaXR0ZSDDvGJlcndlaXNlbiBTaWUgZGVuIEJldHJhZyBzbyBzY2huZWxsIHdpZSBtw7ZnbGljaCBhdWYgbWVpbiBLb250by4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvYi0xLWVpbmUtbmFjaHJpY2h0LXZvbi1kZXItdmVybWlldGVyaW4tMDcvQjElMjAtJTIwRWluZSUyME5hY2hyaWNodCUyMHZvbiUyMGRlciUyMFZlcm1pZXRlcmluXzEwLm1wMyIsInNjcmlwdCI6IkJlaSB3ZWl0ZXJlbiBGcmFnZW4gZXJyZWljaGVuIFNpZSBtaWNoIHVudGVyIGRlciBiZWthbm50ZW4gTnVtbWVyLiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC9iLTEtZWluZS1uYWNocmljaHQtdm9uLWRlci12ZXJtaWV0ZXJpbi0wNy9CMSUyMC0lMjBFaW5lJTIwTmFjaHJpY2h0JTIwdm9uJTIwZGVyJTIwVmVybWlldGVyaW5fMTEubXAzIiwic2NyaXB0IjoiQXVmIFdpZWRlcmjDtnJlbi4ifV19LHsibGV2ZWwiOiJCMSIsImdyb3VwVGl0bGUiOiJJbSBadWciLCJ0cmFja3MiOlt7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMDRfMjAyNjA2MjdfMjAyNjA2LzAxLm1wMyIsInNjcmlwdCI6IkljaCBzaXR6IGdlcmFkZSBpbSBadWcgdW5kIHdvbGx0ZSBkaWNoIGt1cnogd2VnZW4gRnJlaXRhZyBpbmZvcm1pZXJlbi4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMDRfMjAyNjA2MjdfMjAyNjA2LzAyLm1wMyIsInNjcmlwdCI6IkRpZSBCZXNwcmVjaHVuZyB3dXJkZSBhdWYgZHJlaSBVaHIgdmVyc2Nob2Jlbi4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMDRfMjAyNjA2MjdfMjAyNjA2LzAzLm1wMyIsInNjcmlwdCI6IkRlciBDaGVmIGhhdCB2b3JoZXIgbm9jaCBlaW5lbiBUZXJtaW4sIGRlc3dlZ2VuIGdlaHQgZXMgbmljaHQgZnLDvGhlci4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMDRfMjAyNjA2MjdfMjAyNjA2LzA0Lm1wMyIsInNjcmlwdCI6IlVuZCBkZXIgUmF1bSBoYXQgc2ljaCBhdWNoIGdlw6RuZGVydCDigJQgd2lyIHRyZWZmZW4gdW5zIGpldHp0IGltIDIwNCwgbmljaHQgbWVociBpbSBFcmRnZXNjaG9zcy4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMDRfMjAyNjA2MjdfMjAyNjA2LzA1Lm1wMyIsInNjcmlwdCI6Ikthbm5zdCBkdSBkYXMgYml0dGUgYW4gTGlzYSB3ZWl0ZXJnZWJlbj8ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMDRfMjAyNjA2MjdfMjAyNjA2LzA2Lm1wMyIsInNjcmlwdCI6IkljaCB2ZXJzdWNoZSBzaWUgc2Nob24gZWluZSBXZWlsZSB6dSBlcnJlaWNoZW4sIGFiZXIgc2llIG1lbGRldCBzaWNoIG5pY2h0LiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC8wNF8yMDI2MDYyN18yMDI2MDYvMDcubXAzIiwic2NyaXB0IjoiQWNoIHNvLCBkaWUgVW50ZXJsYWdlbiBoYWIgaWNoIHNjaG9uIGRhYmVpLCBkdSBicmF1Y2hzdCBuaWNodHMgdm9yenViZXJlaXRlbi4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMDRfMjAyNjA2MjdfMjAyNjA2LzA4Lm1wMyIsInNjcmlwdCI6Ik1vbWVudC4uLiBFbnRzY2h1bGRpZ3VuZy4uLiBqYSwgZGFua2UuIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkLzA0XzIwMjYwNjI3XzIwMjYwNi8wOS5tcDMiLCJzY3JpcHQiOiJTb3JyeSwgZGVyIFNjaGFmZm5lciB3YXIga3VyeiBkYS4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMDRfMjAyNjA2MjdfMjAyNjA2LzEwLm1wMyIsInNjcmlwdCI6Ik1lbGQgZGljaCBlaW5mYWNoIGt1cnosIHdlbm4gZHUgZGFzIGdlaMO2cnQgaGFzdC4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMDRfMjAyNjA2MjdfMjAyNjA2LzExLm1wMyIsInNjcmlwdCI6IkRlciBadWcgZsOkaHJ0IGdsZWljaCBpbiBkZW4gVHVubmVsLCBpY2ggaGFiIGRhbm4gd2FocnNjaGVpbmxpY2gga2VpbiBOZXR6IG1laHIuIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkLzA0XzIwMjYwNjI3XzIwMjYwNi8xMi5tcDMiLCJzY3JpcHQiOiJCaXMgc3DDpHRlci4ifV19LHsibGV2ZWwiOiJBMSIsImdyb3VwVGl0bGUiOiJJbSBTdXBlcm1hcmt0IiwidHJhY2tzIjpbeyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkLzRfMjAyNjA2MjdfMjAyNjA2MjdfMTU1Mi8xLm1wMyIsInNjcmlwdCI6IkljaCBnZWhlIGluIGRlbiBTdXBlcm1hcmt0LiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC80XzIwMjYwNjI3XzIwMjYwNjI3XzE1NTIvMi5tcDMiLCJzY3JpcHQiOiJJY2gga2F1ZmUgTWlsY2ggdW5kIEJyb3QuIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkLzRfMjAyNjA2MjdfMjAyNjA2MjdfMTU1Mi8zLm1wMyIsInNjcmlwdCI6IkRpZSBNaWxjaCBrb3N0ZXQgendlaSBFdXJvLiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC80XzIwMjYwNjI3XzIwMjYwNjI3XzE1NTIvNC5tcDMiLCJzY3JpcHQiOiJEYXMgQnJvdCBrb3N0ZXQgZWluZW4gRXVybyBmw7xuZnppZy4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvNF8yMDI2MDYyN18yMDI2MDYyN18xNTUyLzUubXAzIiwic2NyaXB0IjoiSWNoIGdlaGUgenVyIEthc3NlLiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC80XzIwMjYwNjI3XzIwMjYwNjI3XzE1NTIvNi5tcDMiLCJzY3JpcHQiOiJJY2ggYmV6YWhsZSB2aWVyIEV1cm8gZsO8bmZ6aWcuIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkLzRfMjAyNjA2MjdfMjAyNjA2MjdfMTU1Mi83Lm1wMyIsInNjcmlwdCI6IkljaCBiZXphaGxlIG1pdCBLYXJ0ZS4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvNF8yMDI2MDYyN18yMDI2MDYyN18xNTUyLzgubXAzIiwic2NyaXB0IjoiSWNoIG5laG1lIGRpZSBUYXNjaGUgdW5kIGdlaGUgbmFjaCBIYXVzZS4ifV19XQ==";
+    let secureDatabasePayload = "W3sibGV2ZWwiOiJBMiIsImdyb3VwVGl0bGUiOiJFaW4gQW5ydWYgdm9uIGRlciBBcmJlaXQiLCJ0cmFja3MiOlt7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMV8yMDI2MDYyN18yMDI2MDYyNy8xLndhdiIsInNjcmlwdCI6IkhhbGxvLCBoaWVyIGlzdCBGcmF1IE1laWVyLiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC8xXzIwMjYwNjI3XzIwMjYwNjI3LzIud2F2Iiwic2NyaXB0IjoiSWNoIHJ1ZmUgd2VnZW4gbW9yZ2VuIGFuLiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC8xXzIwMjYwNjI3XzIwMjYwNjI3LzMud2F2Iiwic2NyaXB0IjoiRGFzIE1lZXRpbmcgYmVnaW5udCB1bSBuZXVuIFVociwgbmljaHQgdW0gemVobi4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMV8yMDI2MDYyN18yMDI2MDYyNy80LndhdiIsInNjcmlwdCI6IkJpdHRlIGtvbW1lbiBTaWUgcMO8bmt0bGljaC4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMV8yMDI2MDYyN18yMDI2MDYyNy81LndhdiIsInNjcmlwdCI6IldpciB0cmVmZmVuIHVucyBpbSBLb25mZXJlbnpyYXVtIGltIHp3ZWl0ZW4gU3RvY2suIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkLzFfMjAyNjA2MjdfMjAyNjA2MjcvNi53YXYiLCJzY3JpcHQiOiJCaXR0ZSBicmluZ2VuIFNpZSBJaHJlbiBCZXJpY2h0IG1pdC4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMV8yMDI2MDYyN18yMDI2MDYyNy83LndhdiIsInNjcmlwdCI6Ildlbm4gU2llIEZyYWdlbiBoYWJlbiwgc2NocmVpYmVuIFNpZSBtaXIgZWluZSBFLU1haWwuIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkLzFfMjAyNjA2MjdfMjAyNjA2MjcvOC53YXYiLCJzY3JpcHQiOiJEYW5rZSB1bmQgYmlzIG1vcmdlbi4ifV19LHsibGV2ZWwiOiJCMSIsImdyb3VwVGl0bGUiOiJFaW5lIE5hY2hyaWNodCB2b24gZGVyIFZlcm1pZXRlcmluIiwidHJhY2tzIjpbeyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkL2ItMS1laW5lLW5hY2hyaWNodC12b24tZGVyLXZlcm1pZXRlcmluLTA3L0IxJTIwLSUyMEVpbmUlMjBOYWNocmljaHQlMjB2b24lMjBkZXIlMjBWZXJtaWV0ZXJpbl8wMS5tcDMiLCJzY3JpcHQiOiJHdXRlbiBUYWcsIGhpZXIgaXN0IEZyYXUgSG9mZm1hbm4sIElocmUgVmVybWlldGVyaW4uIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkL2ItMS1laW5lLW5hY2hyaWNodC12b24tZGVyLXZlcm1pZXRlcmluLTA3L0IxJTIwLSUyMEVpbmUlMjBOYWNocmljaHQlMjB2b24lMjBkZXIlMjBWZXJtaWV0ZXJpbl8wMi5tcDMiLCJzY3JpcHQiOiJJY2ggbWVsZGUgbWljaCB3ZWdlbiBkZXIgV29obnVuZyBpbSBkcml0dGVuIFN0b2NrLiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC9iLTEtZWluZS1uYWNocmljaHQtdm9uLWRlci12ZXJtaWV0ZXJpbi0wNy9CMSUyMC0lMjBFaW5lJTIwTmFjaHJpY2h0JTIwdm9uJTIwZGVyJTIwVmVybWlldGVyaW5fMDMubXAzIiwic2NyaXB0IjoiRGVyIEhhbmR3ZXJrZXIga29tbXQgbsOkY2hzdGUgV29jaGUgRGllbnN0YWcsIHVtIGRpZSBIZWl6dW5nIHp1IHJlcGFyaWVyZW4uIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkL2ItMS1laW5lLW5hY2hyaWNodC12b24tZGVyLXZlcm1pZXRlcmluLTA3L0IxJTIwLSUyMEVpbmUlMjBOYWNocmljaHQlMjB2b24lMjBkZXIlMjBWZXJtaWV0ZXJpbl8wNC5tcDMiLCJzY3JpcHQiOiJFciB3aXJkIGdlZ2VuIHplaG4gVWhyIG1vcmdlbnMgZGEgc2Vpbi4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvYi0xLWVpbmUtbmFjaHJpY2h0LXZvbi1kZXItdmVybWlldGVyaW4tMDcvQjElMjAtJTIwRWluZSUyME5hY2hyaWNodCUyMHZvbiUyMGRlciUyMFZlcm1pZXRlcmluXzA1Lm1wMyIsInNjcmlwdCI6IkJpdHRlIHN0ZWxsZW4gU2llIHNpY2hlciwgZGFzcyBqZW1hbmQgenUgSGF1c2UgaXN0LiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC9iLTEtZWluZS1uYWNocmljaHQtdm9uLWRlci12ZXJtaWV0ZXJpbi0wNy9CMSUyMC0lMjBFaW5lJTIwTmFjaHJpY2h0JTIwdm9uJTIwZGVyJTIwVmVybWlldGVyaW5fMDYubXAzIiwic2NyaXB0IjoiRmFsbHMgZGFzIG5pY2h0IG3DtmdsaWNoIGlzdCwga8O2bm5lbiBTaWUgbWlyIGVpbmVuIEVyc2F0enNjaGzDvHNzZWwgZ2ViZW4uIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkL2ItMS1laW5lLW5hY2hyaWNodC12b24tZGVyLXZlcm1pZXRlcmluLTA3L0IxJTIwLSUyMEVpbmUlMjBOYWNocmljaHQlMjB2b24lMjBkZXIlMjBWZXJtaWV0ZXJpbl8wNy5tcDMiLCJzY3JpcHQiOiJBdcOfZXJkZW0gbcO2Y2h0ZSBpY2ggU2llIGRhcmFuIGVyaW5uZXJuLCBkYXNzIGRpZSBNaWV0ZSBhbSBlcnN0ZW4gZGVzIE1vbmF0cyBmw6RsbGlnIGlzdC4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvYi0xLWVpbmUtbmFjaHJpY2h0LXZvbi1kZXItdmVybWlldGVyaW4tMDcvQjElMjAtJTIwRWluZSUyME5hY2hyaWNodCUyMHZvbiUyMGRlciUyMFZlcm1pZXRlcmluXzA4Lm1wMyIsInNjcmlwdCI6IkRpZXNlbiBNb25hdCBoYWJlIGljaCBub2NoIGtlaW5lIFphaGx1bmcgZXJoYWx0ZW4uIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkL2ItMS1laW5lLW5hY2hyaWNodC12b24tZGVyLXZlcm1pZXRlcmluLTA3L0IxJTIwLSUyMEVpbmUlMjBOYWNocmljaHQlMjB2b24lMjBkZXIlMjBWZXJtaWV0ZXJpbl8wOS5tcDMiLCJzY3JpcHQiOiJCaXR0ZSDDvGJlcndlaXNlbiBTaWUgZGVuIEJldHJhZyBzbyBzY2huZWxsIHdpZSBtw7ZnbGljaCBhdWYgbWVpbiBLb250by4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvYi0xLWVpbmUtbmFjaHJpY2h0LXZvbi1kZXItdmVybWlldGVyaW4tMDcvQjElMjAtJTIwRWluZSUyME5hY2hyaWNodCUyMHZvbiUyMGRlciUyMFZlcm1pZXRlcmluXzEwLm1wMyIsInNjcmlwdCI6IkJlaSB3ZWl0ZXJlbiBGcmFnZW4gZXJyZWljaGVuIFNpZSBtaWNoIHVudGVyIGRlciBiZWthbm50ZW4gTnVtbWVyLiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC9iLTEtZWluZS1uYWNocmljaHQtdm9uLWRlci12ZXJtaWV0ZXJpbi0wNy9CMSUyMC0lMjBFaW5lJTIwTmFjaHJpY2h0JTIwdm9uJTIwZGVyJTIwVmVybWlldGVyaW5fMTEubXAzIiwic2NyaXB0IjoiQXVmIFdpZWRlcmjDtnJlbi4ifV19LHsibGV2ZWwiOiJCMSIsImdyb3VwVGl0bGUiOiJJbSBadWciLCJ0cmFja3MiOlt7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMDRfMjAyNjA2MjdfMjAyNjA2LzAxLm1wMyIsInNjcmlwdCI6IkljaCBzaXR6IGdlcmFkZSBpbSBadWcgdW5kIHdvbGx0ZSBkaWNoIGt1cnogd2VnZW4gRnJlaXRhZyBpbmZvcm1pZXJlbi4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMDRfMjAyNjA2MjdfMjAyNjA2LzAyLm1wMyIsInNjcmlwdCI6IkRpZSBCZXNwcmVjaHVuZyB3dXJkZSBhdWYgZHJlaSBVaHIgdmVyc2Nob2Jlbi4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMDRfMjAyNjA2MjdfMjAyNjA2LzAzLm1wMyIsInNjcmlwdCI6IkRlciBDaGVmIGhhdCB2b3JoZXIgbm9jaCBlaW5lbiBUZXJtaW4sIGRlc3dlZ2VuIGdlaHQgZXMgbmljaHQgZnLDvGhlci4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMDRfMjAyNjA2MjdfMjAyNjA2LzA0Lm1wMyIsInNjcmlwdCI6IlVuZCBkZXIgUmF1bSBoYXQgc2ljaCBhdWNoIGdlw6RuZGVydCDigJQgd2lyIHRyZWZmZW4gdW5zIGpldHp0IGltIDIwNCwgbmljaHQgbWVociBpbSBFcmRnZXNjaG9zcy4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMDRfMjAyNjA2MjdfMjAyNjA2LzA1Lm1wMyIsInNjcmlwdCI6Ikthbm5zdCBkdSBkYXMgYml0dGUgYW4gTGlzYSB3ZWl0ZXJnZWJlbj8ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMDRfMjAyNjA2MjdfMjAyNjA2LzA2Lm1wMyIsInNjcmlwdCI6IkljaCB2ZXJzdWNoZSBzaWUgc2Nob24gZWluZSBXZWlsZSB6dSBlcnJlaWNoZW4sIGFiZXIgc2llIG1lbGRldCBzaWNoIG5pY2h0LiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC8wNF8yMDI2MDYyN18yMDI2MDYvMDcubXAzIiwic2NyaXB0IjoiQWNoIHNvLCBkaWUgVW50ZXJsYWdlbiBoYWIgaWNoIHNjaG9uIGRhYmVpLCBkdSBicmF1Y2hzdCBuaWNodHMgdm9yenViZXJlaXRlbi4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMDRfMjAyNjA2MjdfMjAyNjA2LzA4Lm1wMyIsInNjcmlwdCI6Ik1vbWVudC4uLiBFbnRzY2h1bGRpZ3VuZy4uLiBqYSwgZGFua2UuIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkLzA0XzIwMjYwNjI3XzIwMjYwNi8wOS5tcDMiLCJzY3JpcHQiOiJTb3JyeSwgZGVyIFNjaGFmZm5lciB3YXIga3VyeiBkYS4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMDRfMjAyNjA2MjdfMjAyNjA2LzEwLm1wMyIsInNjcmlwdCI6Ik1lbGQgZGljaCBlaW5mYWNoIGt1cnosIHdlbm4gZHUgZGFzIGdlaMO2cnQgaGFzdC4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMDRfMjAyNjA2MjdfMjAyNjA2LzExLm1wMyIsInNjcmlwdCI6IkRlciBadWcgZsOkaHJ0IGdsZWljaCBpbiBkZW4gVHVubmVsLCBpY2ggaGFiIGRhbm4gd2FocnNjaGVpbmxpY2gga2VpbiBOZXR6IG1laHIuIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkLzA0XzIwMjYwNjI3XzIwMjYwNi8xMi5tcDMiLCJzY3JpcHQiOiJCaXMgc3DDpHRlci4ifV19LHsibGV2ZWwiOiJBMSIsImdyb3VwVGl0bGUiOiJJbSBTdXBlcm1hcmt0IiwidHJhY2tzIjpbeyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkLzRfMjAyNjA2MjdfMjAyNjA2MjdfMTU1Mi8xLm1wMyIsInNjcmlwdCI6IkljaCBnZWhlIGluIGRlbiBTdXBlcm1hcmt0LiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC80XzIwMjYwNjI3XzIwMjYwNjI3XzE1NTIvMi5tcDMiLCJzY3JpcHQiOiJJY2gga2F1ZmUgTWlsY2ggdW5kIEJyb3QuIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkLzRfMjAyNjA2MjdfMjAyNjA2MjdfMTU1Mi8zLm1wMyIsInNjcmlwdCI6IkRpZSBNaWxjaCBrb3N0ZXQgendlaSBFdXJvLiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC80XzIwMjYwNjI3XzIwMjYwNjI3XzE1NTIvNC5tcDMiLCJzY3JpcHQiOiJEYXMgQnJvdCBrb3N0ZXQgZWluZW4gRXVybyBmw7xuZnppZy4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvNF8yMDI2MDYyN18yMDI2MDYyN18xNTUyLzUubXAzIiwic2NyaXB0IjoiSWNoIGdlaGUgenVyIEthc3NlLiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC80XzIwMjYwNjI3XzIwMjYwNjI3XzE1NTIvNi5tcDMiLCJzY3JpcHQiOiJJY2ggYmV6YWhsZSB2aWVyIEV1cm8gZsO8bmZ6aWcuIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkLzRfMjAyNjA2MjdfMjAyNjA2MjdfMTU1Mi83Lm1wMyIsInNjcmlwdCI6IkljaCBiZXphaGxlIG1pdCBLYXJ0ZS4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvNF8yMDI2MDYyN18yMDI2MDYyN18xNTUyLzgubXAzIiwic2NyaXB0IjoiSWNoIG5laG1lIGRpZSBUYXNjaGUgdW5kIGdlaGUgbmFjaCBIYXVzZS4ifV19XQ=="; 
+
     let globalDatabase = [];
     let activeTracks = [];
     let currentIndex = 0;
@@ -376,6 +701,146 @@
         }
     }, true);
 
+    /* --- AUDIO CALL ROOM INTERACTION CONTROL ENGINE --- */
+    let localAudioStream = null;  // Stores your mic stream
+    let peerInstance = null;      // Holds the PeerJS connection instance
+    let currentCall = null;       // Tracks the active call connection
+
+    // 1. Core function to ask for microphone access
+    async function requestMicrophoneAccess() {
+        try {
+            // Request clean audio stream from the browser without video
+            localAudioStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+            console.log("🎙️ Mikrofon-Zugriff erfolgreich erlaubt.");
+            return true;
+        } catch (error) {
+            console.error("Fehler beim Mikrofon-Zugriff:", error);
+            alert("Fehler: Um zu sprechen, musst du den Zugriff auf dein Mikrofon erlauben!");
+            return false;
+        }
+    }
+
+    // 2. Setup PeerJS configuration when building a room
+    function initializePeerNetworkConnection(callback) {
+        // Create a peer instance connected to PeerJS public cloud servers
+        peerInstance = new Peer();
+
+        peerInstance.on('open', (uniqueId) => {
+            console.log("🔗 Erfolgreich mit PeerJS-Netzwerk verbunden. Deine ID: " + uniqueId);
+            if (callback) callback(uniqueId);
+        });
+
+        peerInstance.on('error', (err) => {
+            console.error("PeerJS Netzwerkfehler:", err.type);
+            alert("Verbindungsfehler: " + err.type);
+            leaveAudioCallRoom();
+        });
+    }
+
+    // 3. Workflow triggered when clicking "➕ Raum erstellen"
+    async function initiateCreateRoomWorkflow() {
+        const roomName = document.getElementById('voice-room-input').value.trim();
+        if (!roomName) return alert("Bitte gib einen Raumnamen ein!");
+
+        // Step A: Get microphone permission first
+        const hasMicAccess = await requestMicrophoneAccess();
+        if (!hasMicAccess) return;
+
+        // Step B: Connect to the network
+        initiateUIBlockToCallState(roomName);
+        
+        initializePeerNetworkConnection((myUniqueId) => {
+            // Update the UI showing we are hosting
+            document.getElementById('participant-list').innerHTML = `
+                <li>Du (Host - Warten auf Partner...)</li>
+            `;
+            
+            // TODO (Step 3): Save this room name and myUniqueId into Firebase
+            console.log(`Raum "${roomName}" erstellt. Warte auf Anrufe unter ID: ${myUniqueId}`);
+            
+            // Listen for incoming calls from other peers
+            setupIncomingCallListener();
+        });
+    }
+
+    // 4. Workflow triggered when clicking "🚪 Raum beitreten"
+    async function initiateJoinRoomWorkflow() {
+        const roomName = document.getElementById('voice-room-input').value.trim();
+        if (!roomName) return alert("Bitte gib einen Raumnamen oder Code ein!");
+
+        // Step A: Get microphone permission
+        const hasMicAccess = await requestMicrophoneAccess();
+        if (!hasMicAccess) return;
+
+        initiateUIBlockToCallState(roomName);
+
+        initializePeerNetworkConnection((myUniqueId) => {
+            document.getElementById('participant-list').innerHTML = `
+                <li>Du (Verbinde...)</li>
+            `;
+            
+            // TODO (Step 3): Fetch the host's peer ID from Firebase using the room name
+            // For testing Phase 2 right now, it waits for input.
+            console.log(`Suche nach Raum "${roomName}"...`);
+        });
+    }
+
+    // Helper to toggle visual states smoothly
+    function initiateUIBlockToCallState(roomName) {
+        document.getElementById('active-room-label').textContent = roomName;
+        document.getElementById('voice-lobby-state').classList.add('hidden');
+        document.getElementById('voice-call-state').classList.remove('hidden');
+    }
+
+    // 5. Clean up when exiting a call
+    function leaveAudioCallRoom() {
+        // Stop the microphone stream tracks to turn off the recording light
+        if (localAudioStream) {
+            localAudioStream.getTracks().forEach(track => track.stop());
+            localAudioStream = null;
+        }
+
+        // Close peer connections
+        if (currentCall) { currentCall.close(); currentCall = null; }
+        if (peerInstance) { peerInstance.destroy(); peerInstance = null; }
+
+        // Reset UI frames
+        document.getElementById('voice-call-state').classList.add('hidden');
+        document.getElementById('voice-lobby-state').classList.remove('hidden');
+        document.getElementById('participant-list').innerHTML = `<li>Du (Warten auf Partner...)</li>`;
+        console.log("❌ Raum verlassen und Verbindungen getrennt.");
+    }
+
+    // 6. Mic Mute button configuration
+    function toggleMicrophoneMute() {
+        if (!localAudioStream) return;
+        
+        const audioTracks = localAudioStream.getAudioTracks();
+        if (audioTracks.length === 0) return;
+
+        // Toggle the track track state (enabled vs disabled)
+        const isMuted = !audioTracks[0].enabled;
+        audioTracks[0].enabled = isMuted;
+
+        const btn = document.getElementById('mic-toggle-btn');
+        if (!isMuted) {
+            btn.classList.replace('btn-warning', 'btn-secondary');
+            btn.innerHTML = "🔇 Mikrofon stummschalten (Stumm)";
+        } else {
+            btn.classList.replace('btn-secondary', 'btn-warning');
+            btn.innerHTML = "🎙️ Mikrofon stummschalten";
+        }
+    }
+
+    // Placeholder listening logic for incoming calls
+    function setupIncomingCallListener() {
+        peerInstance.on('call', (incomingCall) => {
+            console.log("Incoming call detected!");
+            // We will hook this up in Step 4 to auto-answer
+        });
+    }
+
+    /* --- APPLICATION RUNTIME CONTROLLERS --- */
     function renderHomeLevelButtons() {
         const container = document.getElementById('home-level-container');
         const levels = ["A1", "A2", "B1", "B2", "C1"];
@@ -398,6 +863,7 @@
         selectedLevel = level;
         document.getElementById('current-selected-level-badge').textContent = level;
         document.getElementById('level-selection-card').classList.add('hidden');
+        document.getElementById('voice-lobby-card').classList.add('hidden'); // Clean viewport view spacing
         document.getElementById('exercises-list-card').classList.remove('hidden');
         renderVisitorExercisesList(level);
     }
@@ -405,6 +871,7 @@
     function goBackToLevelSelection() {
         document.getElementById('exercises-list-card').classList.add('hidden');
         document.getElementById('level-selection-card').classList.remove('hidden');
+        document.getElementById('voice-lobby-card').classList.remove('hidden');
         renderHomeLevelButtons();
     }
 
@@ -688,6 +1155,7 @@
     function backToLevelSelectionFromSummary() {
         document.getElementById('summary-card').classList.add('hidden');
         document.getElementById('level-selection-card').classList.remove('hidden');
+        document.getElementById('voice-lobby-card').classList.remove('hidden');
         renderHomeLevelButtons();
     }
 </script>
