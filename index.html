@@ -165,7 +165,6 @@
         
         .group-info span { font-size: 13px; color: #64748b; }
 
-        /* --- DYNAMISCHE STRUKTUR & CONTRAST BADGES --- */
         .badge-container {
             display: flex;
             gap: 6px;
@@ -204,19 +203,16 @@
             font-weight: bold;
         }
 
-        /* --- CSS ICON ANIMATIONS --- */
         .anim-icon {
             display: inline-block;
             vertical-align: middle;
             transition: transform 0.3s ease;
         }
 
-        /* Offen-Animation: Sanftes Schwingen des Bügels */
         .open-status:hover .anim-icon, .status-badge.open .anim-icon {
             animation: unlock-pulse 1.8s infinite ease-in-out;
         }
 
-        /* Gesperrt-Animation: Kraftvolles Einrasten/Rütteln */
         .status-option input:checked + .custom-radio.locked-status .anim-icon, .status-badge.locked .anim-icon {
             animation: lock-snap 0.45s ease-in-out;
         }
@@ -278,7 +274,6 @@
         
         .hidden { display: none !important; }
 
-        /* --- PRE-START PRIVACY SETTINGS --- */
         .toggle-status-group {
             display: flex;
             gap: 10px;
@@ -320,7 +315,6 @@
             background-color: #222; color: #00ff00; font-family: monospace; padding: 12px; border-radius: 6px; font-size: 11px; max-height: 120px; overflow-y: auto; word-break: break-all; margin-top: 10px;
         }
 
-        /* --- CHAT TIMING & CONFIG --- */
         .chat-toggle-btn {
             position: fixed; bottom: 15px; right: 15px; background-color: var(--primary-color); color: white; border: none; padding: 12px 18px; border-radius: 30px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.2); cursor: pointer; z-index: 1000; font-size: 14px;
         }
@@ -538,7 +532,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, push, onChildAdded, onValue, limitToLast, set, get, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, push, onChildAdded, onValue, limitToLast, set, get, remove, query } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBVDwizQN7wFEQw7hUGoo-1YA-c5_tytxQ",
@@ -634,7 +628,7 @@
                 item.className = "group-item";
                 item.innerHTML = `
                     <div class="group-info">
-                        <h4>🗣️ Room: ${roomName}</h4>
+                        <h4>🗣️ Raum: ${roomName}</h4>
                         <div class="badge-container">
                             <span class="status-badge ${status}">
                                 ${status === 'open' ? `
@@ -656,29 +650,30 @@
 <script>
     const _0x4d2a = ["Ein Anruf von der Arbeit", "Hallo, hier ist Frau Meier.", "Ich rufe wegen morgen an.", "Das Meeting beginnt um neun Uhr, nicht um zehn.", "Bitte kommen Sie pünktlich.", "Wir treffen uns im Konferenzraum im zweiten Stock.", "Bitte bringen Sie Ihren Bericht mit.", "Wenn Sie Fragen haben, schreiben Sie mir eine E-Mail.", "Danke und bis morgen.", "Eine Nachricht von der Vermieterin", "Guten Tag, hier ist Frau Hoffmann, Ihre Vermieterin.", "Ich melde mich wegen der Wohnung im dritten Stock.", "Der Handwerker kommt nächste Woche Dienstag, um die Heizung zu reparieren.", "Das macht ungefähr eine Stunde Arbeit.", "Sie müssen dafür nicht zu Hause sein.", "Ich habe einen Schlüssel.", "Vielen Dank und schönen Nachmittag."];
     
+    // Obfuscated Audio Resources Database using Base64 encryption format
     let globalDatabase = [
         {
             level: "A2", groupTitle: _0x4d2a[0], tracks: [
-                { url: "https://archive.org/download/1_20260627_20260626/1.wav", script: _0x4d2a[1] },
-                { url: "https://archive.org/download/1_20260627_20260627/2.wav", script: _0x4d2a[2] },
-                { url: "https://archive.org/download/1_20260627_20260627/3.wav", script: _0x4d2a[3] },
-                { url: "https://archive.org/download/1_20260627_20260627/4.wav", script: _0x4d2a[4] },
-                { url: "https://archive.org/download/1_20260627_20260627/5.wav", script: _0x4d2a[5] },
-                { url: "https://archive.org/download/1_20260627_20260627/6.wav", script: _0x4d2a[6] },
-                { url: "https://archive.org/download/1_20260627_20260627/7.wav", script: _0x4d2a[7] },
-                { url: "https://archive.org/download/1_20260627_20260627/8.wav", script: _0x4d2a[8] }
+                { url: "aHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC8xXzIwMjYwNjI3XzIwMjYwNjI2LzEud2F2", script: _0x4d2a[1] },
+                { url: "aHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC8xXzIwMjYwNjI3XzIwMjYwNjI3LzIud2F2", script: _0x4d2a[2] },
+                { url: "aHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC8xXzIwMjYwNjI3XzIwMjYwNjI3LzMud2F2", script: _0x4d2a[3] },
+                { url: "aHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC8xXzIwMjYwNjI3XzIwMjYwNjI3LzQud2F2", script: _0x4d2a[4] },
+                { url: "aHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC8xXzIwMjYwNjI3XzIwMjYwNjI3LzUud2F2", script: _0x4d2a[5] },
+                { url: "aHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC8xXzIwMjYwNjI3XzIwMjYwNjI3LzYud2F2", script: _0x4d2a[6] },
+                { url: "aHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC8xXzIwMjYwNjI3XzIwMjYwNjI3Lzdud2F2", script: _0x4d2a[7] },
+                { url: "aHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC8xXzIwMjYwNjI3XzIwMjYwNjI3Lzgud2F2", script: _0x4d2a[8] }
             ]
         },
         {
             level: "B1", groupTitle: _0x4d2a[9], tracks: [
-                { url: "https://archive.org/download/b-1-eine-nachricht-von-der-vermieterin-07/B1%20-%20Eine%20Nachricht%20von%20der%20Vermieterin_01.mp3", script: _0x4d2a[10] },
-                { url: "https://archive.org/download/b-1-eine-nachricht-von-der-vermieterin-07/B1%20-%20Eine%20Nachricht%20von%20der%20Vermieterin_02.mp3", script: _0x4d2a[11] },
-                { url: "https://archive.org/download/b-1-eine-nachricht-von-der-vermieterin-07/B1%20-%20Eine%20Nachricht%20von%20der%20Vermieterin_03.mp3", script: _0x4d2a[12] },
-                { url: "https://archive.org/download/b-1-eine-nachricht-von-der-vermieterin-07/B1%20-%20Eine%20Nachricht%20von%20der%20Vermieterin_04.mp3", script: _0x4d2a[13] },
-                { url: "https://archive.org/download/b-1-eine-nachricht-von-der-vermieterin-07/B1%20-%20Eine%20Nachricht%20von%20der%20Vermieterin_05.mp3", script: _0x4d2a[14] },
-                { url: "https://archive.org/download/b-1-eine-nachricht-von-der-vermieterin-07/B1%20-%20Eine%20Nachricht%20von%20der%20Vermieterin_06.mp3", script: _0x4d2a[15] },
-                { url: "https://archive.org/download/b-1-eine-nachricht-von-der-vermieterin-07/B1%20-%20Eine%20Nachricht%20von%20der%20Vermieterin_07.mp3", script: _0x4d2a[15] },
-                { url: "https://archive.org/download/b-1-eine-nachricht-von-der-vermieterin-07/B1%20-%20Eine%20Nachricht%20von%20der%20Vermieterin_08.mp3", script: _0x4d2a[16] }
+                { url: "aHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC9iLTEtZWluZS1uYWNocmljaHQtdm9uLWRlci12ZXJtaWV0ZXJpbi0wNy9CMSUyMC0lMjBFaW5lJTIwTmFjaHJpY2h0JTIwdm9uJTIwZGVyJTIwVmVybWlldGVyaW5fMDEubXAz", script: _0x4d2a[10] },
+                { url: "aHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC9iLTEtZWluZS1uYWNocmljaHQtdm9uLWRlci12ZXJtaWV0ZXJpbi0wNy9CMSUyMC0lMjBFaW5lJTIwTmFjaHJpY2h0JTIwdm9uJTIwZGVyJTIwVmVybWlldGVyaW5fMDIubXAz", script: _0x4d2a[11] },
+                { url: "aHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC9iLTEtZWluZS1uYWNocmljaHQtdm9uLWRlci12ZXJtaWV0ZXJpbi0wNy9CMSUyMC0lMjBFaW5lJTIwTmFjaHJpY2h0JTIwdm9uJTIwZGVyJTIwVmVybWlldGVyaW5fMDMubXAz", script: _0x4d2a[12] },
+                { url: "aHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC9iLTEtZWluZS1uYWNocmljaHQtdm9uLWRlci12ZXJtaWV0ZXJpbi0wNy9CMSUyMC0lMjBFaW5lJTIwTmFjaHJpY2h0JTIwdm9uJTIwZGVyJTIwVmVybWlldGVyaW5fMDQubXAz", script: _0x4d2a[13] },
+                { url: "aHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC9iLTEtZWluZS1uYWNocmljaHQtdm9uLWRlci12ZXJtaWV0ZXJpbi0wNy9CMSUyMC0lMjBFaW5lJTIwTmFjaHJpY2h0JTIwdm9uJTIwZGVyJTIwVmVybWlldGVyaW5fMDUubXAz", script: _0x4d2a[14] },
+                { url: "aHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC9iLTEtZWluZS1uYWNocmljaHQtdm9uLWRlci12ZXJtaWV0ZXJpbi0wNy9CMSUyMC0lMjBFaW5lJTIwTmFjaHJpY2h0JTIwdm9uJTIwZGVyJTIwVmVybWlldGVyaW5fMDYubXAz", script: _0x4d2a[15] },
+                { url: "aHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC9iLTEtZWluZS1uYWNocmljaHQtdm9uLWRlci12ZXJtaWV0ZXJpbi0wNy9CMSUyMC0lMjBFaW5lJTIwTmFjaHJpY2h0JTIwdm9uJTIwZGVyJTIwVmVybWlldGVyaW5fMDcubXAz", script: _0x4d2a[15] },
+                { url: "aHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC9iLTEtZWluZS1uYWNocmljaHQtdm9uLWRlci12ZXJtaWV0ZXJpbi0wNy9CMSUyMC0lMjBFaW5lJTIwTmFjaHJpY2h0JTIwdm9uJTIwZGVyJTIwVmVybWlldGVyaW5fMDgubXAz", script: _0x4d2a[16] }
             ]
         }
     ];
@@ -859,7 +854,8 @@
         if(!title || links.length !== scripts.length) return alert("Fehler im Formular!");
 
         let g = { level: lvl, groupTitle: title, tracks: [] };
-        links.forEach((l, i) => g.tracks.push({ url: l, script: scripts[i] }));
+        // Admin configuration saves straight text, but exports encrypted format
+        links.forEach((l, i) => g.tracks.push({ url: btoa(l), script: scripts[i] }));
         if(editingGroupIndex !== null) { globalDatabase[editingGroupIndex] = g; editingGroupIndex = null; }
         else globalDatabase.push(g);
 
@@ -879,7 +875,9 @@
         editingGroupIndex = i; const g = globalDatabase[i];
         document.getElementById('admin-level-select').value = g.level;
         document.getElementById('admin-group-title').value = g.groupTitle;
-        document.getElementById('admin-links-list').value = g.tracks.map(t=>t.url).join('\n');
+        document.getElementById('admin-links-list').value = g.tracks.map(t=> {
+            try { return atob(t.url); } catch(e) { return t.url; }
+        }).join('\n');
         document.getElementById('admin-scripts-list').value = g.tracks.map(t=>t.script).join('\n');
     }
     window.removeGroupAsAdmin = function(i) { globalDatabase.splice(i,1); renderAdminTrackList(); renderHomeLevelButtons(); }
@@ -907,7 +905,16 @@
         document.getElementById('result').style.display = "none";
         playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
         document.getElementById('progress-indicator').textContent = `Satz ${currentIndex + 1}/${activeTracks.length}`;
-        nativePlayer.src = activeTracks[currentIndex].url;
+        
+        // --- REAL TIME BASE64 DECODING ENGINE LINKAGE ---
+        const obfuscatedUrl = activeTracks[currentIndex].url;
+        try {
+            // Decodes Base64 track link directly to the native audio engine
+            nativePlayer.src = atob(obfuscatedUrl);
+        } catch(e) {
+            // Fallback safety if clean plaintext link was parsed
+            nativePlayer.src = obfuscatedUrl;
+        }
     }
 
     nativePlayer.addEventListener('timeupdate', () => {
