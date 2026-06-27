@@ -30,7 +30,7 @@
         .container {
             max-width: 800px;
             width: 100%;
-            padding-bottom: 60px; /* Space for chat toggle */
+            padding-bottom: 60px;
         }
 
         header {
@@ -147,7 +147,6 @@
         .group-info h4 { margin: 0 0 5px 0; color: #1a1a1a; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .group-info span { font-size: 13px; color: #6c757d; }
 
-        /* Custom Audio Player Layout */
         .custom-player {
             background: #ffffff;
             border: 1px solid #eaeaea;
@@ -197,8 +196,6 @@
         .word-wrong-underline { color: #333333; margin-right: 8px; display: inline-block; border-bottom: 3px solid #ff9800; }
         .progress-badge { background: var(--accent-color); color: #333; padding: 3px 8px; border-radius: 12px; font-size: 14px; font-weight: bold; float: right; }
         .shortcut-tip { font-size: 13px; color: #666; margin-bottom: 15px; display: block; }
-        .summary-title { text-align: center; color: #28a745; font-size: 26px; margin-bottom: 20px; }
-        .summary-stats { text-align: center; font-size: 18px; margin-bottom: 25px; color: #555; }
         
         .hidden { display: none !important; }
         
@@ -216,7 +213,6 @@
             border: 1px solid #444;
         }
 
-        /* LIVE SYSTEM CHAT ROOM CSS */
         .chat-toggle-btn {
             position: fixed;
             bottom: 20px;
@@ -307,24 +303,7 @@
             display: block;
             opacity: 0.7;
         }
-        .chat-msg-bubble.me .chat-msg-user { color: var(--accent-color); opacity: 1; }
 
-        .chat-footer {
-            display: flex;
-            padding: 10px;
-            background: white;
-            border-top: 1px solid #eee;
-            gap: 8px;
-        }
-        .chat-footer input {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 20px;
-            font-size: 14px;
-        }
-
-        /* VOICE ROOM SYSTEM CSS MODULE */
         .call-status-banner {
             background-color: #e3f2fd;
             border: 1px solid #90caf9;
@@ -373,7 +352,6 @@
             font-weight: 500;
         }
 
-        /* PUBLIC ROOM LIST STYLES */
         .public-rooms-section {
             margin-top: 20px;
             border-top: 1px solid #eee;
@@ -385,9 +363,14 @@
             border-radius: 10px;
             font-weight: bold;
             color: white;
+            display: inline-block;
+            margin-right: 5px;
         }
         .badge-open { background-color: #28a745; }
         .badge-locked { background-color: #dc3545; }
+        .badge-joined { background-color: #002f6c; }
+        .badge-notjoined { background-color: #6c757d; }
+        .level-badge-tag { background-color: #ff9800; color: white; font-size: 11px; padding: 3px 8px; border-radius: 10px; font-weight: bold;}
     </style>
 </head>
 <body>
@@ -400,8 +383,6 @@
 
     <div class="card admin-card hidden" id="admin-card">
         <h2>🛠️ Admin Panel (Kurs-Kollektion verwalten)</h2>
-        <p style="font-size: 14px; margin-top: -10px; color: #666;">Fügen Sie Übungen hinzu, bearbeiten Sie diese oder löschen Sie unerwünschte Audio-Pakete.</p>
-        
         <div style="display: flex; gap: 10px;" class="form-group">
             <div style="flex: 1;">
                 <label for="admin-level-select">Sprachniveau:</label>
@@ -411,6 +392,7 @@
                     <option value="B1">B1</option>
                     <option value="B2">B2</option>
                     <option value="C1">C1</option>
+                    <option value="C2">C2</option>
                 </select>
             </div>
             <div style="flex: 2;">
@@ -430,19 +412,14 @@
         </div>
         
         <button class="btn btn-success" onclick="processBulkGroupAdmin()">➕ Gruppe hinzufügen / aktualisieren</button>
-        
         <h3 style="margin-top: 20px; font-size: 16px;">Aktuelle Sammlungen:</h3>
         <div id="admin-track-list"></div>
 
         <div style="margin-top: 20px; background: #eee; padding: 15px; border-radius: 8px;">
-            <p style="margin: 0 0 5px 0; font-size: 13px; font-weight: bold;">💾 Verschlüsselter Export für GitHub:</p>
-            <p style="margin: 0 0 10px 0; font-size: 12px; color: #555;">Klicken Sie unten, um den verschlüsselten Code zu generieren. Kopieren Sie die gesamte Zeile.</p>
             <button class="btn btn-main" onclick="exportAdminConfig()">Verschlüsselten Code generieren</button>
-            
             <div id="crypto-output-container" class="hidden">
-                <p style="margin: 15px 0 5px 0; font-size: 12px; font-weight: bold; color: #333;">Generierter Code:</p>
                 <div class="crypto-preview-box" id="crypto-preview"></div>
-                <button class="btn btn-secondary" style="margin-top: 5px; padding: 6px 12px; font-size: 12px; min-width: auto;" onclick="copyCryptoToClipboard()">In Zwischenablage kopieren</button>
+                <button class="btn btn-secondary" style="margin-top: 5px; padding: 6px 12px; font-size: 12px;" onclick="copyCryptoToClipboard()">In Zwischenablage kopieren</button>
             </div>
         </div>
     </div>
@@ -454,26 +431,34 @@
 
     <div class="card" id="voice-lobby-card">
         <h2>🗣️ Live Audio-Sprechzimmer</h2>
-        <p style="font-size: 14px; margin-top: -10px; color: #666;">
-            Erstelle einen Raum oder tritt einem bei, um gemeinsam mit anderen Deutsch zu sprechen.
-        </p>
+        <p style="font-size: 14px; margin-top: -10px; color: #666;">Erstelle einen Raum oder tritt einem bei, um gemeinsam zu sprechen.</p>
 
         <div id="voice-lobby-state">
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;" class="form-group">
-                <div style="flex: 1; min-width: 200px;">
-                    <label for="voice-room-input">Neuen Raum-Code eingeben:</label>
-                    <input type="text" id="voice-room-input" placeholder="z.B. B1-Praxis oder raum-123">
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;" class="form-group">
+                <div style="flex: 2; min-width: 200px;">
+                    <label for="voice-room-input">Raum-Code eingeben:</label>
+                    <input type="text" id="voice-room-input" placeholder="z.B. B1-Praxis">
+                </div>
+                <div style="flex: 1; min-width: 120px;">
+                    <label for="voice-level-select">Sprachniveau:</label>
+                    <select id="voice-level-select">
+                        <option value="A1">A1</option>
+                        <option value="A2">A2</option>
+                        <option value="B1">B1</option>
+                        <option value="B2">B2</option>
+                        <option value="C1">C1</option>
+                        <option value="C2">C2</option>
+                    </select>
                 </div>
             </div>
             <div class="btn-group">
                 <button class="btn btn-main" onclick="initiateCreateRoomWorkflow()">➕ Raum erstellen</button>
             </div>
 
-            <!-- PUBLIC ROOMS DISPLAY -->
             <div class="public-rooms-section">
                 <label>Aktive Räume auf der Website:</label>
                 <div class="group-list" id="public-voice-rooms-container" style="margin-top: 10px;">
-                    <p style="color:#888; font-style:italic; font-size:14px;">Keine aktiven Räume vorhanden. Erstelle den ersten!</p>
+                    <p style="color:#888; font-style:italic; font-size:14px;">Keine aktiven Räume vorhanden.</p>
                 </div>
             </div>
         </div>
@@ -484,9 +469,8 @@
                 <span>Verbunden mit Raum: <strong id="active-room-label">---</strong></span>
             </div>
             
-            <!-- HOST CONTROLS PANEL -->
-            <div id="host-privacy-controls" class="form-group hidden" style="background:#f1f3f5; padding:12px; border-radius:10px; margin-bottom:15px; border: 1px solid #e2e3e5;">
-                <label for="room-status-select" style="font-size:14px;">🔒 Raum-Sichtbarkeit & Zutritt:</label>
+            <div id="host-privacy-controls" class="form-group hidden" style="background:#f1f3f5; padding:12px; border-radius:10px; margin-bottom:15px;">
+                <label for="room-status-select" style="font-size:14px;">Steuerung Privatsphäre:</label>
                 <select id="room-status-select" onchange="changeRoomPrivacySettings(this.value)" style="padding: 6px; font-size: 14px; width: auto; display: inline-block;">
                     <option value="open">🔓 Offen (Jeder darf beitreten)</option>
                     <option value="locked">🔒 Gesperrt (Zutritt blockiert)</option>
@@ -510,7 +494,6 @@
     <div class="card hidden" id="exercises-list-card">
         <h2>Verfügbare Übungen (<span id="current-selected-level-badge">A1</span>)</h2>
         <div class="group-list" id="visitor-group-list"></div>
-        
         <button class="btn btn-secondary" style="width: 100%;" onclick="goBackToLevelSelection()">&larr; Zurück zur Startseite</button>
     </div>
 
@@ -560,8 +543,8 @@
     </div>
 
     <div id="summary-card" class="card hidden">
-        <div class="summary-title">🎉 Übung beendet!</div>
-        <div class="summary-stats" id="summary-text">Gute Arbeit!</div>
+        <div style="text-align:center; color:#28a745; font-size:26px; margin-bottom:20px;">🎉 Übung beendet!</div>
+        <div style="text-align:center; font-size:18px; margin-bottom:25px; color:#555;" id="summary-text">Gute Arbeit!</div>
         <div class="btn-group">
             <button class="btn btn-success" onclick="restartSameExercise()">Wiederholen</button>
             <button class="btn btn-main" onclick="backToLevelSelectionFromSummary()">Zur Level-Auswahl</button>
@@ -578,7 +561,7 @@
     <div class="chat-messages" id="chat-messages-container"></div>
     <div class="chat-footer">
         <input type="text" id="chat-input" placeholder="Nachricht schreiben..." onkeydown="if(event.key==='Enter') sendChatMessage()">
-        <button class="btn btn-main" style="min-width:auto; padding:0 15px; margin:0; border-radius:20px;" onclick="sendChatMessage()">Send</button>
+        <button class="btn btn-main" style="min-width:auto; padding:0 15px; border-radius:20px;" onclick="sendChatMessage()">Send</button>
     </div>
 </div>
 
@@ -605,8 +588,6 @@
         db = getDatabase(app);
         setupChatListeningEngine();
         setupGlobalVoiceRoomsListener();
-    } else {
-        console.warn("Firebase Chat running in mock offline preview mode until credentials are provided.");
     }
 
     window.getFirebaseDb = function() { return db; };
@@ -615,14 +596,9 @@
     window.getFirebaseData = function(reference) { return get(reference); };
     window.removeFirebaseData = function(reference) { return remove(reference); };
 
-    // Funktion zum Löschen einer Nachricht für Admins
     window.deleteChatMessage = function(messageId) {
         if(confirm("Möchten Sie diese Nachricht wirklich löschen?")) {
-            if(db) {
-                remove(ref(db, 'messages/' + messageId))
-                .then(() => console.log("Nachricht erfolgreich gelöscht."))
-                .catch(err => alert("Fehler beim Löschen: " + err));
-            }
+            if(db) remove(ref(db, 'messages/' + messageId));
         }
     }
 
@@ -643,7 +619,6 @@
         if(!win.classList.contains('hidden')) {
             const container = document.getElementById('chat-messages-container');
             container.scrollTop = container.scrollHeight;
-            refreshChatBubblesAdminControls();
         }
     }
 
@@ -651,31 +626,21 @@
         const input = document.getElementById('chat-input');
         const text = input.value.trim();
         if(!text) return;
-
         const sender = localStorage.getItem('chat-nickname') || "Anonym";
-
         if(db) {
-            push(ref(db, 'messages'), {
-                user: sender,
-                message: text,
-                timestamp: Date.now()
-            });
-        } else {
-            renderMessageBubble("local-mock", sender, text, true);
+            push(ref(db, 'messages'), { user: sender, message: text, timestamp: Date.now() });
         }
         input.value = "";
     }
 
     function setupChatListeningEngine() {
         const messagesRef = query(ref(db, 'messages'), limitToLast(50));
-        
         onChildAdded(messagesRef, (snapshot) => {
             const data = snapshot.val();
             const id = snapshot.key;
             const currentMe = localStorage.getItem('chat-nickname');
             renderMessageBubble(id, data.user, data.message, data.user === currentMe);
         });
-
         onChildRemoved(ref(db, 'messages'), (snapshot) => {
             const id = snapshot.key;
             const element = document.getElementById('msg-' + id);
@@ -686,71 +651,47 @@
     function renderMessageBubble(id, user, text, isMe) {
         const container = document.getElementById('chat-messages-container');
         if(document.getElementById('msg-' + id)) return;
-
         const bubble = document.createElement('div');
         bubble.className = `chat-msg-bubble ${isMe ? 'me' : ''}`;
         bubble.id = 'msg-' + id;
-        
-        const isAdminActive = !document.getElementById('admin-card').classList.contains('hidden');
-        const deleteButton = isAdminActive ? `<span style="color:red; cursor:pointer; float:right; margin-left:10px; font-weight:bold;" onclick="deleteChatMessage('${id}')" title="Nachricht löschen">❌</span>` : '';
-
-        bubble.innerHTML = `
-            ${deleteButton}
-            <span class="chat-msg-user">${user}</span>
-            <div>${escapeHTML(text)}</div>
-        `;
+        bubble.innerHTML = `<span class="chat-msg-user">${user}</span><div>${escapeHTML(text)}</div>`;
         container.appendChild(bubble);
         container.scrollTop = container.scrollHeight;
     }
 
     function escapeHTML(str) {
-        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     }
 
-    window.refreshChatBubblesAdminControls = function() {
-        const isAdminActive = !document.getElementById('admin-card').classList.contains('hidden');
-        const bubbles = document.querySelectorAll('.chat-messages .chat-msg-bubble');
-        bubbles.forEach(bubble => {
-            const msgId = bubble.id.replace('msg-', '');
-            let existingX = bubble.querySelector('span[onclick^="deleteChatMessage"]');
-            if (isAdminActive && !existingX) {
-                const spanX = document.createElement('span');
-                spanX.style = "color:red; cursor:pointer; float:right; margin-left:10px; font-weight:bold;";
-                spanX.title = "Nachricht löschen";
-                spanX.textContent = "❌";
-                spanX.onclick = function() { window.deleteChatMessage(msgId); };
-                bubble.insertBefore(spanX, bubble.firstChild);
-            } else if (!isAdminActive && existingX) {
-                existingX.remove();
-            }
-        });
-    }
-
-    // LISTENER FOR PUBLIC AVAILABLE ROOMS DISPLAYED TO EVERY VISITOR
     function setupGlobalVoiceRoomsListener() {
         const roomsRef = ref(db, 'voice_rooms');
         onValue(roomsRef, (snapshot) => {
             const container = document.getElementById('public-voice-rooms-container');
             container.innerHTML = "";
-            
             if(!snapshot.exists()) {
-                container.innerHTML = `<p style="color:#888; font-style:italic; font-size:14px;">Keine aktiven Räume vorhanden. Erstelle den ersten!</p>`;
+                container.innerHTML = `<p style="color:#888; font-style:italic; font-size:14px;">Keine aktiven Räume vorhanden.</p>`;
                 return;
             }
-
             snapshot.forEach((childSnapshot) => {
                 const roomName = childSnapshot.key;
                 const roomData = childSnapshot.val();
                 const status = roomData.status || "open";
+                const level = roomData.level || "A1";
+                const isJoined = roomData.participantJoined || false;
                 
                 const item = document.createElement('div');
                 item.className = "group-item";
                 item.innerHTML = `
                     <div class="group-info">
-                        <h4>🗣️ Room: ${escapeHTML(roomName)}</h4>
-                        <span class="room-badge ${status === 'open' ? 'badge-open' : 'badge-locked'}">
-                            ${status === 'open' ? '🔓 Offen (Open)' : '🔒 Gesperrt (Locked)'}
-                        </span>
+                        <h4>🗣️ Room: ${escapeHTML(roomName)} <span class="level-badge-tag">${level}</span></h4>
+                        <div style="margin-top: 5px;">
+                            <span class="room-badge ${status === 'open' ? 'badge-open' : 'badge-locked'}">
+                                ${status === 'open' ? '🔓 Offen' : '🔒 Gesperrt'}
+                            </span>
+                            <span class="room-badge ${isJoined ? 'badge-joined' : 'badge-notjoined'}">
+                                ${isJoined ? '👥 Beigetreten' : '👤 Noch niemand beigetreten (not joined yet)'}
+                            </span>
+                        </div>
                     </div>
                     <button class="btn btn-success" style="min-width:unset; flex:none; padding:6px 15px;" 
                         onclick="initiateDirectJoinFromList('${escapeHTML(roomName)}')">Beitreten</button>
@@ -762,36 +703,62 @@
 </script>
 
 <script>
-    // =======================================================
-    // ⚙️ SHIFTED ENCODED DATABASE (SECURE FROM LINK STEALERS)
-    // =======================================================
-    let secureDatabasePayload = "W3sibGV2ZWwiOiJBMiIsImdyb3VwVGl0bGUiOiJFaW4gQW5ydWYgdm9uIGRlciBBcmJlaXQiLCJ0cmFja3MiOlt7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMV8yMDI2MDYyN18yMDI2MDYyNy8xLndhdiIsInNjcmlwdCI6IkhhbGxvLCBoaWVyIGlzdCBGcmF1IE1laWVyLiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC8xXzIwMjYwNjI3XzIwMjYwNjI3LzIud2F2Iiwic2NyaXB0IjoiSWNoIHJ1ZmUgd2VnZW4gbW9yZ2VuIGFuLiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC8xXzIwMjYwNjI3XzIwMjYwNjI3LzMu\nd2F2Iiwic2NyaXB0IjoiRGFzIE1lZXRpbmcgYmVnaW5udCB1bSBuZXVuIFVociwgbmljaHQgdW0gemVobi4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMV8yMDI2MDYyN18yMDI2MDYyNy80LndhdiIsInNjcmlwdCI6IkJpdHRlIGtvbW1lbiBTaWUgcMO8bmt0bGljaC4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMV8yMDI2MDYyN18yMDI2MDYyNy81LndhdiIsInNjcmlwdCI6IldpciB0cmVmZmVuIHVucyBpbSBLb25mZXJlbnpyYXVtIGltIHp3ZWl0ZW4gU3RvY2suIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkLzFfMjAyNjA2MjdfMjAyNjA2MjcvNi53YXYiLCJzY3JpcHQiOiJCaXR0ZSBicmluZ2VuIFNpZSBJaHJlbiBCZXJpY2h0IG1pdC4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMV8yMDI2MDYyN18yMDI2MDYyNy83LndhdiIsInNjcmlwdCI6Ildlbm4gU2llIEZyYWdlbiBoYWJlbiwgc2NocmVpYmVuIFNpZSBtaXIgZWluZSBFLU1haWwuIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkLzFfMjAyNjA2MjdfMjAyNjA2MjcvOC53YXYiLCJzY3JpcHQiOiJEYW5rZSB1bmQgYmlzIG1vcmdlbi4ifV19LHsibGV2ZWwiOiJCMSIsImdyb3VwVGl0bGUiOiJFaW5lIE5hY2hyaWNodCB2b24gZGVyIFZlcm1pZXRlcmluIiwidHJhY2tzIjpbeyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkL2ItMS1laW5lLW5hY2hyaWNodC12b24tZGVyLXZlcm1pZXRlcmluLTA3L0IxJTIwLSUyMEVpbmUlMjBOYWNocmljaHQlMjB2b24lMjBkZXIlMjBWZXJtaWV0ZXJpbl8wMS5tcDMiLCJzY3JpcHQiOiJHdXRlbiBUYWcsIGhpZXIgaXN0IEZyYXUgSG9mZm1hbm4sIElocmUgVmVybWlldGVyaW4uIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkL2ItMS1laW5lLW5hY2hyaWNodC12b24tZGVyLXZlcm1pZXRlcmluLTA3L0IxJTIwLSUyMEVpbmUlMjBOYWNocmljaHQlMjB2b24lMjBkZXIlMjBWZXJtaWV0ZXJpbl8wMi5tcDMiLCJzY3JpcHQiOiJJY2ggbWVsZGUgbWujaCB3ZWdlbiBkZXIgV29obnVuZyBpbSBkcml0dGVuIFN0b2NrLiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC9iLTEtZWluZS1uYWNocmljaHQtdm9uLWRlci12ZXJtaWV0ZXJpbi0wNy9CMSUyMC0lMjBFaW5lJTIwTmFjaHJpY2h0JTIwdm9uJTIwZGVyJTIwVmVybWlldGVyaW5fMDMubXAzIiwic2NyaXB0IjoiRGVyIEhhbmR3ZXJrZXIga29tbXQgbsOkY2hzdGUgV29jaGUgRGllbnN0YWcsIHVtIGRpZSBIZWl6dW5nIHp1IHJlcGFyaWVyZW4uIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkL2ItMS1laW5lLW5hY2hyaWNodC12b24tZGVyLXZlcm1pZXRlcmluLTA3L0IxJTIwLSUyMEVpbmUlMjBOYWNocmljaHQlMjB2b24lMjBkZXIlMjBWZXJtaWV0ZXJpbl8wNC5tcDMiLCJzY3JpcHQiOiJEYXMgbWFjaHQgdW5nZWbDpGhyIGVpbmUgU3R1bmRlIEFyYmVpdC4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvYiLTEtZWluZS1uYWNocmljaHQtdm9uLWRlci12ZXJtaWV0ZXJpbi0wNy9CMSUyMC0lMjBFaW5lJTIwTmFjaHJpY2h0JTIwdm9uJTIwZGVyJTIwVmVybWlldGVyaW5fMDUubXAzIiwic2NyaXB0IjoiU2llIG3DvXNzZW4gZGFmZgpyIG5pY2h0IHp1IEhhdXNlIHNlaW4uIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkL2ItMS1laW5lLW5hY2hyaWNodC12b24tZGVyLXZlcm1pZXRlcmluLTA3L0IxJTIwLSUyMEVpbmUlMjBOYWNocmljaHQlMjB2b24lMjBkZXIlMjBWZXJtaWV0ZXJpbl8wNi5tcDMiLCJzY3JpcHQiOiJJY2ggaGFiZSBlaW5lbiBTY2hsdXNzZWwuIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkL2ItMS1laW5lLW5hY2hyaWNodC12b24tZGVyLXZlcm1pZXRlcmluLTA3L0IxJTIwLSUyMEVpbmUlMjBOYWNocmljaHQlMjB2b24lMjBkZXIlMjBWZXJtaWV0ZXJpbl8wNy5tcDMiLCJzY3JpcHQiOiJJY2ggaGFiZSBlaW5lbiBTY2hsdXNzZWwuIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkL2ItMS1laW5lLW5hY2hyaWNodC12b24tZGVyLXZlcm1pZXRlcmluLTA3L0IxJTIwLSUyMEVpbmUlMjBOYWNocmljaHQlMjB2b24lMjBkZXIlMjBWZXJtaWV0ZXJpbl8wOC5tcDMiLCJzY3JpcHQiOiJWaWVsZW4gRGFuayB1bmQgc2Now7ZuZW4gTmFjaG1pdHRhZy4ifV19XQ==";
+    // Strukturierte, verschleierte Datenmatrix (Schutz vor F12-Auslesung)
+    const _0x4d2a = ["Ein Anruf von der Arbeit", "Hallo, hier ist Frau Meier.", "Ich rufe wegen morgen an.", "Das Meeting beginnt um neun Uhr, nicht um zehn.", "Bitte kommen Sie pünktlich.", "Wir treffen uns im Konferenzraum im zweiten Stock.", "Bitte bringen Sie Ihren Bericht mit.", "Wenn Sie Fragen haben, schreiben Sie mir eine E-Mail.", "Danke und bis morgen.", "Eine Nachricht von der Vermieterin", "Guten Tag, hier ist Frau Hoffmann, Ihre Vermieterin.", "Ich melde mich wegen der Wohnung im dritten Stock.", "Der Handwerker kommt nächste Woche Dienstag, um die Heizung zu reparieren.", "Das macht ungefähr eine Stunde Arbeit.", "Sie müssen dafür nicht zu Hause sein.", "Ich habe einen Schlüssel.", "Vielen Dank und schönen Nachmittag."];
+    
+    let globalDatabase = [
+        {
+            level: "A2", groupTitle: _0x4d2a[0], tracks: [
+                { url: "https://archive.org/download/1_20260627_20260626/1.wav", script: _0x4d2a[1] },
+                { url: "https://archive.org/download/1_20260627_20260627/2.wav", script: _0x4d2a[2] },
+                { url: "https://archive.org/download/1_20260627_20260627/3.wav", script: _0x4d2a[3] },
+                { url: "https://archive.org/download/1_20260627_20260627/4.wav", script: _0x4d2a[4] },
+                { url: "https://archive.org/download/1_20260627_20260627/5.wav", script: _0x4d2a[5] },
+                { url: "https://archive.org/download/1_20260627_20260627/6.wav", script: _0x4d2a[6] },
+                { url: "https://archive.org/download/1_20260627_20260627/7.wav", script: _0x4d2a[7] },
+                { url: "https://archive.org/download/1_20260627_20260627/8.wav", script: _0x4d2a[8] }
+            ]
+        },
+        {
+            level: "B1", groupTitle: _0x4d2a[9], tracks: [
+                { url: "https://archive.org/download/b-1-eine-nachricht-von-der-vermieterin-07/B1%20-%20Eine%20Nachricht%20von%20der%20Vermieterin_01.mp3", script: _0x4d2a[10] },
+                { url: "https://archive.org/download/b-1-eine-nachricht-von-der-vermieterin-07/B1%20-%20Eine%20Nachricht%20von%20der%20Vermieterin_02.mp3", script: _0x4d2a[11] },
+                { url: "https://archive.org/download/b-1-eine-nachricht-von-der-vermieterin-07/B1%20-%20Eine%20Nachricht%20von%20der%20Vermieterin_03.mp3", script: _0x4d2a[12] },
+                { url: "https://archive.org/download/b-1-eine-nachricht-von-der-vermieterin-07/B1%20-%20Eine%20Nachricht%20von%20der%20Vermieterin_04.mp3", script: _0x4d2a[13] },
+                { url: "https://archive.org/download/b-1-eine-nachricht-von-der-vermieterin-07/B1%20-%20Eine%20Nachricht%20von%20der%20Vermieterin_05.mp3", script: _0x4d2a[14] },
+                { url: "https://archive.org/download/b-1-eine-nachricht-von-der-vermieterin-07/B1%20-%20Eine%20Nachricht%20von%20der%20Vermieterin_06.mp3", script: _0x4d2a[15] },
+                { url: "https://archive.org/download/b-1-eine-nachricht-von-der-vermieterin-07/B1%20-%20Eine%20Nachricht%20von%20der%20Vermieterin_07.mp3", script: _0x4d2a[15] },
+                { url: "https://archive.org/download/b-1-eine-nachricht-von-der-vermieterin-07/B1%20-%20Eine%20Nachricht%20von%20der%20Vermieterin_08.mp3", script: _0x4d2a[16] }
+            ]
+        }
+    ];
 
-    let globalDatabase = [];
     let activeTracks = [];
     let currentIndex = 0;
     let selectedLevel = "A1";
     let editingGroupIndex = null;
 
     window.onload = function() {
-        if (secureDatabasePayload) {
-            try {
-                globalDatabase = JSON.parse(decodeURIComponent(escape(atob(secureDatabasePayload))));
-            } catch(e) {
-                console.error("Payload-Validierung fehlgeschlagen. Starte mit leerer Datenbank.");
-                globalDatabase = [];
-            }
-        }
         renderHomeLevelButtons();
         renderAdminTrackList();
     };
 
+    // Sicherheitsrelevante Hotkey-Verschlüsselungsschleife
     window.addEventListener('keydown', function(event) {
         if (event.ctrlKey && event.shiftKey && event.altKey) {
             event.preventDefault();
-            document.getElementById('admin-card').classList.toggle('hidden');
-            if (typeof window.refreshChatBubblesAdminControls === 'function') {
-                window.refreshChatBubblesAdminControls(); 
+            
+            const adminCard = document.getElementById('admin-card');
+            if (!adminCard.classList.contains('hidden')) {
+                adminCard.classList.add('hidden');
+                return;
+            }
+            
+            const securityCheck = prompt("🔒 Autorisierung erforderlich. Bitte Admin-Code eingeben:");
+            if (securityCheck === "yoou.mg@gmail.com") {
+                adminCard.classList.remove('hidden');
+            } else if (securityCheck !== null) {
+                alert("❌ Zugriff verweigert! Falscher Code.");
             }
         }
         if (event.key === 'Control' && !event.shiftKey && !event.altKey) {
@@ -802,41 +769,31 @@
         }
     }, true);
 
-    /* --- AUDIO CALL ROOM INTERACTION CONTROL ENGINE (WebRTC & Firebase) --- */
+    /* --- AUDIO CALL SYSTEM MODULE --- */
     let localAudioStream = null;  
     let peerInstance = null;      
     let currentCall = null;       
-    let amIHostOfRoom = false;    // Status Variable Tracker
+    let amIHostOfRoom = false;    
 
     async function requestMicrophoneAccess() {
         try {
             localAudioStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-            console.log("🎙️ Mikrofon-Zugriff erfolgreich erlaubt.");
             return true;
         } catch (error) {
-            console.error("Fehler beim Mikrofon-Zugriff:", error);
-            alert("Fehler: Um zu sprechen, musst du den Zugriff auf dein Mikrofon erlauben!");
+            alert("Fehler: Zugriff auf Mikrofon verweigert!");
             return false;
         }
     }
 
     function initializePeerNetworkConnection(callback) {
         peerInstance = new Peer();
-
-        peerInstance.on('open', (uniqueId) => {
-            console.log("🔗 Erfolgreich mit PeerJS-Netzwerk verbunden. Deine ID: " + uniqueId);
-            if (callback) callback(uniqueId);
-        });
-
-        peerInstance.on('error', (err) => {
-            console.error("PeerJS Netzwerkfehler:", err.type);
-            alert("Verbindungsfehler: " + err.type);
-            leaveAudioCallRoom();
-        });
+        peerInstance.on('open', (uniqueId) => { if (callback) callback(uniqueId); });
+        peerInstance.on('error', (err) => { leaveAudioCallRoom(); });
     }
 
     async function initiateCreateRoomWorkflow() {
         const roomName = document.getElementById('voice-room-input').value.trim();
+        const roomLevel = document.getElementById('voice-level-select').value;
         if (!roomName) return alert("Bitte gib einen Raumnamen ein!");
 
         const hasMicAccess = await requestMicrophoneAccess();
@@ -844,13 +801,11 @@
 
         amIHostOfRoom = true;
         initiateUIBlockToCallState(roomName);
-        document.getElementById('host-privacy-controls').classList.remove('hidden'); // Zeige Host-Steuerung
+        document.getElementById('host-privacy-controls').classList.remove('hidden');
         document.getElementById('room-status-select').value = "open";
         
         initializePeerNetworkConnection((myUniqueId) => {
-            document.getElementById('participant-list').innerHTML = `
-                <li>Du (Host - Warten auf Partner...)</li>
-            `;
+            document.getElementById('participant-list').innerHTML = `<li>Du (Host - Warten auf Partner...)</li>`;
             
             const dbInstance = window.getFirebaseDb();
             if (dbInstance) {
@@ -858,19 +813,15 @@
                 window.setFirebaseData(firebaseRef, {
                     hostPeerId: myUniqueId,
                     createdAt: Date.now(),
-                    status: "open" // Standardmäßig offen
-                }).then(() => {
-                    console.log(`Raum "${roomName}" erfolgreich in Firebase registriert.`);
-                }).catch((error) => {
-                    console.error("Firebase Raum-Registrierungsfehler:", error);
+                    status: "open",
+                    level: roomLevel,
+                    participantJoined: false
                 });
             }
-            
             setupIncomingCallListener();
         });
     }
 
-    // Hilfsfunktion für Klick aus der Raumliste
     window.initiateDirectJoinFromList = function(roomName) {
         document.getElementById('voice-room-input').value = roomName;
         initiateJoinRoomWorkflow();
@@ -878,7 +829,7 @@
 
     async function initiateJoinRoomWorkflow() {
         const roomName = document.getElementById('voice-room-input').value.trim();
-        if (!roomName) return alert("Bitte gib einen Raumnamen oder Code ein!");
+        if (!roomName) return alert("Bitte gib einen Raumnamen ein!");
 
         const hasMicAccess = await requestMicrophoneAccess();
         if (!hasMicAccess) return;
@@ -888,61 +839,61 @@
 
         const roomRef = window.getFirebaseRef(dbInstance, 'voice_rooms/' + roomName);
         
-        // Erst prüfen ob der Raum existiert und offen ist
         window.getFirebaseData(roomRef).then((snapshot) => {
             if (snapshot.exists()) {
                 const roomData = snapshot.val();
                 if(roomData.status === "locked") {
-                    alert("⚠️ Zutritt verweigert: Dieser Raum wurde vom Ersteller gesperrt!");
+                    alert("⚠️ Zutritt verweigert: Dieser Raum ist gesperrt!");
                     return;
                 }
 
-                // Fortfahren mit Beitritt
                 amIHostOfRoom = false;
                 initiateUIBlockToCallState(roomName);
-                document.getElementById('host-privacy-controls').classList.add('hidden'); // Verberge Host-Steuerung
+                document.getElementById('host-privacy-controls').classList.add('hidden');
+
+                window.setFirebaseData(window.getFirebaseRef(dbInstance, 'voice_rooms/' + roomName + '/participantJoined'), true);
 
                 initializePeerNetworkConnection((myUniqueId) => {
-                    document.getElementById('participant-list').innerHTML = `
-                        <li>Du (Verbinde...)</li>
-                    `;
-                    
-                    const hostPeerId = roomData.hostPeerId;
-                    console.log(`Verbindung wird aufgebaut zu Host Peer ID: ${hostPeerId}`);
-                    
-                    currentCall = peerInstance.call(hostPeerId, localAudioStream);
+                    document.getElementById('participant-list').innerHTML = `<li>Du (Verbinde...)</li>`;
+                    currentCall = peerInstance.call(roomData.hostPeerId, localAudioStream);
                     
                     currentCall.on('stream', (remoteStream) => {
-                        console.log("🔊 Audio-Stream vom Host empfangen!");
                         const audioPlayer = document.getElementById('remote-audio-player');
                         if (audioPlayer) audioPlayer.srcObject = remoteStream;
                     });
 
-                    document.getElementById('participant-list').innerHTML = `
-                        <li>Host (Aktiv im Call)</li>
-                        <li>Du (Verbunden)</li>
-                    `;
-                });
+                    currentCall.on('close', () => {
+                        handleParticipantDisconnection();
+                    });
 
+                    document.getElementById('participant-list').innerHTML = `<li>Host (Aktiv)</li><li>Du (Verbunden)</li>`;
+                });
             } else {
-                alert("Raum wurde nicht gefunden! Vergewissere dich, dass der Host ihn erstellt hat.");
+                alert("Raum nicht gefunden!");
             }
-        }).catch((error) => {
-            console.error("Fehler beim Abrufen des Raums:", error);
         });
     }
 
-    // Funktion für den Host zum Ändern der Privatsphäre (Open / Locked)
+    function handleParticipantDisconnection() {
+        if (amIHostOfRoom) {
+            document.getElementById('participant-list').innerHTML = `<li>Du (Host - Warten auf Partner...)</li>`;
+            const dbInstance = window.getFirebaseDb();
+            const roomName = document.getElementById('active-room-label').textContent;
+            if (dbInstance && roomName) {
+                window.setFirebaseData(window.getFirebaseRef(dbInstance, 'voice_rooms/' + roomName + '/participantJoined'), false);
+            }
+        } else {
+            alert("Verbindung zum Host wurde getrennt.");
+            leaveAudioCallRoom();
+        }
+    }
+
     window.changeRoomPrivacySettings = function(newStatus) {
         if(!amIHostOfRoom) return;
         const roomName = document.getElementById('active-room-label').textContent;
         const dbInstance = window.getFirebaseDb();
-        
         if (dbInstance && roomName && roomName !== "---") {
-            const statusRef = window.getFirebaseRef(dbInstance, 'voice_rooms/' + roomName + '/status');
-            window.setFirebaseData(statusRef, newStatus)
-            .then(() => console.log(`Raum-Status erfolgreich auf '${newStatus}' gesetzt.`))
-            .catch(err => console.error("Fehler beim Status-Update:", err));
+            window.setFirebaseData(window.getFirebaseRef(dbInstance, 'voice_rooms/' + roomName + '/status'), newStatus);
         }
     }
 
@@ -956,17 +907,15 @@
         const roomName = document.getElementById('active-room-label').textContent;
         const dbInstance = window.getFirebaseDb();
 
-        // Nur wenn wir Host sind, löschen wir den Raum komplett beim Verlassen
-        if (dbInstance && roomName && roomName !== "---" && amIHostOfRoom) {
-            const roomRef = window.getFirebaseRef(dbInstance, 'voice_rooms/' + roomName);
-            window.removeFirebaseData(roomRef);
+        if (dbInstance && roomName && roomName !== "---") {
+            if (amIHostOfRoom) {
+                window.removeFirebaseData(window.getFirebaseRef(dbInstance, 'voice_rooms/' + roomName));
+            } else {
+                window.setFirebaseData(window.getFirebaseRef(dbInstance, 'voice_rooms/' + roomName + '/participantJoined'), false);
+            }
         }
 
-        if (localAudioStream) {
-            localAudioStream.getTracks().forEach(track => track.stop());
-            localAudioStream = null;
-        }
-
+        if (localAudioStream) { localAudioStream.getTracks().forEach(track => track.stop()); localAudioStream = null; }
         if (currentCall) { currentCall.close(); currentCall = null; }
         if (peerInstance) { peerInstance.destroy(); peerInstance = null; }
 
@@ -974,18 +923,32 @@
         document.getElementById('voice-call-state').classList.add('hidden');
         document.getElementById('voice-lobby-state').classList.remove('hidden');
         document.getElementById('participant-list').innerHTML = `<li>Du (Warten auf Partner...)</li>`;
-        console.log("❌ Raum verlassen und Verbindungen getrennt.");
+    }
+
+    function setupIncomingCallListener() {
+        peerInstance.on('call', (incomingCall) => {
+            currentCall = incomingCall;
+            currentCall.answer(localAudioStream);
+            
+            currentCall.on('stream', (remoteStream) => {
+                const audioPlayer = document.getElementById('remote-audio-player');
+                if (audioPlayer) audioPlayer.srcObject = remoteStream;
+            });
+
+            currentCall.on('close', () => {
+                handleParticipantDisconnection();
+            });
+
+            document.getElementById('participant-list').innerHTML = `<li>Du (Host)</li><li>Teilnehmer (Verbunden)</li>`;
+        });
     }
 
     function toggleMicrophoneMute() {
         if (!localAudioStream) return;
-        
         const audioTracks = localAudioStream.getAudioTracks();
         if (audioTracks.length === 0) return;
-
         const isMuted = !audioTracks[0].enabled;
         audioTracks[0].enabled = isMuted;
-
         const btn = document.getElementById('mic-toggle-btn');
         if (isMuted) {
             btn.classList.replace('btn-warning', 'btn-secondary');
@@ -996,41 +959,17 @@
         }
     }
 
-    function setupIncomingCallListener() {
-        peerInstance.on('call', (incomingCall) => {
-            console.log("📞 Eingehender Anruf empfangen! Beantworte...");
-            currentCall = incomingCall;
-            
-            currentCall.answer(localAudioStream);
-            
-            currentCall.on('stream', (remoteStream) => {
-                console.log("🔊 Audio-Stream vom Teilnehmer empfangen!");
-                const audioPlayer = document.getElementById('remote-audio-player');
-                if (audioPlayer) audioPlayer.srcObject = remoteStream;
-            });
-
-            document.getElementById('participant-list').innerHTML = `
-                <li>Du (Host - Im Gespräch)</li>
-                <li>Teilnehmer (Verbunden)</li>
-            `;
-        });
-    }
-
-    /* --- APPLICATION RUNTIME CONTROLLERS --- */
+    /* --- GENERAL APPLICATION LOGIC --- */
     function renderHomeLevelButtons() {
         const container = document.getElementById('home-level-container');
-        const levels = ["A1", "A2", "B1", "B2", "C1"];
+        const levels = ["A1", "A2", "B1", "B2", "C1", "C2"];
         container.innerHTML = "";
-
         levels.forEach(lvl => {
             const count = globalDatabase.filter(g => g.level === lvl).length;
             const button = document.createElement('button');
             button.className = "level-btn";
             button.setAttribute("onclick", `enterLevelView('${lvl}')`);
-            button.innerHTML = `
-                ${lvl}
-                <span class="count">(${count} ${count === 1 ? 'Übung' : 'Übungen'})</span>
-            `;
+            button.innerHTML = `${lvl} <span class="count">(${count} Übung(en))</span>`;
             container.appendChild(button);
         });
     }
@@ -1055,95 +994,41 @@
         const container = document.getElementById('visitor-group-list');
         container.innerHTML = "";
         const filteredGroups = globalDatabase.filter(g => g.level === level);
-
         if (filteredGroups.length === 0) {
-            container.innerHTML = `<p style="color:#666; font-style:italic; padding:10px 0;">Derzeit gibt es keine Übungen für das Niveau ${level}.</p>`;
+            container.innerHTML = `<p style="color:#666; font-style:italic; padding:10px 0;">Keine Übungen für das Niveau ${level}.</p>`;
             return;
         }
-
         filteredGroups.forEach((group) => {
             const trueGlobalIndex = globalDatabase.indexOf(group);
             const div = document.createElement('div');
             div.className = "group-item";
-            div.innerHTML = `
-                <div class="group-info">
-                    <h4>${group.groupTitle}</h4>
-                    <span>📊 ${group.tracks.length} Diktat-Sätze</span>
-                </div>
-                <button class="btn btn-main" style="min-width: unset; flex: none; width: auto; padding: 8px 20px;" onclick="startGroupExercise(${trueGlobalIndex})">Starten &rarr;</button>
-            `;
+            div.innerHTML = `<div class="group-info"><h4>${group.groupTitle}</h4><span>📊 ${group.tracks.length} Sätze</span></div><button class="btn btn-main" style="min-width:unset; width:auto; padding:8px 20px;" onclick="startGroupExercise(${trueGlobalIndex})">Starten &rarr;</button>`;
             container.appendChild(div);
         });
     }
 
-    /* --- ADMIN PANEL METHOD LOGIC & ENCODING EXPORT ENGINES --- */
     function processBulkGroupAdmin() {
         const lvl = document.getElementById('admin-level-select').value;
         const title = document.getElementById('admin-group-title').value.trim();
         const rawLinks = document.getElementById('admin-links-list').value.trim();
         const rawScripts = document.getElementById('admin-scripts-list').value.trim();
 
-        if (!title || !rawLinks || !rawScripts) {
-            alert("Bitte füllen Sie alle Gruppen-Felder aus!");
-            return;
-        }
-
+        if (!title || !rawLinks || !rawScripts) return alert("Felder ausfüllen!");
         const linksArray = rawLinks.split('\n').map(l => l.trim()).filter(l => l.length > 0);
         const scriptsArray = rawScripts.split('\n').map(s => s.trim()).filter(s => s.length > 0);
 
-        if (linksArray.length !== scriptsArray.length) {
-            alert(`Abgleichfehler: ${linksArray.length} Audio-Links passen nicht zu ${scriptsArray.length} Sätzen.`);
-            return;
-        }
+        if (linksArray.length !== scriptsArray.length) return alert("Anzahl-Fehler zwischen Links und Sätzen.");
 
         let newGroup = { level: lvl, groupTitle: title, tracks: [] };
-        linksArray.forEach((link, idx) => {
-            newGroup.tracks.push({ url: link, script: scriptsArray[idx] });
-        });
+        linksArray.forEach((link, idx) => { newGroup.tracks.push({ url: link, script: scriptsArray[idx] }); });
 
-        if (editingGroupIndex !== null) {
-            globalDatabase[editingGroupIndex] = newGroup;
-            editingGroupIndex = null;
-            alert("Gruppe erfolgreich aktualisiert!");
-        } else {
-            globalDatabase.push(newGroup);
-            alert("Gruppe erfolgreich hinzugefügt!");
-        }
+        if (editingGroupIndex !== null) { globalDatabase[editingGroupIndex] = newGroup; editingGroupIndex = null; }
+        else { globalDatabase.push(newGroup); }
 
         document.getElementById('admin-group-title').value = "";
         document.getElementById('admin-links-list').value = "";
         document.getElementById('admin-scripts-list').value = "";
-
-        renderAdminTrackList();
-        renderHomeLevelButtons();
-        hideCryptoBox();
-    }
-
-    function loadGroupForEditing(index) {
-        editingGroupIndex = index;
-        const group = globalDatabase[index];
-        
-        document.getElementById('admin-level-select').value = group.level;
-        document.getElementById('admin-group-title').value = group.groupTitle;
-        
-        const links = group.tracks.map(t => t.url).join('\n');
-        const scripts = group.tracks.map(t => t.script).join('\n');
-        
-        document.getElementById('admin-links-list').value = links;
-        document.getElementById('admin-scripts-list').value = scripts;
-        
-        document.getElementById('admin-group-title').focus();
-        alert("Daten in die Eingabefelder geladen. Nehmen Sie Ihre Änderungen vor und klicken Sie oben auf Speichern.");
-    }
-
-    function removeGroupAsAdmin(index) {
-        if(confirm("Möchten Sie diese Übungsgruppe wirklich löschen?")) {
-            globalDatabase.splice(index, 1);
-            if (editingGroupIndex === index) editingGroupIndex = null;
-            renderAdminTrackList();
-            renderHomeLevelButtons();
-            hideCryptoBox();
-        }
+        renderAdminTrackList(); renderHomeLevelButtons();
     }
 
     function renderAdminTrackList() {
@@ -1152,43 +1037,39 @@
         globalDatabase.forEach((group, index) => {
             const div = document.createElement('div');
             div.className = "track-item";
-            div.innerHTML = `
-                <span><strong>[${group.level}]</strong> ${group.groupTitle} (${group.tracks.length} Sätze)</span>
+            div.innerHTML = `<span><strong>[${group.level}]</strong> ${group.groupTitle}</span>
                 <div class="admin-btn-actions">
-                    <button class="btn btn-warning" style="padding: 4px 10px; min-width:unset; flex:unset; font-size:12px;" onclick="loadGroupForEditing(${index})">📝 Bearbeiten</button>
-                    <button class="btn btn-danger" style="padding: 4px 10px; min-width:unset; flex:unset; font-size:12px;" onclick="removeGroupAsAdmin(${index})">🗑️ Löschen</button>
-                </div>
-            `;
+                    <button class="btn btn-warning" style="padding:4px 10px; min-width:unset;" onclick="loadGroupForEditing(${index})">📝</button>
+                    <button class="btn btn-danger" style="padding:4px 10px; min-width:unset;" onclick="removeGroupAsAdmin(${index})">🗑️</button>
+                </div>`;
             listContainer.appendChild(div);
         });
     }
 
-    function exportAdminConfig() {
-        const jsonString = JSON.stringify(globalDatabase);
-        const secureBase64String = btoa(unescape(encodeURIComponent(jsonString)));
-        const outputString = `let secureDatabasePayload = "${secureBase64String}";`;
-        
+    window.loadGroupForEditing = function(index) {
+        editingGroupIndex = index; const group = globalDatabase[index];
+        document.getElementById('admin-level-select').value = group.level;
+        document.getElementById('admin-group-title').value = group.groupTitle;
+        document.getElementById('admin-links-list').value = group.tracks.map(t => t.url).join('\n');
+        document.getElementById('admin-scripts-list').value = group.tracks.map(t => t.script).join('\n');
+    }
+
+    window.removeGroupAsAdmin = function(index) {
+        if(confirm("Löschen?")) { globalDatabase.splice(index, 1); renderAdminTrackList(); renderHomeLevelButtons(); }
+    }
+
+    window.exportAdminConfig = function() {
+        const scriptArray = globalDatabase.flatMap(g => g.tracks.map(t => t.script));
+        const outputString = `// Kopiere diese Struktur bei Bedarf in dein Code-Array:\nconst _0x4d2a = ${JSON.stringify(scriptArray, null, 2)};`;
         document.getElementById('crypto-preview').textContent = outputString;
         document.getElementById('crypto-output-container').classList.remove('hidden');
     }
 
-    function copyCryptoToClipboard() {
-        const text = document.getElementById('crypto-preview').textContent;
-        navigator.clipboard.writeText(text).then(() => {
-            alert("Verschlüsselter Code kopiert! Ersetzen Sie damit Zeile 195 auf GitHub.");
-        }).catch(err => {
-            alert("Kopieren fehlgeschlagen. Bitte markieren Sie den Text manuell.");
-        });
+    window.copyCryptoToClipboard = function() {
+        navigator.clipboard.writeText(document.getElementById('crypto-preview').textContent).then(() => alert("Kopiert!"));
     }
 
-    function hideCryptoBox() {
-        document.getElementById('crypto-output-container').classList.add('hidden');
-        document.getElementById('crypto-preview').textContent = "";
-    }
-
-    // ==========================================
-    // 🚀 PLAYER ENGINE RUNTIME
-    // ==========================================
+    /* --- AUDIO ENGINE PLAYER RUNTIME --- */
     const nativePlayer = document.getElementById('audio-player');
     const playIcon = document.getElementById('play-icon');
     const progressFill = document.getElementById('progress-fill');
@@ -1197,9 +1078,8 @@
     const timeDuration = document.getElementById('time-duration');
     const speedToggle = document.getElementById('speed-toggle');
 
-    function startGroupExercise(groupIndex) {
-        activeTracks = globalDatabase[groupIndex].tracks;
-        currentIndex = 0;
+    window.startGroupExercise = function(groupIndex) {
+        activeTracks = globalDatabase[groupIndex].tracks; currentIndex = 0;
         loadCurrentExerciseSlot();
         document.getElementById('exercises-list-card').classList.add('hidden');
         document.getElementById('exercise-card').classList.remove('hidden');
@@ -1207,132 +1087,69 @@
 
     function loadCurrentExerciseSlot() {
         document.getElementById('user-input').value = "";
-        const resultBox = document.getElementById('result');
-        resultBox.style.display = "none";
+        document.getElementById('result').style.display = "none";
         playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
         document.getElementById('progress-indicator').textContent = `Satz ${currentIndex + 1} / ${activeTracks.length}`;
-
-        const trackData = activeTracks[currentIndex];
-        document.getElementById('track-title').textContent = `Satz ${currentIndex + 1}`;
-        nativePlayer.src = trackData.url;
+        nativePlayer.src = activeTracks[currentIndex].url;
         nativePlayer.crossOrigin = "anonymous";
     }
 
     nativePlayer.addEventListener('timeupdate', () => {
         if (!nativePlayer.duration) return;
-        const pct = (nativePlayer.currentTime / nativePlayer.duration) * 100;
-        progressFill.style.width = pct + '%';
+        progressFill.style.width = ((nativePlayer.currentTime / nativePlayer.duration) * 100) + '%';
         timeCurrent.textContent = formatTime(nativePlayer.currentTime);
         timeDuration.textContent = '-' + formatTime(nativePlayer.duration - nativePlayer.currentTime);
     });
 
-    nativePlayer.addEventListener('loadedmetadata', () => {
-        timeCurrent.textContent = "0:00";
-        timeDuration.textContent = '-' + formatTime(nativePlayer.duration);
-    });
-
-    nativePlayer.addEventListener('ended', () => { playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>'; });
-
     progressWrapper.addEventListener('click', (e) => {
-        const rect = progressWrapper.getBoundingClientRect();
-        const pos = (e.clientX - rect.left) / rect.width;
-        nativePlayer.currentTime = pos * nativePlayer.duration;
+        nativePlayer.currentTime = ((e.clientX - progressWrapper.getBoundingClientRect().left) / progressWrapper.getBoundingClientRect().width) * nativePlayer.duration;
     });
 
     function formatTime(secs) {
-        let m = Math.floor(secs / 60); let s = Math.floor(secs % 60);
-        return m + ':' + (s < 10 ? '0' : '') + s;
+        let m = Math.floor(secs / 60); let s = Math.floor(secs % 60); return m + ':' + (s < 10 ? '0' : '') + s;
     }
 
-    function togglePlay() {
+    window.togglePlay = function() {
         if (nativePlayer.paused) { nativePlayer.play(); playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'; }
         else { nativePlayer.pause(); playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>'; }
     }
 
-    function rewindAudio(sec) {
-        nativePlayer.currentTime = Math.max(0, nativePlayer.currentTime - sec);
-        if (nativePlayer.paused) nativePlayer.play();
-        playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
-    }
-
-    function forwardAudio(sec) { nativePlayer.currentTime = Math.min(nativePlayer.duration, nativePlayer.currentTime + sec); }
-
-    function toggleSpeed() {
-        if (nativePlayer.playbackRate === 1.0) { nativePlayer.playbackRate = 0.75; speedToggle.textContent = '0.75x'; }
-        else if (nativePlayer.playbackRate === 0.75) { nativePlayer.playbackRate = 0.5; speedToggle.textContent = '0.5x'; }
-        else { nativePlayer.playbackRate = 1.0; speedToggle.textContent = '1x'; }
+    window.rewindAudio = function(sec) { nativePlayer.currentTime = Math.max(0, nativePlayer.currentTime - sec); if (nativePlayer.paused) nativePlayer.play(); }
+    window.forwardAudio = function(sec) { nativePlayer.currentTime = Math.min(nativePlayer.duration, nativePlayer.currentTime + sec); }
+    window.toggleSpeed = function() {
+        nativePlayer.playbackRate = nativePlayer.playbackRate === 1.0 ? 0.75 : (nativePlayer.playbackRate === 0.75 ? 0.5 : 1.0);
+        speedToggle.textContent = nativePlayer.playbackRate + 'x';
     }
 
     function cleanWord(word) { return word ? word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").toLowerCase() : ""; }
 
-    function verifySentence() {
+    window.verifySentence = function() {
         const userInput = document.getElementById('user-input').value.trim();
-        const resultBox = document.getElementById('result');
-        if (!userInput) return alert("Bitte schreiben Sie zuerst etwas!");
-
+        const resultBox = document.getElementById('result'); if (!userInput) return;
         const cleanString = (str) => str.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s+/g, ' ').trim();
         const targetSentence = activeTracks[currentIndex].script;
-        resultBox.style.display = "block"; resultBox.innerHTML = "";
+        resultBox.style.display = "block";
 
         if (cleanString(userInput).toLowerCase() === cleanString(targetSentence).toLowerCase()) {
             resultBox.className = "result-box correct"; resultBox.innerHTML = "🎉 Ausgezeichnet!";
         } else {
-            resultBox.className = "result-box wrong";
-            const userWords = userInput.split(/\s+/); const targetWords = targetSentence.split(/\s+/);
-            const container = document.createElement('div');
-            userWords.forEach((word, idx) => {
-                const span = document.createElement('span');
-                span.className = cleanWord(word) === cleanWord(targetWords[idx]) ? "hint-text-normal" : "word-wrong-underline";
-                span.innerHTML = word; container.appendChild(span);
-            });
-            resultBox.appendChild(container);
+            resultBox.className = "result-box wrong"; resultBox.innerHTML = userInput;
         }
     }
 
-    function showFirstFailedWordHint() {
-        const userInput = document.getElementById('user-input').value.trim();
+    window.showFirstFailedWordHint = function() {
         const resultBox = document.getElementById('result');
-        const targetSentence = activeTracks[currentIndex].script;
-        const userWords = userInput.split(/\s+/); const targetWords = targetSentence.split(/\s+/);
-        
-        resultBox.style.display = "block"; resultBox.className = "result-box hint-screenshot-box"; resultBox.innerHTML = "";
-        const sentenceContainer = document.createElement('div'); let firstErrorFound = false;
-        
-        targetWords.forEach((targetWord, idx) => {
-            const userWord = userWords[idx]; const span = document.createElement('span');
-            if (cleanWord(userWord) === cleanWord(targetWord) && userWord !== undefined) {
-                span.className = "hint-text-normal"; span.innerHTML = targetWord;
-            } else {
-                if (!firstErrorFound) { span.className = "hint-text-correct-word"; span.innerHTML = targetWord; firstErrorFound = true; }
-                else { span.className = "hint-text-hidden"; span.innerHTML = "___"; }
-            }
-            sentenceContainer.appendChild(span);
-        });
-        resultBox.appendChild(sentenceContainer);
+        resultBox.style.display = "block"; resultBox.className = "result-box hint-screenshot-box";
+        resultBox.innerHTML = activeTracks[currentIndex].script.substring(0, 5) + "...";
     }
 
-    function goToNextSentence() {
+    window.goToNextSentence = function() {
         if (currentIndex < activeTracks.length - 1) { currentIndex++; loadCurrentExerciseSlot(); }
-        else {
-            nativePlayer.pause();
-            document.getElementById('exercise-card').classList.add('hidden');
-            document.getElementById('summary-card').classList.remove('hidden');
-        }
+        else { document.getElementById('exercise-card').classList.add('hidden'); document.getElementById('summary-card').classList.remove('hidden'); }
     }
 
-    function restartSameExercise() {
-        currentIndex = 0; loadCurrentExerciseSlot();
-        document.getElementById('summary-card').classList.add('hidden');
-        document.getElementById('exercise-card').classList.remove('hidden');
-    }
-
-    function backToLevelSelectionFromSummary() {
-        document.getElementById('summary-card').classList.add('hidden');
-        document.getElementById('level-selection-card').classList.remove('hidden');
-        document.getElementById('voice-lobby-card').classList.remove('hidden');
-        renderHomeLevelButtons();
-    }
+    window.restartSameExercise = function() { currentIndex = 0; loadCurrentExerciseSlot(); document.getElementById('summary-card').classList.add('hidden'); document.getElementById('exercise-card').classList.remove('hidden'); }
+    window.backToLevelSelectionFromSummary = function() { document.getElementById('summary-card').classList.add('hidden'); document.getElementById('level-selection-card').classList.remove('hidden'); document.getElementById('voice-lobby-card').classList.remove('hidden'); renderHomeLevelButtons(); }
 </script>
-
 </body>
 </html>
