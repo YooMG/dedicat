@@ -293,6 +293,7 @@
             font-size: 14px;
             line-height: 1.4;
             align-self: flex-start;
+            position: relative;
         }
         .chat-msg-bubble.me {
             background: #002f6c;
@@ -348,18 +349,9 @@
         }
 
         @keyframes pulse-green {
-            0% {
-                transform: scale(0.95);
-                box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
-            }
-            70% {
-                transform: scale(1);
-                box-shadow: 0 0 0 6px rgba(40, 167, 69, 0);
-            }
-            100% {
-                transform: scale(0.95);
-                box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
-            }
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(40, 167, 69, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
         }
 
         .participant-box {
@@ -380,6 +372,22 @@
             margin-bottom: 5px;
             font-weight: 500;
         }
+
+        /* PUBLIC ROOM LIST STYLES */
+        .public-rooms-section {
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+        .room-badge {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-weight: bold;
+            color: white;
+        }
+        .badge-open { background-color: #28a745; }
+        .badge-locked { background-color: #dc3545; }
     </style>
 </head>
 <body>
@@ -453,13 +461,20 @@
         <div id="voice-lobby-state">
             <div style="display: flex; gap: 10px; flex-wrap: wrap;" class="form-group">
                 <div style="flex: 1; min-width: 200px;">
-                    <label for="voice-room-input">Raum-Name oder Code:</label>
+                    <label for="voice-room-input">Neuen Raum-Code eingeben:</label>
                     <input type="text" id="voice-room-input" placeholder="z.B. B1-Praxis oder raum-123">
                 </div>
             </div>
             <div class="btn-group">
                 <button class="btn btn-main" onclick="initiateCreateRoomWorkflow()">➕ Raum erstellen</button>
-                <button class="btn btn-success" onclick="initiateJoinRoomWorkflow()">🚪 Raum beitreten</button>
+            </div>
+
+            <!-- PUBLIC ROOMS DISPLAY -->
+            <div class="public-rooms-section">
+                <label>Aktive Räume auf der Website:</label>
+                <div class="group-list" id="public-voice-rooms-container" style="margin-top: 10px;">
+                    <p style="color:#888; font-style:italic; font-size:14px;">Keine aktiven Räume vorhanden. Erstelle den ersten!</p>
+                </div>
             </div>
         </div>
 
@@ -469,6 +484,15 @@
                 <span>Verbunden mit Raum: <strong id="active-room-label">---</strong></span>
             </div>
             
+            <!-- HOST CONTROLS PANEL -->
+            <div id="host-privacy-controls" class="form-group hidden" style="background:#f1f3f5; padding:12px; border-radius:10px; margin-bottom:15px; border: 1px solid #e2e3e5;">
+                <label for="room-status-select" style="font-size:14px;">🔒 Raum-Sichtbarkeit & Zutritt:</label>
+                <select id="room-status-select" onchange="changeRoomPrivacySettings(this.value)" style="padding: 6px; font-size: 14px; width: auto; display: inline-block;">
+                    <option value="open">🔓 Offen (Jeder darf beitreten)</option>
+                    <option value="locked">🔒 Gesperrt (Zutritt blockiert)</option>
+                </select>
+            </div>
+
             <div class="participant-box">
                 <label>Teilnehmer im Raum:</label>
                 <ul id="participant-list">
@@ -562,7 +586,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, push, onChildAdded, query, limitToLast, set, get, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, push, onChildAdded, onChildRemoved, onValue, query, limitToLast, set, get, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBVDwizQN7wFEQw7hUGoo-1YA-c5_tytxQ",
@@ -580,6 +604,7 @@
         const app = initializeApp(firebaseConfig);
         db = getDatabase(app);
         setupChatListeningEngine();
+        setupGlobalVoiceRoomsListener();
     } else {
         console.warn("Firebase Chat running in mock offline preview mode until credentials are provided.");
     }
@@ -589,6 +614,17 @@
     window.setFirebaseData = function(reference, data) { return set(reference, data); };
     window.getFirebaseData = function(reference) { return get(reference); };
     window.removeFirebaseData = function(reference) { return remove(reference); };
+
+    // Funktion zum Löschen einer Nachricht für Admins
+    window.deleteChatMessage = function(messageId) {
+        if(confirm("Möchten Sie diese Nachricht wirklich löschen?")) {
+            if(db) {
+                remove(ref(db, 'messages/' + messageId))
+                .then(() => console.log("Nachricht erfolgreich gelöscht."))
+                .catch(err => alert("Fehler beim Löschen: " + err));
+            }
+        }
+    }
 
     if(!localStorage.getItem('chat-nickname')) {
         localStorage.setItem('chat-nickname', 'User_' + Math.floor(Math.random() * 900 + 100));
@@ -607,6 +643,7 @@
         if(!win.classList.contains('hidden')) {
             const container = document.getElementById('chat-messages-container');
             container.scrollTop = container.scrollHeight;
+            refreshChatBubblesAdminControls();
         }
     }
 
@@ -624,25 +661,41 @@
                 timestamp: Date.now()
             });
         } else {
-            renderMessageBubble(sender, text, true);
+            renderMessageBubble("local-mock", sender, text, true);
         }
         input.value = "";
     }
 
     function setupChatListeningEngine() {
         const messagesRef = query(ref(db, 'messages'), limitToLast(50));
+        
         onChildAdded(messagesRef, (snapshot) => {
             const data = snapshot.val();
+            const id = snapshot.key;
             const currentMe = localStorage.getItem('chat-nickname');
-            renderMessageBubble(data.user, data.message, data.user === currentMe);
+            renderMessageBubble(id, data.user, data.message, data.user === currentMe);
+        });
+
+        onChildRemoved(ref(db, 'messages'), (snapshot) => {
+            const id = snapshot.key;
+            const element = document.getElementById('msg-' + id);
+            if(element) element.remove();
         });
     }
 
-    function renderMessageBubble(user, text, isMe) {
+    function renderMessageBubble(id, user, text, isMe) {
         const container = document.getElementById('chat-messages-container');
+        if(document.getElementById('msg-' + id)) return;
+
         const bubble = document.createElement('div');
         bubble.className = `chat-msg-bubble ${isMe ? 'me' : ''}`;
+        bubble.id = 'msg-' + id;
+        
+        const isAdminActive = !document.getElementById('admin-card').classList.contains('hidden');
+        const deleteButton = isAdminActive ? `<span style="color:red; cursor:pointer; float:right; margin-left:10px; font-weight:bold;" onclick="deleteChatMessage('${id}')" title="Nachricht löschen">❌</span>` : '';
+
         bubble.innerHTML = `
+            ${deleteButton}
             <span class="chat-msg-user">${user}</span>
             <div>${escapeHTML(text)}</div>
         `;
@@ -653,13 +706,66 @@
     function escapeHTML(str) {
         return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
     }
+
+    window.refreshChatBubblesAdminControls = function() {
+        const isAdminActive = !document.getElementById('admin-card').classList.contains('hidden');
+        const bubbles = document.querySelectorAll('.chat-messages .chat-msg-bubble');
+        bubbles.forEach(bubble => {
+            const msgId = bubble.id.replace('msg-', '');
+            let existingX = bubble.querySelector('span[onclick^="deleteChatMessage"]');
+            if (isAdminActive && !existingX) {
+                const spanX = document.createElement('span');
+                spanX.style = "color:red; cursor:pointer; float:right; margin-left:10px; font-weight:bold;";
+                spanX.title = "Nachricht löschen";
+                spanX.textContent = "❌";
+                spanX.onclick = function() { window.deleteChatMessage(msgId); };
+                bubble.insertBefore(spanX, bubble.firstChild);
+            } else if (!isAdminActive && existingX) {
+                existingX.remove();
+            }
+        });
+    }
+
+    // LISTENER FOR PUBLIC AVAILABLE ROOMS DISPLAYED TO EVERY VISITOR
+    function setupGlobalVoiceRoomsListener() {
+        const roomsRef = ref(db, 'voice_rooms');
+        onValue(roomsRef, (snapshot) => {
+            const container = document.getElementById('public-voice-rooms-container');
+            container.innerHTML = "";
+            
+            if(!snapshot.exists()) {
+                container.innerHTML = `<p style="color:#888; font-style:italic; font-size:14px;">Keine aktiven Räume vorhanden. Erstelle den ersten!</p>`;
+                return;
+            }
+
+            snapshot.forEach((childSnapshot) => {
+                const roomName = childSnapshot.key;
+                const roomData = childSnapshot.val();
+                const status = roomData.status || "open";
+                
+                const item = document.createElement('div');
+                item.className = "group-item";
+                item.innerHTML = `
+                    <div class="group-info">
+                        <h4>🗣️ Room: ${escapeHTML(roomName)}</h4>
+                        <span class="room-badge ${status === 'open' ? 'badge-open' : 'badge-locked'}">
+                            ${status === 'open' ? '🔓 Offen (Open)' : '🔒 Gesperrt (Locked)'}
+                        </span>
+                    </div>
+                    <button class="btn btn-success" style="min-width:unset; flex:none; padding:6px 15px;" 
+                        onclick="initiateDirectJoinFromList('${escapeHTML(roomName)}')">Beitreten</button>
+                `;
+                container.appendChild(item);
+            });
+        });
+    }
 </script>
 
 <script>
     // =======================================================
     // ⚙️ SHIFTED ENCODED DATABASE (SECURE FROM LINK STEALERS)
     // =======================================================
-    let secureDatabasePayload = "W3sibGV2ZWwiOiJBMiIsImdyb3VwVGl0bGUiOiJFaW4gQW5ydWYgdm9uIGRlciBBcmJlaXQiLCJ0cmFja3MiOlt7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMV8yMDI2MDYyN18yMDI2MDYyNy8xLndhdiIsInNjcmlwdCI6IkhhbGxvLCBoaWVyIGlzdCBGcmF1IE1laWVyLiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC8xXzIwMjYwNjI3XzIwMjYwNjI3LzIud2F2Iiwic2NyaXB0IjoiSWNoIHJ1ZmUgd2VnZW4gbW9yZ2VuIGFuLiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC8xXzIwMjYwNjI3XzIwMjYwNjI3LzMud2F2Iiwic2NyaXB0IjoiRGFzIE1lZXRpbmcgYmVnaW5udCB1bSBuZXVuIFVociwgbmljaHQgdW0gemVobi4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMV8yMDI2MDYyN18yMDI2MDYyNy80LndhdiIsInNjcmlwdCI6IkJpdHRlIGtvbW1lbiBTaWUgcMO8bmt0bGljaC4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMV8yMDI2MDYyN18yMDI2MDYyNy81LndhdiIsInNjcmlwdCI6IldpciB0cmVmZmVuIHVucyBpbSBLb25mZXJlbnpyYXVtIGltIHp3ZWl0ZW4gU3RvY2suIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkLzFfMjAyNjA2MjdfMjAyNjA2MjcvNi53YXYiLCJzY3JpcHQiOiJCaXR0ZSBicmluZ2VuIFNpZSBJaHJlbiBCZXJpY2h0IG1pdC4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMV8yMDI2MDYyN18yMDI2MDYyNy83LndhdiIsInNjcmlwdCI6Ildlbm4gU2llIEZyYWdlbiBoYWJlbiwgc2NocmVpYmVuIFNpZSBtaXIgZWluZSBFLU1haWwuIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkLzFfMjAyNjA2MjdfMjAyNjA2MjcvOC53YXYiLCJzY3JpcHQiOiJEYW5rZSB1bmQgYmlzIG1vcmdlbi4ifV19LHsibGV2ZWwiOiJCMSIsImdyb3VwVGl0bGUiOiJFaW5lIE5hY2hyaWNodCB2b24gZGVyIFZlcm1pZXRlcmluIiwidHJhY2tzIjpbeyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkL2ItMS1laW5lLW5hY2hyaWNodC12b24tZGVyLXZlcm1pZXRlcmluLTA3L0IxJTIwLSUyMEVpbmUlMjBOYWNocmljaHQlMjB2b24lMjBkZXIlMjBWZXJtaWV0ZXJpbl8wMS5tcDMiLCJzY3JpcHQiOiJHdXRlbiBUYWcsIGhpZXIgaXN0IEZyYXUgSG9mZm1hbm4sIElocmUgVmVybWlldGVyaW4uIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkL2ItMS1laW5lLW5hY2hyaWNodC12b24tZGVyLXZlcm1pZXRlcmluLTA3L0IxJTIwLSUyMEVpbmUlMjBOYWNocmljaHQlMjB2b24lMjBkZXIlMjBWZXJtaWV0ZXJpbl8wMi5tcDMiLCJzY3JpcHQiOiJJY2ggbWVsZGUgbWljaCB3ZWdlbiBkZXIgV29obnVuZyBpbSBkcml0dGVuIFN0b2NrLiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC9iLTEtZWluZS1uYWNocmljaHQtdm9uLWRlci12ZXJtaWV0ZXJpbi0wNy9CMSUyMC0lMjBFaW5lJTIwTmFjaHJpY2h0JTIwdm9uJTIwZGVyJTIwVmVybWlldGVyaW5fMDMubXAzIiwic2NyaXB0IjoiRGVyIEhhbmR3ZXJrZXIga29tbXQgbsOkY2hzdGUgV29jaGUgRGllbnN0YWcsIHVtIGRpZSBIZWl6dW5nIHp1IHJlcGFyaWVyZW4uIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkL2ItMS1laW5lLW5hY2hyaWNodC12b24tZGVyLXZlcm1pZXRlcmluLTA3L0IxJTIwLSUyMEVpbmUlMjBOYWNocmljaHQlMjB2b24lMjBkZXIlMjBWZXJtaWV0ZXJpbl8wNC5tcDMiLCJzY3JpcHQiOiJEYXMgbWFjaHQgdW5nZWbDpGhyIGVpbmUgU3R1bmRlIEFyYmVpdC4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvYiLTEtZWluZS1uYWNocmljaHQtdm9uLWRlci12ZXJtaWV0ZXJpbi0wNy9CMSUyMC0lMjBFaW5lJTIwTmFjaHJpY2h0JTIwdm9uJTIwZGVyJTIwVmVybWlldGVyaW5fMDUubXAzIiwic2NyaXB0IjoiU2llIG3DvXNzZW4gZGFmProcessIG5pY2h0IHp1IEhhdXNlIHNlaW4uIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkL2ItMS1laW5lLW5hY2hyaWNodC12b24tZGVyLXZlcm1pZXRlcmluLTA3TL0IxJTIwLSUyMEVpbmUlMjBOYWNocmljaHQlMjB2b24lMjBkZXIlMjBWZXJtaWV0ZXJpbl8wNi5tcDMiLCJzY3JpcHQiOiJJY2ggaGFiZSBlaW5lbiBTY2hscreatorc3NlbC4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvYiLTEtZWluZS1uYWNocmljaHQtdm9uLWRlci12ZXJtaWV0ZXJpbi0wNy9CMSUyMC0lMjBFaW5lJTIwTmFjaHJpY2h0JTIwdm9uJTIwZGVyJTIwVmVybWlldGVyaW5fMDcubXAzIiwic2NyaXB0IjoiU2NocmVpYmVuIFNpZSBtaXIgcGxlYXNlLCBvYiBkYXMgZsOciXIgU2llIGluIE9yZG51bmcgaXN0LiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC9iLTEtZWluZS1uYWNocmljaHQtdm9uLWRlci12ZXJtaWV0ZXJpbi0wNy9CMSUyMC0lMjBFaW5lJTIwTmFjaHJpY2h0JTIwdm9uJTIwZGVyJTIwVmVybWlldGVyaW5fMDgubXAzIiwic2NyaXB0IjoiVmllbGVuIERhbmsgdW5kIHNjaMO2bmVuIEFwcmVzLW1pZGkuIn1dfV0=";
+    let secureDatabasePayload = "W3sibGV2ZWwiOiJBMiIsImdyb3VwVGl0bGUiOiJFaW4gQW5ydWYgdm9uIGRlciBBcmJlaXQiLCJ0cmFja3MiOlt7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMV8yMDI2MDYyN18yMDI2MDYyNy8xLndhdiIsInNjcmlwdCI6IkhhbGxvLCBoaWVyIGlzdCBGcmF1IE1laWVyLiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC8xXzIwMjYwNjI3XzIwMjYwNjI3LzIud2F2Iiwic2NyaXB0IjoiSWNoIHJ1ZmUgd2VnZW4gbW9yZ2VuIGFuLiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC8xXzIwMjYwNjI3XzIwMjYwNjI3LzMu\nd2F2Iiwic2NyaXB0IjoiRGFzIE1lZXRpbmcgYmVnaW5udCB1bSBuZXVuIFVociwgbmljaHQgdW0gemVobi4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMV8yMDI2MDYyN18yMDI2MDYyNy80LndhdiIsInNjcmlwdCI6IkJpdHRlIGtvbW1lbiBTaWUgcMO8bmt0bGljaC4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMV8yMDI2MDYyN18yMDI2MDYyNy81LndhdiIsInNjcmlwdCI6IldpciB0cmVmZmVuIHVucyBpbSBLb25mZXJlbnpyYXVtIGltIHp3ZWl0ZW4gU3RvY2suIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkLzFfMjAyNjA2MjdfMjAyNjA2MjcvNi53YXYiLCJzY3JpcHQiOiJCaXR0ZSBicmluZ2VuIFNpZSBJaHJlbiBCZXJpY2h0IG1pdC4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvMV8yMDI2MDYyN18yMDI2MDYyNy83LndhdiIsInNjcmlwdCI6Ildlbm4gU2llIEZyYWdlbiBoYWJlbiwgc2NocmVpYmVuIFNpZSBtaXIgZWluZSBFLU1haWwuIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkLzFfMjAyNjA2MjdfMjAyNjA2MjcvOC53YXYiLCJzY3JpcHQiOiJEYW5rZSB1bmQgYmlzIG1vcmdlbi4ifV19LHsibGV2ZWwiOiJCMSIsImdyb3VwVGl0bGUiOiJFaW5lIE5hY2hyaWNodCB2b24gZGVyIFZlcm1pZXRlcmluIiwidHJhY2tzIjpbeyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkL2ItMS1laW5lLW5hY2hyaWNodC12b24tZGVyLXZlcm1pZXRlcmluLTA3L0IxJTIwLSUyMEVpbmUlMjBOYWNocmljaHQlMjB2b24lMjBkZXIlMjBWZXJtaWV0ZXJpbl8wMS5tcDMiLCJzY3JpcHQiOiJHdXRlbiBUYWcsIGhpZXIgaXN0IEZyYXUgSG9mZm1hbm4sIElocmUgVmVybWlldGVyaW4uIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkL2ItMS1laW5lLW5hY2hyaWNodC12b24tZGVyLXZlcm1pZXRlcmluLTA3L0IxJTIwLSUyMEVpbmUlMjBOYWNocmljaHQlMjB2b24lMjBkZXIlMjBWZXJtaWV0ZXJpbl8wMi5tcDMiLCJzY3JpcHQiOiJJY2ggbWVsZGUgbWujaCB3ZWdlbiBkZXIgV29obnVuZyBpbSBkcml0dGVuIFN0b2NrLiJ9LHsidXJsIjoiaHR0cHM6Ly9hcmNoaXZlLm9yZy9kb3dubG9hZC9iLTEtZWluZS1uYWNocmljaHQtdm9uLWRlci12ZXJtaWV0ZXJpbi0wNy9CMSUyMC0lMjBFaW5lJTIwTmFjaHJpY2h0JTIwdm9uJTIwZGVyJTIwVmVybWlldGVyaW5fMDMubXAzIiwic2NyaXB0IjoiRGVyIEhhbmR3ZXJrZXIga29tbXQgbsOkY2hzdGUgV29jaGUgRGllbnN0YWcsIHVtIGRpZSBIZWl6dW5nIHp1IHJlcGFyaWVyZW4uIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkL2ItMS1laW5lLW5hY2hyaWNodC12b24tZGVyLXZlcm1pZXRlcmluLTA3L0IxJTIwLSUyMEVpbmUlMjBOYWNocmljaHQlMjB2b24lMjBkZXIlMjBWZXJtaWV0ZXJpbl8wNC5tcDMiLCJzY3JpcHQiOiJEYXMgbWFjaHQgdW5nZWbDpGhyIGVpbmUgU3R1bmRlIEFyYmVpdC4ifSx7InVybCI6Imh0dHBzOi8vYXJjaGl2ZS5vcmcvZG93bmxvYWQvYiLTEtZWluZS1uYWNocmljaHQtdm9uLWRlci12ZXJtaWV0ZXJpbi0wNy9CMSUyMC0lMjBFaW5lJTIwTmFjaHJpY2h0JTIwdm9uJTIwZGVyJTIwVmVybWlldGVyaW5fMDUubXAzIiwic2NyaXB0IjoiU2llIG3DvXNzZW4gZGFmZgpyIG5pY2h0IHp1IEhhdXNlIHNlaW4uIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkL2ItMS1laW5lLW5hY2hyaWNodC12b24tZGVyLXZlcm1pZXRlcmluLTA3L0IxJTIwLSUyMEVpbmUlMjBOYWNocmljaHQlMjB2b24lMjBkZXIlMjBWZXJtaWV0ZXJpbl8wNi5tcDMiLCJzY3JpcHQiOiJJY2ggaGFiZSBlaW5lbiBTY2hsdXNzZWwuIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkL2ItMS1laW5lLW5hY2hyaWNodC12b24tZGVyLXZlcm1pZXRlcmluLTA3L0IxJTIwLSUyMEVpbmUlMjBOYWNocmljaHQlMjB2b24lMjBkZXIlMjBWZXJtaWV0ZXJpbl8wNy5tcDMiLCJzY3JpcHQiOiJJY2ggaGFiZSBlaW5lbiBTY2hsdXNzZWwuIn0seyJ1cmwiOiJodHRwczovL2FyY2hpdmUub3JnL2Rvd25sb2FkL2ItMS1laW5lLW5hY2hyaWNodC12b24tZGVyLXZlcm1pZXRlcmluLTA3L0IxJTIwLSUyMEVpbmUlMjBOYWNocmljaHQlMjB2b24lMjBkZXIlMjBWZXJtaWV0ZXJpbl8wOC5tcDMiLCJzY3JpcHQiOiJWaWVsZW4gRGFuayB1bmQgc2Now7ZuZW4gTmFjaG1pdHRhZy4ifV19XQ==";
 
     let globalDatabase = [];
     let activeTracks = [];
@@ -684,6 +790,9 @@
         if (event.ctrlKey && event.shiftKey && event.altKey) {
             event.preventDefault();
             document.getElementById('admin-card').classList.toggle('hidden');
+            if (typeof window.refreshChatBubblesAdminControls === 'function') {
+                window.refreshChatBubblesAdminControls(); 
+            }
         }
         if (event.key === 'Control' && !event.shiftKey && !event.altKey) {
             if (!document.getElementById('exercise-card').classList.contains('hidden') && document.getElementById('audio-player').src) {
@@ -697,6 +806,7 @@
     let localAudioStream = null;  
     let peerInstance = null;      
     let currentCall = null;       
+    let amIHostOfRoom = false;    // Status Variable Tracker
 
     async function requestMicrophoneAccess() {
         try {
@@ -732,7 +842,10 @@
         const hasMicAccess = await requestMicrophoneAccess();
         if (!hasMicAccess) return;
 
+        amIHostOfRoom = true;
         initiateUIBlockToCallState(roomName);
+        document.getElementById('host-privacy-controls').classList.remove('hidden'); // Zeige Host-Steuerung
+        document.getElementById('room-status-select').value = "open";
         
         initializePeerNetworkConnection((myUniqueId) => {
             document.getElementById('participant-list').innerHTML = `
@@ -744,7 +857,8 @@
                 const firebaseRef = window.getFirebaseRef(dbInstance, 'voice_rooms/' + roomName);
                 window.setFirebaseData(firebaseRef, {
                     hostPeerId: myUniqueId,
-                    createdAt: Date.now()
+                    createdAt: Date.now(),
+                    status: "open" // Standardmäßig offen
                 }).then(() => {
                     console.log(`Raum "${roomName}" erfolgreich in Firebase registriert.`);
                 }).catch((error) => {
@@ -756,6 +870,12 @@
         });
     }
 
+    // Hilfsfunktion für Klick aus der Raumliste
+    window.initiateDirectJoinFromList = function(roomName) {
+        document.getElementById('voice-room-input').value = roomName;
+        initiateJoinRoomWorkflow();
+    }
+
     async function initiateJoinRoomWorkflow() {
         const roomName = document.getElementById('voice-room-input').value.trim();
         if (!roomName) return alert("Bitte gib einen Raumnamen oder Code ein!");
@@ -763,44 +883,67 @@
         const hasMicAccess = await requestMicrophoneAccess();
         if (!hasMicAccess) return;
 
-        initiateUIBlockToCallState(roomName);
+        const dbInstance = window.getFirebaseDb();
+        if (!dbInstance) return;
 
-        initializePeerNetworkConnection((myUniqueId) => {
-            document.getElementById('participant-list').innerHTML = `
-                <li>Du (Verbinde...)</li>
-            `;
-            
-            const dbInstance = window.getFirebaseDb();
-            if (dbInstance) {
-                const roomRef = window.getFirebaseRef(dbInstance, 'voice_rooms/' + roomName);
-                window.getFirebaseData(roomRef).then((snapshot) => {
-                    if (snapshot.exists()) {
-                        const roomData = snapshot.val();
-                        const hostPeerId = roomData.hostPeerId;
-                        console.log(`Raum gefunden! Host Peer ID: ${hostPeerId}`);
-                        
-                        currentCall = peerInstance.call(hostPeerId, localAudioStream);
-                        
-                        currentCall.on('stream', (remoteStream) => {
-                            console.log("🔊 Audio-Stream vom Host empfangen!");
-                            const audioPlayer = document.getElementById('remote-audio-player');
-                            if (audioPlayer) audioPlayer.srcObject = remoteStream;
-                        });
+        const roomRef = window.getFirebaseRef(dbInstance, 'voice_rooms/' + roomName);
+        
+        // Erst prüfen ob der Raum existiert und offen ist
+        window.getFirebaseData(roomRef).then((snapshot) => {
+            if (snapshot.exists()) {
+                const roomData = snapshot.val();
+                if(roomData.status === "locked") {
+                    alert("⚠️ Zutritt verweigert: Dieser Raum wurde vom Ersteller gesperrt!");
+                    return;
+                }
 
-                        document.getElementById('participant-list').innerHTML = `
-                            <li>Host (Aktiv im Call)</li>
-                            <li>Du (Verbunden)</li>
-                        `;
-                    } else {
-                        alert("Raum wurde nicht gefunden! Vergewissere dich, dass der Host ihn erstellt hat.");
-                        leaveAudioCallRoom();
-                    }
-                }).catch((error) => {
-                    console.error("Fehler beim Abrufen des Raums:", error);
-                    leaveAudioCallRoom();
+                // Fortfahren mit Beitritt
+                amIHostOfRoom = false;
+                initiateUIBlockToCallState(roomName);
+                document.getElementById('host-privacy-controls').classList.add('hidden'); // Verberge Host-Steuerung
+
+                initializePeerNetworkConnection((myUniqueId) => {
+                    document.getElementById('participant-list').innerHTML = `
+                        <li>Du (Verbinde...)</li>
+                    `;
+                    
+                    const hostPeerId = roomData.hostPeerId;
+                    console.log(`Verbindung wird aufgebaut zu Host Peer ID: ${hostPeerId}`);
+                    
+                    currentCall = peerInstance.call(hostPeerId, localAudioStream);
+                    
+                    currentCall.on('stream', (remoteStream) => {
+                        console.log("🔊 Audio-Stream vom Host empfangen!");
+                        const audioPlayer = document.getElementById('remote-audio-player');
+                        if (audioPlayer) audioPlayer.srcObject = remoteStream;
+                    });
+
+                    document.getElementById('participant-list').innerHTML = `
+                        <li>Host (Aktiv im Call)</li>
+                        <li>Du (Verbunden)</li>
+                    `;
                 });
+
+            } else {
+                alert("Raum wurde nicht gefunden! Vergewissere dich, dass der Host ihn erstellt hat.");
             }
+        }).catch((error) => {
+            console.error("Fehler beim Abrufen des Raums:", error);
         });
+    }
+
+    // Funktion für den Host zum Ändern der Privatsphäre (Open / Locked)
+    window.changeRoomPrivacySettings = function(newStatus) {
+        if(!amIHostOfRoom) return;
+        const roomName = document.getElementById('active-room-label').textContent;
+        const dbInstance = window.getFirebaseDb();
+        
+        if (dbInstance && roomName && roomName !== "---") {
+            const statusRef = window.getFirebaseRef(dbInstance, 'voice_rooms/' + roomName + '/status');
+            window.setFirebaseData(statusRef, newStatus)
+            .then(() => console.log(`Raum-Status erfolgreich auf '${newStatus}' gesetzt.`))
+            .catch(err => console.error("Fehler beim Status-Update:", err));
+        }
     }
 
     function initiateUIBlockToCallState(roomName) {
@@ -813,7 +956,8 @@
         const roomName = document.getElementById('active-room-label').textContent;
         const dbInstance = window.getFirebaseDb();
 
-        if (dbInstance && roomName && roomName !== "---") {
+        // Nur wenn wir Host sind, löschen wir den Raum komplett beim Verlassen
+        if (dbInstance && roomName && roomName !== "---" && amIHostOfRoom) {
             const roomRef = window.getFirebaseRef(dbInstance, 'voice_rooms/' + roomName);
             window.removeFirebaseData(roomRef);
         }
@@ -826,6 +970,7 @@
         if (currentCall) { currentCall.close(); currentCall = null; }
         if (peerInstance) { peerInstance.destroy(); peerInstance = null; }
 
+        amIHostOfRoom = false;
         document.getElementById('voice-call-state').classList.add('hidden');
         document.getElementById('voice-lobby-state').classList.remove('hidden');
         document.getElementById('participant-list').innerHTML = `<li>Du (Warten auf Partner...)</li>`;
