@@ -634,7 +634,7 @@
             if (!adminCard.classList.contains('hidden')) { adminCard.classList.add('hidden'); return; }
             
             const code = prompt("🔒 Admin-Code eingeben:");
-            if (btoa(code) === "eW9vdS5tZ0BnbWFpbC5jb20=") { adminCard.classList.remove('hidden'); } 
+            if (btoa(code) === btoa("Admin@DiktatPro#2026!")) { adminCard.classList.remove('hidden'); } 
             else { alert("Falscher Code!"); }
         }
         if (event.key === 'Control' && !event.shiftKey && !event.altKey) {
